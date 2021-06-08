@@ -87,7 +87,7 @@
                     <button *ngIf="session.isPublished || session.isSubmitted" id="btn-download" class="btn btn-light btn-sm" ngbDropdownToggle> Download </button>
                     <div ngbDropdownMenu (click)="$event.stopPropagation()">
                       <button *ngIf="session.isSubmitted"
-                         (click)="downloadProofOfSubmission(i)"
+                         (click)="downloadSubmission(i, studentCourse)"
                          id="download-submit-btn-{{i}}" class="btn btn-light btn-sm dropdown-item">
                         Proof of Submission
                       </button>

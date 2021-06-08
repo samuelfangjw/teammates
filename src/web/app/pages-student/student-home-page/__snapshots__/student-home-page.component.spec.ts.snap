@@ -6,6 +6,8 @@ exports[`StudentHomePageComponent should snap when courses are still loading 1`]
   allStudentFeedbackSessionsNotReturned={[Function String]}
   courseService={[Function CourseService]}
   courses={[Function Array]}
+  feedbackQuestionsService={[Function FeedbackQuestionsService]}
+  feedbackResponsesService={[Function FeedbackResponsesService]}
   feedbackSessionsService={[Function FeedbackSessionsService]}
   hasCoursesLoadingFailed="false"
   isCoursesLoading={[Function Boolean]}
@@ -18,6 +20,7 @@ exports[`StudentHomePageComponent should snap when courses are still loading 1`]
   studentFeedbackSessionStatusPending={[Function String]}
   studentFeedbackSessionStatusPublished={[Function String]}
   studentFeedbackSessionStatusSubmitted={[Function String]}
+  studentService={[Function StudentService]}
   tableComparatorService={[Function TableComparatorService]}
   timezoneService={[Function TimezoneService]}
 >
@@ -56,6 +59,8 @@ exports[`StudentHomePageComponent should snap when there is course loading faile
   allStudentFeedbackSessionsNotReturned={[Function String]}
   courseService={[Function CourseService]}
   courses={[Function Array]}
+  feedbackQuestionsService={[Function FeedbackQuestionsService]}
+  feedbackResponsesService={[Function FeedbackResponsesService]}
   feedbackSessionsService={[Function FeedbackSessionsService]}
   hasCoursesLoadingFailed={[Function Boolean]}
   isCoursesLoading="false"
@@ -68,6 +73,7 @@ exports[`StudentHomePageComponent should snap when there is course loading faile
   studentFeedbackSessionStatusPending={[Function String]}
   studentFeedbackSessionStatusPublished={[Function String]}
   studentFeedbackSessionStatusSubmitted={[Function String]}
+  studentService={[Function StudentService]}
   tableComparatorService={[Function TableComparatorService]}
   timezoneService={[Function TimezoneService]}
 >
@@ -102,6 +108,8 @@ exports[`StudentHomePageComponent should snap with all feedback sessions over 2 
   allStudentFeedbackSessionsNotReturned={[Function String]}
   courseService={[Function CourseService]}
   courses={[Function Array]}
+  feedbackQuestionsService={[Function FeedbackQuestionsService]}
+  feedbackResponsesService={[Function FeedbackResponsesService]}
   feedbackSessionsService={[Function FeedbackSessionsService]}
   hasCoursesLoadingFailed="false"
   isCoursesLoading="false"
@@ -114,6 +122,7 @@ exports[`StudentHomePageComponent should snap with all feedback sessions over 2 
   studentFeedbackSessionStatusPending={[Function String]}
   studentFeedbackSessionStatusPublished={[Function String]}
   studentFeedbackSessionStatusSubmitted={[Function String]}
+  studentService={[Function StudentService]}
   tableComparatorService={[Function TableComparatorService]}
   timezoneService={[Function TimezoneService]}
 >
@@ -249,6 +258,35 @@ exports[`StudentHomePageComponent should snap with all feedback sessions over 2 
                    Edit Submission 
                 </a>
                 
+                <span
+                  class="dropdown"
+                  ngbdropdown=""
+                >
+                  
+                  <button
+                    aria-expanded="false"
+                    aria-haspopup="true"
+                    class="btn btn-light btn-sm dropdown-toggle"
+                    id="btn-download"
+                    ngbdropdowntoggle=""
+                  >
+                     Download 
+                  </button>
+                  <div
+                    class="dropdown-menu"
+                    ngbdropdownmenu=""
+                    x-placement="bottom"
+                  >
+                    
+                    <button
+                      class="btn btn-light btn-sm dropdown-item"
+                      id="download-submit-btn-0"
+                    >
+                       Proof of Submission 
+                    </button>
+                    
+                  </div>
+                </span>
               </td>
             </tr>
             <tr>
@@ -291,6 +329,35 @@ exports[`StudentHomePageComponent should snap with all feedback sessions over 2 
                 >
                    View Submission 
                 </a>
+                <span
+                  class="dropdown"
+                  ngbdropdown=""
+                >
+                  
+                  <button
+                    aria-expanded="false"
+                    aria-haspopup="true"
+                    class="btn btn-light btn-sm dropdown-toggle"
+                    id="btn-download"
+                    ngbdropdowntoggle=""
+                  >
+                     Download 
+                  </button>
+                  <div
+                    class="dropdown-menu"
+                    ngbdropdownmenu=""
+                    x-placement="bottom"
+                  >
+                    
+                    <button
+                      class="btn btn-light btn-sm dropdown-item"
+                      id="download-submit-btn-1"
+                    >
+                       Proof of Submission 
+                    </button>
+                    
+                  </div>
+                </span>
               </td>
             </tr>
           </tbody>
@@ -390,6 +457,35 @@ exports[`StudentHomePageComponent should snap with all feedback sessions over 2 
                    Edit Submission 
                 </a>
                 
+                <span
+                  class="dropdown"
+                  ngbdropdown=""
+                >
+                  
+                  <button
+                    aria-expanded="false"
+                    aria-haspopup="true"
+                    class="btn btn-light btn-sm dropdown-toggle"
+                    id="btn-download"
+                    ngbdropdowntoggle=""
+                  >
+                     Download 
+                  </button>
+                  <div
+                    class="dropdown-menu"
+                    ngbdropdownmenu=""
+                    x-placement="bottom"
+                  >
+                    
+                    <button
+                      class="btn btn-light btn-sm dropdown-item"
+                      id="download-submit-btn-0"
+                    >
+                       Proof of Submission 
+                    </button>
+                    
+                  </div>
+                </span>
               </td>
             </tr>
             <tr>
@@ -432,6 +528,35 @@ exports[`StudentHomePageComponent should snap with all feedback sessions over 2 
                 >
                    View Submission 
                 </a>
+                <span
+                  class="dropdown"
+                  ngbdropdown=""
+                >
+                  
+                  <button
+                    aria-expanded="false"
+                    aria-haspopup="true"
+                    class="btn btn-light btn-sm dropdown-toggle"
+                    id="btn-download"
+                    ngbdropdowntoggle=""
+                  >
+                     Download 
+                  </button>
+                  <div
+                    class="dropdown-menu"
+                    ngbdropdownmenu=""
+                    x-placement="bottom"
+                  >
+                    
+                    <button
+                      class="btn btn-light btn-sm dropdown-item"
+                      id="download-submit-btn-1"
+                    >
+                       Proof of Submission 
+                    </button>
+                    
+                  </div>
+                </span>
               </td>
             </tr>
           </tbody>
@@ -453,6 +578,8 @@ exports[`StudentHomePageComponent should snap with default fields 1`] = `
   allStudentFeedbackSessionsNotReturned={[Function String]}
   courseService={[Function CourseService]}
   courses={[Function Array]}
+  feedbackQuestionsService={[Function FeedbackQuestionsService]}
+  feedbackResponsesService={[Function FeedbackResponsesService]}
   feedbackSessionsService={[Function FeedbackSessionsService]}
   hasCoursesLoadingFailed="false"
   isCoursesLoading={[Function Boolean]}
@@ -465,6 +592,7 @@ exports[`StudentHomePageComponent should snap with default fields 1`] = `
   studentFeedbackSessionStatusPending={[Function String]}
   studentFeedbackSessionStatusPublished={[Function String]}
   studentFeedbackSessionStatusSubmitted={[Function String]}
+  studentService={[Function StudentService]}
   tableComparatorService={[Function TableComparatorService]}
   timezoneService={[Function TimezoneService]}
 >
@@ -503,6 +631,8 @@ exports[`StudentHomePageComponent should snap with feedback sessions 1`] = `
   allStudentFeedbackSessionsNotReturned={[Function String]}
   courseService={[Function CourseService]}
   courses={[Function Array]}
+  feedbackQuestionsService={[Function FeedbackQuestionsService]}
+  feedbackResponsesService={[Function FeedbackResponsesService]}
   feedbackSessionsService={[Function FeedbackSessionsService]}
   hasCoursesLoadingFailed="false"
   isCoursesLoading="false"
@@ -515,6 +645,7 @@ exports[`StudentHomePageComponent should snap with feedback sessions 1`] = `
   studentFeedbackSessionStatusPending={[Function String]}
   studentFeedbackSessionStatusPublished={[Function String]}
   studentFeedbackSessionStatusSubmitted={[Function String]}
+  studentService={[Function StudentService]}
   tableComparatorService={[Function TableComparatorService]}
   timezoneService={[Function TimezoneService]}
 >
@@ -656,6 +787,41 @@ exports[`StudentHomePageComponent should snap with feedback sessions 1`] = `
                    Edit Submission 
                 </a>
                 
+                <span
+                  class="dropdown"
+                  ngbdropdown=""
+                >
+                  
+                  <button
+                    aria-expanded="false"
+                    aria-haspopup="true"
+                    class="btn btn-light btn-sm dropdown-toggle"
+                    id="btn-download"
+                    ngbdropdowntoggle=""
+                  >
+                     Download 
+                  </button>
+                  <div
+                    class="dropdown-menu"
+                    ngbdropdownmenu=""
+                    x-placement="bottom"
+                  >
+                    
+                    <button
+                      class="btn btn-light btn-sm dropdown-item"
+                      id="download-submit-btn-0"
+                    >
+                       Proof of Submission 
+                    </button>
+                    
+                    <button
+                      class="btn btn-light btn-sm dropdown-item"
+                      id="download-responses-btn-0"
+                    >
+                       Responses 
+                    </button>
+                  </div>
+                </span>
               </td>
             </tr>
             <tr>
@@ -698,6 +864,20 @@ exports[`StudentHomePageComponent should snap with feedback sessions 1`] = `
                 </a>
                 
                 
+                <span
+                  class="dropdown"
+                  ngbdropdown=""
+                >
+                  
+                  <div
+                    class="dropdown-menu"
+                    ngbdropdownmenu=""
+                    x-placement="bottom"
+                  >
+                    
+                    
+                  </div>
+                </span>
               </td>
             </tr>
           </tbody>
@@ -719,6 +899,8 @@ exports[`StudentHomePageComponent should snap with no course 1`] = `
   allStudentFeedbackSessionsNotReturned={[Function String]}
   courseService={[Function CourseService]}
   courses={[Function Array]}
+  feedbackQuestionsService={[Function FeedbackQuestionsService]}
+  feedbackResponsesService={[Function FeedbackResponsesService]}
   feedbackSessionsService={[Function FeedbackSessionsService]}
   hasCoursesLoadingFailed="false"
   isCoursesLoading="false"
@@ -731,6 +913,7 @@ exports[`StudentHomePageComponent should snap with no course 1`] = `
   studentFeedbackSessionStatusPending={[Function String]}
   studentFeedbackSessionStatusPublished={[Function String]}
   studentFeedbackSessionStatusSubmitted={[Function String]}
+  studentService={[Function StudentService]}
   tableComparatorService={[Function TableComparatorService]}
   timezoneService={[Function TimezoneService]}
 >
@@ -762,6 +945,8 @@ exports[`StudentHomePageComponent should snap with no feedback session over 2 co
   allStudentFeedbackSessionsNotReturned={[Function String]}
   courseService={[Function CourseService]}
   courses={[Function Array]}
+  feedbackQuestionsService={[Function FeedbackQuestionsService]}
+  feedbackResponsesService={[Function FeedbackResponsesService]}
   feedbackSessionsService={[Function FeedbackSessionsService]}
   hasCoursesLoadingFailed="false"
   isCoursesLoading="false"
@@ -774,6 +959,7 @@ exports[`StudentHomePageComponent should snap with no feedback session over 2 co
   studentFeedbackSessionStatusPending={[Function String]}
   studentFeedbackSessionStatusPublished={[Function String]}
   studentFeedbackSessionStatusSubmitted={[Function String]}
+  studentService={[Function StudentService]}
   tableComparatorService={[Function TableComparatorService]}
   timezoneService={[Function TimezoneService]}
 >
@@ -919,6 +1105,8 @@ exports[`StudentHomePageComponent should snap with no feedback sessions 1`] = `
   allStudentFeedbackSessionsNotReturned={[Function String]}
   courseService={[Function CourseService]}
   courses={[Function Array]}
+  feedbackQuestionsService={[Function FeedbackQuestionsService]}
+  feedbackResponsesService={[Function FeedbackResponsesService]}
   feedbackSessionsService={[Function FeedbackSessionsService]}
   hasCoursesLoadingFailed="false"
   isCoursesLoading="false"
@@ -931,6 +1119,7 @@ exports[`StudentHomePageComponent should snap with no feedback sessions 1`] = `
   studentFeedbackSessionStatusPending={[Function String]}
   studentFeedbackSessionStatusPublished={[Function String]}
   studentFeedbackSessionStatusSubmitted={[Function String]}
+  studentService={[Function StudentService]}
   tableComparatorService={[Function TableComparatorService]}
   timezoneService={[Function TimezoneService]}
 >
