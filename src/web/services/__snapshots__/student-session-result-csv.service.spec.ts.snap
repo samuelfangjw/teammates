@@ -1,0 +1,329 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`StudentSessionResultCsvService should generate results for CONSTSUM question (restricted responses) 1`] = `
+"Question 1,How important are the following factors to you? Give points accordingly.
+
+Team,Giver's Full Name,Recipient's Team,Recipient's Full Name,Feedback,Grades,Fun
+
+
+Question 2,Split points among the teams
+
+Team,Giver's Full Name,Recipient's Team,Recipient's Full Name,Feedback
+
+
+Question 3,How much has each student worked?
+
+Team,Giver's Full Name,Recipient's Team,Recipient's Full Name,Feedback
+
+"
+`;
+
+exports[`StudentSessionResultCsvService should generate results for CONSTSUM question 1`] = `
+"Question 1,How important are the following factors to you? Give points accordingly.
+
+Option,Total Points,Average Points,Points Received
+Fun,101,50.5,20,81
+Grades,99,49.5,19,80
+
+
+Question 2,Split points among the teams
+
+Team,Recipient,Total Points,Average Points,Points Received
+,\\"Team 1.1</td></div>'\\"\\"\\",80,80,80
+,Team 1.2,20,20,20
+
+
+Question 3,How much has each student worked?
+
+Team,Recipient,Total Points,Average Points,Points Received
+\\"Team 1.1</td></div>'\\"\\"\\",\\"student1 In Course1</td></div>'\\"\\"\\",30,30,30
+\\"Team 1.1</td></div>'\\"\\"\\",student2 In Course1,20,20,20
+\\"Team 1.1</td></div>'\\"\\"\\",student3 In Course1,30,30,30
+\\"Team 1.1</td></div>'\\"\\"\\",student4 In Course1,10,10,10
+Team 1.2,student5 In Course1,10,10,10
+
+"
+`;
+
+exports[`StudentSessionResultCsvService should generate results for CONTRIB question (restricted section) 1`] = `
+"Question 1,\\"How much has each team member including yourself, contributed to the project?\\"
+
+My View of Me,E +0%
+Team View of Me,E -10099%
+
+My View of Others
+Team View of Others
+
+"
+`;
+
+exports[`StudentSessionResultCsvService should generate results for CONTRIB question 1`] = `
+"Question 1,\\"How much has each team member including yourself, contributed to the project?\\"
+
+My View of Me,E -1099%
+Team View of Me,E -25%
+
+My View of Others
+Team View of Others,E -25%,E -10099%,E -10099%
+
+"
+`;
+
+exports[`StudentSessionResultCsvService should generate results for MCQ question 1`] = `
+"Question 1,What do you like best about our product?
+
+Choice,Response Count,Percentage (%)
+It's good,1,33.33
+It's perfect,2,66.67
+
+
+Question 2,What do you like best about the class' product?
+
+Choice,Response Count,Percentage (%)
+It's good,1,50
+It's perfect,1,50
+
+
+Question 3,What can be improved for this class?
+
+Choice,Response Count,Percentage (%)
+Content,0,0
+Other,1,100
+Teaching style,0,0
+
+
+Question 4,What do you like best about our product?
+
+Choice,Weight,Response Count,Percentage (%),Weighted Percentage (%)
+It's good,1.25,1,100,100
+It's perfect,1.7,0,0,0
+Other,3,0,0,0
+
+Per Recipient Statistics
+Team,Recipient Name,It's good [1.25],It's perfect [1.7],Other [3],Total,Average
+\\"Team 1.1</td></div>'\\"\\"\\",\\"student1 In Course1</td></div>'\\"\\"\\",1,0,0,1.25,1.25
+
+"
+`;
+
+exports[`StudentSessionResultCsvService should generate results for MSQ question 1`] = `
+"Question 1,What do you like best about our product?
+
+Choice,Response Count,Percentage (%)
+It's good,2,66.67
+It's perfect,1,33.33
+
+
+Question 2,What do you like best about the class' product?
+
+Choice,Response Count,Percentage (%)
+It's good,1,33.33
+It's perfect,2,66.67
+
+
+Question 3,Choose all the food you like
+
+Choice,Weight,Response Count,Percentage (%),Weighted Percentage (%)
+Chicken rice,0,1,16.67,0
+Other,3,2,33.33,54.55
+Pasta,2,2,33.33,36.36
+Pizza,1,1,16.67,9.09
+
+Per Recipient Statistics
+Team,Recipient Name,Pizza [1],Pasta [2],Chicken rice [0],Other [3],Total,Average
+\\"Team 1.1</td></div>'\\"\\"\\",\\"student1 In Course1</td></div>'\\"\\"\\",1,1,1,1,6,1.5
+\\"Team 1.1</td></div>'\\"\\"\\",student2 In Course1,0,1,0,0,2,2
+\\"Team 1.1</td></div>'\\"\\"\\",student3 In Course1,0,0,0,1,3,3
+
+"
+`;
+
+exports[`StudentSessionResultCsvService should generate results for NUMSCALE question 1`] = `
+"Question 1,Rate our product.
+
+Team,Recipient,Average,Minimum,Maximum
+\\"Team 1.1</td></div>'\\"\\"\\",\\"student1 In Course1</td></div>'\\"\\"\\",3.5,3.5,3.5
+\\"Team 1.1</td></div>'\\"\\"\\",student2 In Course1,2,2,2
+
+
+Question 2,Rate our product.
+
+Team,Recipient,Average,Minimum,Maximum
+Instructors,Instructor1 Course1,4.5,4.5,4.5
+Instructors,Instructor2 Course1,1,1,1
+
+"
+`;
+
+exports[`StudentSessionResultCsvService should generate results for RANK question 1`] = `
+"Question 1,Rank the other students.
+
+Team,Recipient,Self Rank,Overall Rank,Overall Rank Excluding Self,Ranks Received,Team Rank,Team Rank Excluding Self
+\\"Team 1.1</td></div>'\\"\\"\\",\\"student1 In Course1</td></div>'\\"\\"\\",4,4,-,4
+\\"Team 1.1</td></div>'\\"\\"\\",student2 In Course1,2,1,3,2,3
+\\"Team 1.1</td></div>'\\"\\"\\",student3 In Course1,3,1,1,2,3
+\\"Team 1.1</td></div>'\\"\\"\\",student4 In Course1,3,3,2,1,3,4
+
+
+Question 2,Rank the areas of improvement you think your team should make progress in.
+
+Option,Overall Rank,Ranks Received
+Friendliness of teammates,
+Quality of progress reports,4,2,3
+Quality of work,3,1,1,2,3,4
+Teamwork and communication,1,1,1,1,4
+Time management,2,1,2,2,3
+
+"
+`;
+
+exports[`StudentSessionResultCsvService should generate results for RUBRIC question 1`] = `
+"Question 1,Please choose the best choice for the following sub-questions.
+
+,Yes,No,Average
+a) This student has done a good job.,66.67% (2) [1.25],33.33% (1) [-1.7],0.27
+b) This student has tried his/her best.,75% (3) [1.25],25% (1) [-1.7],0.51
+
+Per Recipient Statistics (Per Criterion)
+Team,Recipient Name,Recipient's Email,Sub Question,Yes,No,Total,Average
+\\"Team 1.1</td></div>'\\"\\"\\",\\"student1 In Course1</td></div>'\\"\\"\\",student1InCourse1@gmail.tmt,a) This student has done a good job.,100% (1) [1.25],0% (0) [-1.7],1.25,1.25
+\\"Team 1.1</td></div>'\\"\\"\\",\\"student1 In Course1</td></div>'\\"\\"\\",student1InCourse1@gmail.tmt,b) This student has tried his/her best.,0% (0) [1.25],100% (1) [-1.7],-1.7,-1.7
+\\"Team 1.1</td></div>'\\"\\"\\",student2 In Course1,student2InCourse1@gmail.tmt,a) This student has done a good job.,0% (0) [1.25],100% (1) [-1.7],-1.7,-1.7
+\\"Team 1.1</td></div>'\\"\\"\\",student2 In Course1,student2InCourse1@gmail.tmt,b) This student has tried his/her best.,100% (1) [1.25],0% (0) [-1.7],1.25,1.25
+\\"Team 1.1</td></div>'\\"\\"\\",student3 In Course1,student3InCourse1@gmail.tmt,a) This student has done a good job.,100% (1) [1.25],0% (0) [-1.7],1.25,1.25
+\\"Team 1.1</td></div>'\\"\\"\\",student3 In Course1,student3InCourse1@gmail.tmt,b) This student has tried his/her best.,100% (1) [1.25],0% (0) [-1.7],1.25,1.25
+\\"Team 1.1</td></div>'\\"\\"\\",student4 In Course1,student4InCourse1@gmail.tmt,a) This student has done a good job.,0% (0) [1.25],0% (0) [-1.7],0,0
+\\"Team 1.1</td></div>'\\"\\"\\",student4 In Course1,student4InCourse1@gmail.tmt,b) This student has tried his/her best.,100% (1) [1.25],0% (0) [-1.7],1.25,1.25
+
+Per Recipient Statistics (Overall)
+Team,Recipient Name,Recipient's Email,Average,Breakdown
+\\"Team 1.1</td></div>'\\"\\"\\",\\"student1 In Course1</td></div>'\\"\\"\\",student1InCourse1@gmail.tmt,-0.44999999999999996,\\"1.25, -1.7\\"
+\\"Team 1.1</td></div>'\\"\\"\\",student2 In Course1,student2InCourse1@gmail.tmt,-0.44999999999999996,\\"-1.7, 1.25\\"
+\\"Team 1.1</td></div>'\\"\\"\\",student3 In Course1,student3InCourse1@gmail.tmt,2.5,\\"1.25, 1.25\\"
+\\"Team 1.1</td></div>'\\"\\"\\",student4 In Course1,student4InCourse1@gmail.tmt,1.25,\\"NA, 1.25\\"
+
+
+Question 2,Please choose the best choice for the following sub-questions. Only first subquestion has responses
+
+,Yes,No,Average
+a) This student has done a good job.,66.67% (2) [1.25],33.33% (1) [1],1.17
+b) This student has tried his/her best.,0% (0) [1.25],0% (0) [1],0
+
+Per Recipient Statistics (Per Criterion)
+Team,Recipient Name,Recipient's Email,Sub Question,Yes,No,Total,Average
+\\"Team 1.1</td></div>'\\"\\"\\",student2 In Course1,student2InCourse1@gmail.tmt,a) This student has done a good job.,100% (1) [1.25],0% (0) [1],1.25,1.25
+\\"Team 1.1</td></div>'\\"\\"\\",student2 In Course1,student2InCourse1@gmail.tmt,b) This student has tried his/her best.,0% (0) [1.25],0% (0) [1],0,0
+\\"Team 1.1</td></div>'\\"\\"\\",student3 In Course1,student3InCourse1@gmail.tmt,a) This student has done a good job.,0% (0) [1.25],100% (1) [1],1,1
+\\"Team 1.1</td></div>'\\"\\"\\",student3 In Course1,student3InCourse1@gmail.tmt,b) This student has tried his/her best.,0% (0) [1.25],0% (0) [1],0,0
+\\"Team 1.1</td></div>'\\"\\"\\",student4 In Course1,student4InCourse1@gmail.tmt,a) This student has done a good job.,100% (1) [1.25],0% (0) [1],1.25,1.25
+\\"Team 1.1</td></div>'\\"\\"\\",student4 In Course1,student4InCourse1@gmail.tmt,b) This student has tried his/her best.,0% (0) [1.25],0% (0) [1],0,0
+
+Per Recipient Statistics (Overall)
+Team,Recipient Name,Recipient's Email,Average,Breakdown
+\\"Team 1.1</td></div>'\\"\\"\\",student2 In Course1,student2InCourse1@gmail.tmt,1.25,\\"1.25, NA\\"
+\\"Team 1.1</td></div>'\\"\\"\\",student3 In Course1,student3InCourse1@gmail.tmt,1,\\"1, NA\\"
+\\"Team 1.1</td></div>'\\"\\"\\",student4 In Course1,student4InCourse1@gmail.tmt,1.25,\\"1.25, NA\\"
+
+"
+`;
+
+exports[`StudentSessionResultCsvService should generate results for a specific question (question 1) 1`] = `
+"Question 1,What is the best selling point of your product?
+
+Team,Giver's Full Name,Recipient's Team,Recipient's Full Name,Feedback,Comment From,Comment
+\\"Team 1.1</td></div>'\\"\\"\\",\\"student1 In Course1</td></div>'\\"\\"\\",\\"Team 1.1</td></div>'\\"\\"\\",\\"student1 In Course1</td></div>'\\"\\"\\",Student 1 self feedback.,Instructor1 Course1,Instructor 1 comment to student 1 self feedback
+\\"Team 1.1</td></div>'\\"\\"\\",student2 In Course1,\\"Team 1.1</td></div>'\\"\\"\\",student2 In Course1,I'm cool'
+\\"Team 1.1</td></div>'\\"\\"\\",student3 In Course1,\\"Team 1.1</td></div>'\\"\\"\\",student3 In Course1,No Response
+\\"Team 1.1</td></div>'\\"\\"\\",student4 In Course1,\\"Team 1.1</td></div>'\\"\\"\\",student4 In Course1,No Response
+Team 1.2,student5 In Course1,Team 1.2,student5 In Course1,No Response
+
+"
+`;
+
+exports[`StudentSessionResultCsvService should generate results for a specific question (question 2) 1`] = `
+"Question 2,Rate 1 other student's product
+
+Team,Giver's Full Name,Recipient's Team,Recipient's Full Name,Feedback,Comment From,Comment
+\\"Team 1.1</td></div>'\\"\\"\\",\\"student1 In Course1</td></div>'\\"\\"\\",\\"Team 1.1</td></div>'\\"\\"\\",student2 In Course1,No Response
+\\"Team 1.1</td></div>'\\"\\"\\",\\"student1 In Course1</td></div>'\\"\\"\\",\\"Team 1.1</td></div>'\\"\\"\\",student3 In Course1,No Response
+\\"Team 1.1</td></div>'\\"\\"\\",\\"student1 In Course1</td></div>'\\"\\"\\",\\"Team 1.1</td></div>'\\"\\"\\",student4 In Course1,No Response
+\\"Team 1.1</td></div>'\\"\\"\\",\\"student1 In Course1</td></div>'\\"\\"\\",Team 1.2,student5 In Course1,No Response
+\\"Team 1.1</td></div>'\\"\\"\\",student2 In Course1,\\"Team 1.1</td></div>'\\"\\"\\",\\"student1 In Course1</td></div>'\\"\\"\\",No Response
+\\"Team 1.1</td></div>'\\"\\"\\",student2 In Course1,\\"Team 1.1</td></div>'\\"\\"\\",student3 In Course1,No Response
+\\"Team 1.1</td></div>'\\"\\"\\",student2 In Course1,\\"Team 1.1</td></div>'\\"\\"\\",student4 In Course1,No Response
+\\"Team 1.1</td></div>'\\"\\"\\",student2 In Course1,Team 1.2,student5 In Course1,Response from student 2 to student 5.,Instructor1 Course1,Instructor 1 comment to response from student 2 to student 5 in feedback Question 2
+\\"Team 1.1</td></div>'\\"\\"\\",student3 In Course1,\\"Team 1.1</td></div>'\\"\\"\\",\\"student1 In Course1</td></div>'\\"\\"\\",No Response
+\\"Team 1.1</td></div>'\\"\\"\\",student3 In Course1,\\"Team 1.1</td></div>'\\"\\"\\",student2 In Course1,\\"Response from student 3 \\"\\"to\\"\\" student 2. Multiline test.\\"
+\\"Team 1.1</td></div>'\\"\\"\\",student3 In Course1,\\"Team 1.1</td></div>'\\"\\"\\",student4 In Course1,No Response
+\\"Team 1.1</td></div>'\\"\\"\\",student3 In Course1,Team 1.2,student5 In Course1,No Response
+\\"Team 1.1</td></div>'\\"\\"\\",student4 In Course1,\\"Team 1.1</td></div>'\\"\\"\\",\\"student1 In Course1</td></div>'\\"\\"\\",No Response
+\\"Team 1.1</td></div>'\\"\\"\\",student4 In Course1,\\"Team 1.1</td></div>'\\"\\"\\",student2 In Course1,No Response
+\\"Team 1.1</td></div>'\\"\\"\\",student4 In Course1,\\"Team 1.1</td></div>'\\"\\"\\",student3 In Course1,No Response
+\\"Team 1.1</td></div>'\\"\\"\\",student4 In Course1,Team 1.2,student5 In Course1,No Response
+Team 1.2,student5 In Course1,\\"Team 1.1</td></div>'\\"\\"\\",\\"student1 In Course1</td></div>'\\"\\"\\",No Response
+Team 1.2,student5 In Course1,\\"Team 1.1</td></div>'\\"\\"\\",student2 In Course1,Response from student 5 to student 2.
+Team 1.2,student5 In Course1,\\"Team 1.1</td></div>'\\"\\"\\",student3 In Course1,No Response
+Team 1.2,student5 In Course1,\\"Team 1.1</td></div>'\\"\\"\\",student4 In Course1,No Response
+
+"
+`;
+
+exports[`StudentSessionResultCsvService should show responses for feedbackSessionResultsC1S1 1`] = `
+"Question 1,What is the best selling point of your product?
+
+Team,Giver's Full Name,Recipient's Team,Recipient's Full Name,Feedback,Comment From,Comment
+\\"Team 1.1</td></div>'\\"\\"\\",\\"student1 In Course1</td></div>'\\"\\"\\",\\"Team 1.1</td></div>'\\"\\"\\",\\"student1 In Course1</td></div>'\\"\\"\\",Student 1 self feedback.,Instructor1 Course1,Instructor 1 comment to student 1 self feedback
+\\"Team 1.1</td></div>'\\"\\"\\",student2 In Course1,\\"Team 1.1</td></div>'\\"\\"\\",student2 In Course1,I'm cool'
+\\"Team 1.1</td></div>'\\"\\"\\",student3 In Course1,\\"Team 1.1</td></div>'\\"\\"\\",student3 In Course1,No Response
+\\"Team 1.1</td></div>'\\"\\"\\",student4 In Course1,\\"Team 1.1</td></div>'\\"\\"\\",student4 In Course1,No Response
+Team 1.2,student5 In Course1,Team 1.2,student5 In Course1,No Response
+
+
+Question 2,Rate 1 other student's product
+
+Team,Giver's Full Name,Recipient's Team,Recipient's Full Name,Feedback,Comment From,Comment
+\\"Team 1.1</td></div>'\\"\\"\\",\\"student1 In Course1</td></div>'\\"\\"\\",\\"Team 1.1</td></div>'\\"\\"\\",student2 In Course1,No Response
+\\"Team 1.1</td></div>'\\"\\"\\",\\"student1 In Course1</td></div>'\\"\\"\\",\\"Team 1.1</td></div>'\\"\\"\\",student3 In Course1,No Response
+\\"Team 1.1</td></div>'\\"\\"\\",\\"student1 In Course1</td></div>'\\"\\"\\",\\"Team 1.1</td></div>'\\"\\"\\",student4 In Course1,No Response
+\\"Team 1.1</td></div>'\\"\\"\\",\\"student1 In Course1</td></div>'\\"\\"\\",Team 1.2,student5 In Course1,No Response
+\\"Team 1.1</td></div>'\\"\\"\\",student2 In Course1,\\"Team 1.1</td></div>'\\"\\"\\",\\"student1 In Course1</td></div>'\\"\\"\\",No Response
+\\"Team 1.1</td></div>'\\"\\"\\",student2 In Course1,\\"Team 1.1</td></div>'\\"\\"\\",student3 In Course1,No Response
+\\"Team 1.1</td></div>'\\"\\"\\",student2 In Course1,\\"Team 1.1</td></div>'\\"\\"\\",student4 In Course1,No Response
+\\"Team 1.1</td></div>'\\"\\"\\",student2 In Course1,Team 1.2,student5 In Course1,Response from student 2 to student 5.,Instructor1 Course1,Instructor 1 comment to response from student 2 to student 5 in feedback Question 2
+\\"Team 1.1</td></div>'\\"\\"\\",student3 In Course1,\\"Team 1.1</td></div>'\\"\\"\\",\\"student1 In Course1</td></div>'\\"\\"\\",No Response
+\\"Team 1.1</td></div>'\\"\\"\\",student3 In Course1,\\"Team 1.1</td></div>'\\"\\"\\",student2 In Course1,\\"Response from student 3 \\"\\"to\\"\\" student 2. Multiline test.\\"
+\\"Team 1.1</td></div>'\\"\\"\\",student3 In Course1,\\"Team 1.1</td></div>'\\"\\"\\",student4 In Course1,No Response
+\\"Team 1.1</td></div>'\\"\\"\\",student3 In Course1,Team 1.2,student5 In Course1,No Response
+\\"Team 1.1</td></div>'\\"\\"\\",student4 In Course1,\\"Team 1.1</td></div>'\\"\\"\\",\\"student1 In Course1</td></div>'\\"\\"\\",No Response
+\\"Team 1.1</td></div>'\\"\\"\\",student4 In Course1,\\"Team 1.1</td></div>'\\"\\"\\",student2 In Course1,No Response
+\\"Team 1.1</td></div>'\\"\\"\\",student4 In Course1,\\"Team 1.1</td></div>'\\"\\"\\",student3 In Course1,No Response
+\\"Team 1.1</td></div>'\\"\\"\\",student4 In Course1,Team 1.2,student5 In Course1,No Response
+Team 1.2,student5 In Course1,\\"Team 1.1</td></div>'\\"\\"\\",\\"student1 In Course1</td></div>'\\"\\"\\",No Response
+Team 1.2,student5 In Course1,\\"Team 1.1</td></div>'\\"\\"\\",student2 In Course1,Response from student 5 to student 2.
+Team 1.2,student5 In Course1,\\"Team 1.1</td></div>'\\"\\"\\",student3 In Course1,No Response
+Team 1.2,student5 In Course1,\\"Team 1.1</td></div>'\\"\\"\\",student4 In Course1,No Response
+
+
+Question 3,My comments on the class
+
+Team,Giver's Full Name,Recipient's Team,Recipient's Full Name,Feedback,Comment From,Comment
+Instructors,Instructor1 Course1,-,-,\\"Good work, keep it up!\\",Instructor1 Course1,Instructor 1 comment to instructor 1 self feedback Question 3
+
+
+Question 4,Instructor comments on the class
+
+Team,Giver's Full Name,Recipient's Team,Recipient's Full Name,Feedback
+Instructors,Helper Course1,-,-,No Response
+Instructors,Instructor Not Yet Joined Course 1,-,-,No Response
+Instructors,Instructor1 Course1,-,-,No Response
+Instructors,Instructor2 Course1,-,-,No Response
+Instructors,Instructor3 Course1,-,-,No Response
+
+
+Question 5,New format Text question
+
+Team,Giver's Full Name,Recipient's Team,Recipient's Full Name,Feedback
+Instructors,Instructor1 Course1,-,-,No Response
+
+"
+`;
