@@ -1,5 +1,5 @@
 // tslint:disable-next-line:max-line-length
-import { ContributionQuestionStatisticsCalculation } from '../../app/components/question-types/question-statistics/question-statistics-calculation/contribution-question-statistics-calculation';
+import { ContributionQuestionStatisticsCalculation, ContributionStatisticsEntryExt } from '../../app/components/question-types/question-statistics/question-statistics-calculation/contribution-question-statistics-calculation';
 import {
   FeedbackContributionQuestionDetails as FeedbackContributionQuestionDetails,
   FeedbackQuestionType, QuestionOutput,
@@ -31,7 +31,7 @@ export class FeedbackContributionQuestionDetailsImpl extends AbstractFeedbackQue
 
   getQuestionCsvStats(question: QuestionOutput): string[][] {
     const statsRows: string[][] = [];
-    
+
     const statsCalculation: ContributionQuestionStatisticsCalculation
         = new ContributionQuestionStatisticsCalculation(this);
     this.populateQuestionStatistics(statsCalculation, question, this.isStudent);
@@ -42,21 +42,23 @@ export class FeedbackContributionQuestionDetailsImpl extends AbstractFeedbackQue
     }
 
     if (this.isStudent) {
-      const stats = statsCalculation.questionStatisticsForStudent;
+      const stats: ContributionStatisticsEntryExt | undefined = statsCalculation.questionStatisticsForStudent;
       if (!stats) {
         return statsRows;
       }
 
-      const claimed: number = stats.claimed - 100;
-      const perceived: number = stats.perceived - 100;
-      const claimedOthersValues: number[] = stats.claimedOthersValues.map(claimed => claimed - 100);
-      const percceivedOthers: number[] = stats.perceivedOthers.map(perceived => perceived - 100);
+      const claimedSelf: number = stats.claimed - 100;
+      const perceivedSelf: number = stats.perceived - 100;
+      const claimedOthersValues: number[] = stats.claimedOthersValues.map((claimed: number) => claimed - 100);
+      const percceivedOthers: number[] = stats.perceivedOthers.map((perceived: number) => perceived - 100);
 
-      statsRows.push(["My View of Me", `E ${claimed < 0 ? claimed: "+" + claimed}%`]);
-      statsRows.push(["Team View of Me", `E ${perceived < 0 ? perceived: "+" + perceived}%`]);
+      statsRows.push(['My View of Me', claimedSelf < 0 ? `E ${claimedSelf}%` : `E +${claimedSelf}%`]);
+      statsRows.push(['Team View of Me', perceivedSelf < 0 ? `E ${perceivedSelf}%` : `E +${perceivedSelf}%`]);
       statsRows.push([]);
-      statsRows.push(["My View of Others"].concat(claimedOthersValues.map(claimed => claimed < 0 ? `E ${claimed}%`: `E +${claimed}%`)));
-      statsRows.push(["Team View of Others"].concat(percceivedOthers.map(perceived => perceived < 0 ? `E ${perceived}%`: `E +${perceived}%`)));
+      statsRows.push(['My View of Others'].concat(claimedOthersValues.map((claimed: number) =>
+       claimed < 0 ? `E ${claimed}%` : `E +${claimed}%`)));
+      statsRows.push(['Team View of Others'].concat(percceivedOthers.map((perceived: number) =>
+       perceived < 0 ? `E ${perceived}%` : `E +${perceived}%`)));
     } else {
       const stats: {
         teamName: string,

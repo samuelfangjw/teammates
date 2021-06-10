@@ -27,8 +27,7 @@ export class StudentSessionResultCsvService {
     // sort questions by question number
     result.questions.sort((a: QuestionOutput, b: QuestionOutput) =>
         a.feedbackQuestion.questionNumber - b.feedbackQuestion.questionNumber);
-    
-        // filter responses based on settings
+
     for (const question of result.questions) {
       const currQuestion: QuestionOutput = JSON.parse(JSON.stringify(question));
 
@@ -46,15 +45,15 @@ export class StudentSessionResultCsvService {
 
     csvRows.push([`Question ${question.feedbackQuestion.questionNumber}`, question.feedbackQuestion.questionBrief]);
     this.generateEmptyRow(csvRows);
-    
+
     const statsRows: string[][] = this.getQuestionStats(question);
-    
+
     if (statsRows.length > 0) {
       csvRows.push(...statsRows);
     } else {
       const header: string[] = ['Team', "Giver's Full Name",
-       "Recipient's Team", "Recipient's Full Name", 
-      ...this.getQuestionSpecificHeaders(question.feedbackQuestion)];
+        "Recipient's Team", "Recipient's Full Name",
+        ...this.getQuestionSpecificHeaders(question.feedbackQuestion)];
 
       const isParticipantCommentsOnResponsesAllowed: boolean =
           this.getIsParticipantCommentsOnResponsesAllowed(question.feedbackQuestion);

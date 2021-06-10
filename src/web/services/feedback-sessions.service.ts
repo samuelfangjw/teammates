@@ -324,11 +324,11 @@ export class FeedbackSessionsService {
    */
   downloadStudentSessionResults(courseId: string,
                                 feedbackSessionName: string,
-                                intent: Intent) {
+                                intent: Intent): Observable<string> {
     return this.getFeedbackSessionResults({
       courseId,
       feedbackSessionName,
-      intent
+      intent,
     }).pipe(
       map((results: SessionResults) =>
         this.studentSessionResultCsvService.getCsvForSessionResult(results),

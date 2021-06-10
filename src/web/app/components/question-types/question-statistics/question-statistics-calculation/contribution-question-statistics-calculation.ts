@@ -8,7 +8,10 @@ import {
 import { CONTRIBUTION_POINT_NOT_SUBMITTED } from '../../../../../types/feedback-response-details';
 import { QuestionStatistics } from '../question-statistics';
 
-interface ContributionStatisticsEntryExt extends ContributionStatisticsEntry {
+/**
+ * Extends {@interface ContributionStatisticsEntry} with fields needed to calculate contribution question statistics.
+ */
+export interface ContributionStatisticsEntryExt extends ContributionStatisticsEntry {
   claimedOthersValues: number[];
 }
 

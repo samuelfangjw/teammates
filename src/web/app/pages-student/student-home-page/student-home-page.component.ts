@@ -1,17 +1,21 @@
-import {Component, OnInit} from '@angular/core';
-import {ActivatedRoute} from '@angular/router';
-import {finalize} from 'rxjs/operators';
-import {saveAs} from 'file-saver';
-import {CourseService} from '../../../services/course.service';
-import {FeedbackSessionsService} from '../../../services/feedback-sessions.service';
-import {StatusMessageService} from '../../../services/status-message.service';
-import {TableComparatorService} from '../../../services/table-comparator.service';
-import {TimezoneService} from '../../../services/timezone.service';
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { saveAs } from 'file-saver';
+import { finalize } from 'rxjs/operators';
+import { CourseService } from '../../../services/course.service';
+import { FeedbackQuestionsService } from '../../../services/feedback-questions.service';
+import { FeedbackResponsesService } from '../../../services/feedback-responses.service';
+import { FeedbackSessionsService } from '../../../services/feedback-sessions.service';
+import { StatusMessageService } from '../../../services/status-message.service';
+import { StudentService } from '../../../services/student.service';
+import { TableComparatorService } from '../../../services/table-comparator.service';
+import { TimezoneService } from '../../../services/timezone.service';
 import {
   Course,
   Courses,
   FeedbackQuestion,
   FeedbackQuestions,
+  FeedbackResponse,
   FeedbackSession,
   FeedbackSessionPublishStatus,
   FeedbackSessions,
@@ -19,13 +23,11 @@ import {
   HasResponses,
   Student,
 } from '../../../types/api-output';
-import {SortBy, SortOrder} from '../../../types/sort-properties';
-import {ErrorMessageOutput} from '../../error-message-output';
-import {FeedbackQuestionsService} from "../../../services/feedback-questions.service";
-import {Intent} from "../../../types/api-request";
-import {FeedbackResponsesService} from "../../../services/feedback-responses.service";
-import {FeedbackResponseDetailsFactory} from "../../../types/response-details-impl/feedback-response-details-factory";
-import {StudentService} from "../../../services/student.service";
+import { Intent } from '../../../types/api-request';
+import { FeedbackResponseDetailsFactory } from '../../../types/response-details-impl/feedback-response-details-factory';
+import { SortBy, SortOrder } from '../../../types/sort-properties';
+import { ErrorMessageOutput } from '../../error-message-output';
+import { FeedbackResponsesResponse } from '../../pages-session/session-submission-page/session-submission-page.component';
 
 interface StudentCourse {
   course: Course;
@@ -137,14 +139,14 @@ export class StudentHomePageComponent implements OnInit {
 
                   const isSubmitted: boolean = hasRes.hasResponsesBySession[fs.feedbackSessionName];
                   studentSessions.push(Object.assign({},
-                    {isOpened, isWaitingToOpen, isPublished, isSubmitted, session: fs}));
+                    { isOpened, isWaitingToOpen, isPublished, isSubmitted, session: fs }));
                 }
               }, (error: ErrorMessageOutput) => {
                 this.hasCoursesLoadingFailed = true;
                 this.statusMessageService.showErrorToast(error.error.message);
               });
 
-            this.courses.push(Object.assign({}, {course, feedbackSessions: studentSessions}));
+            this.courses.push(Object.assign({}, { course, feedbackSessions: studentSessions }));
             this.courses.sort((a: StudentCourse, b: StudentCourse) =>
               (a.course.courseId > b.course.courseId) ? 1 : -1);
           }, (error: ErrorMessageOutput) => {
@@ -235,19 +237,18 @@ export class StudentHomePageComponent implements OnInit {
     this.feedbackSessionsService.downloadStudentSessionResults(
       feedbackSession.courseId,
       feedbackSession.feedbackSessionName,
-      Intent.STUDENT_RESULT
+      Intent.STUDENT_RESULT,
     ).subscribe({
-        next: result => {
-          outputData.push(result);
-        },
-        complete: () => {
-          const time: number = new Date().getTime();
-          const filename: string = `TEAMMATES Responses -${time}.csv`;
-          const blob: Blob = new Blob(outputData, { type: 'text/csv' });
-          saveAs(blob, filename);
-        }
-      }
-    )
+      next: ((result: string) => {
+        outputData.push(result);
+      }),
+      complete: (() => {
+        const time: number = new Date().getTime();
+        const filename: string = `TEAMMATES Responses -${time}.csv`;
+        const blob: Blob = new Blob(outputData, { type: 'text/csv' });
+        saveAs(blob, filename);
+      }),
+    });
   }
 
   /**
@@ -255,15 +256,15 @@ export class StudentHomePageComponent implements OnInit {
    */
   downloadProofOfSubmission(rowIndex: number, studentCourse: StudentCourse): void {
     const studentSession: StudentSession = studentCourse.feedbackSessions[rowIndex];
-    const courseId = studentSession.session.courseId;
+    const courseId: string = studentSession.session.courseId;
 
     this.studentService.getStudent(courseId).subscribe((student: Student) => {
       this.processSubmission(student, studentSession);
-    })
+    });
   }
 
-  private processSubmission(student: Student, studentSession: StudentSession) {
-    const feedbackSession = studentSession.session;
+  private processSubmission(student: Student, studentSession: StudentSession): void {
+    const feedbackSession: FeedbackSession = studentSession.session;
     const time: number = new Date().getTime();
     const formattedTime: string = this.timezoneService.formatToString(
       time, feedbackSession.timeZone, 'YYYYMMDDHHmmSSZZ');
@@ -283,14 +284,15 @@ export class StudentHomePageComponent implements OnInit {
     this.feedbackQuestionsService.getFeedbackQuestions({
       courseId: feedbackSession.courseId,
       feedbackSessionName: feedbackSession.feedbackSessionName,
-      intent: Intent.STUDENT_SUBMISSION
+      intent: Intent.STUDENT_SUBMISSION,
     }).subscribe(async (response: FeedbackQuestions) => {
       this.processSubmissionHelper(response.questions, 0, fileContent, time);
-    })
+    });
   }
 
-  private processSubmissionHelper(questions: FeedbackQuestion[], idx: number, fileContent: string[], time: number) {
-    const question = questions[idx];
+  private processSubmissionHelper(
+    questions: FeedbackQuestion[], idx: number, fileContent: string[], time: number): void {
+    const question: FeedbackQuestion = questions[idx];
 
     this.feedbackResponsesService.getFeedbackResponse({
       questionId: question.feedbackQuestionId,
@@ -298,10 +300,10 @@ export class StudentHomePageComponent implements OnInit {
       key: '',
       moderatedPerson: '',
     }).subscribe({
-      next: answers => {
+      next: ((answers: FeedbackResponsesResponse) => {
         fileContent.push(`${question.questionNumber}: ${question.questionBrief}`);
 
-        answers.responses.forEach(answer => {
+        answers.responses.forEach((answer: FeedbackResponse) => {
           fileContent.push(`> ${answer.recipientIdentifier}`);
           fileContent.push(FeedbackResponseDetailsFactory
             .fromApiOutput(answer.responseDetails)
@@ -309,16 +311,16 @@ export class StudentHomePageComponent implements OnInit {
             .join(','));
           fileContent.push('');
           fileContent.push('');
-        })
-      },
-      complete: () => {
+        });
+      }),
+      complete: (() => {
         if (idx >= questions.length - 1) {
-          const blob: Blob = new Blob([fileContent.join('\r\n')], {type: 'text/plain'});
+          const blob: Blob = new Blob([fileContent.join('\r\n')], { type: 'text/plain' });
           saveAs(blob, `TEAMMATES Proof of Submission - ${time}`);
         } else {
           this.processSubmissionHelper(questions, idx + 1, fileContent, time);
         }
-      }
-    })
+      }),
+    });
   }
 }
