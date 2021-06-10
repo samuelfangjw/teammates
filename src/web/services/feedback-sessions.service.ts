@@ -27,7 +27,7 @@ import {
 } from '../types/api-request';
 import { HttpRequestService } from './http-request.service';
 import { SessionResultCsvService } from './session-result-csv.service';
-import { StudentSessionResultCsvService } from './student-result-csv.service';
+import { StudentSessionResultCsvService } from './student-session-result-csv.service';
 
 /**
  * A template session.
