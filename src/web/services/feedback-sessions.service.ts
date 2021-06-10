@@ -27,6 +27,7 @@ import {
 } from '../types/api-request';
 import { HttpRequestService } from './http-request.service';
 import { SessionResultCsvService } from './session-result-csv.service';
+import { StudentSessionResultCsvService } from './student-result-csv.service';
 
 /**
  * A template session.
@@ -45,7 +46,8 @@ export interface TemplateSession {
 export class FeedbackSessionsService {
 
   constructor(private httpRequestService: HttpRequestService,
-              private sessionResultCsvService: SessionResultCsvService) {
+              private sessionResultCsvService: SessionResultCsvService,
+              private studentSessionResultCsvService: StudentSessionResultCsvService) {
   }
 
   /**
@@ -314,6 +316,23 @@ export class FeedbackSessionsService {
                 groupBySection, sectionDetail,
             ),
         ),
+    );
+  }
+
+  /**
+   * Download student session results.
+   */
+  downloadStudentSessionResults(courseId: string,
+                                feedbackSessionName: string,
+                                intent: Intent) {
+    return this.getFeedbackSessionResults({
+      courseId,
+      feedbackSessionName,
+      intent
+    }).pipe(
+      map((results: SessionResults) =>
+        this.studentSessionResultCsvService.getCsvForSessionResult(results),
+      ),
     );
   }
 

@@ -32,14 +32,14 @@ export class FeedbackQuestionDetailsFactory {
    * Converts API output ({@link FeedbackQuestionDetails})
    * to frontend implementation class {@link AbstractFeedbackQuestionDetails}.
    */
-  static fromApiOutput(details: FeedbackQuestionDetails): AbstractFeedbackQuestionDetails {
+  static fromApiOutput(details: FeedbackQuestionDetails, isStudent: boolean = false): AbstractFeedbackQuestionDetails {
     switch (details.questionType) {
       case FeedbackQuestionType.CONSTSUM_OPTIONS:
         return new FeedbackConstantSumOptionsQuestionDetailsImpl(details as FeedbackConstantSumQuestionDetails);
       case FeedbackQuestionType.CONSTSUM_RECIPIENTS:
         return new FeedbackConstantSumRecipientsQuestionDetailsImpl(details as FeedbackConstantSumQuestionDetails);
       case FeedbackQuestionType.CONTRIB:
-        return new FeedbackContributionQuestionDetailsImpl(details as FeedbackContributionQuestionDetails);
+        return new FeedbackContributionQuestionDetailsImpl(details as FeedbackContributionQuestionDetails, isStudent);
       case FeedbackQuestionType.MCQ:
         return new FeedbackMcqQuestionDetailsImpl(details as FeedbackMcqQuestionDetails);
       case FeedbackQuestionType.MSQ:

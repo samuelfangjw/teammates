@@ -9,13 +9,15 @@ import {TableComparatorService} from '../../../services/table-comparator.service
 import {TimezoneService} from '../../../services/timezone.service';
 import {
   Course,
-  Courses, FeedbackQuestion,
+  Courses,
+  FeedbackQuestion,
   FeedbackQuestions,
   FeedbackSession,
   FeedbackSessionPublishStatus,
   FeedbackSessions,
   FeedbackSessionSubmissionStatus,
-  HasResponses, Student,
+  HasResponses,
+  Student,
 } from '../../../types/api-output';
 import {SortBy, SortOrder} from '../../../types/sort-properties';
 import {ErrorMessageOutput} from '../../error-message-output';
@@ -225,34 +227,42 @@ export class StudentHomePageComponent implements OnInit {
   /**
    * Triggers the download of a student's response as a text file.
    */
-  downloadResponse(rowIndex: number): void {
-    console.log(rowIndex);
+  downloadResponse(rowIndex: number, studentCourse: StudentCourse): void {
+    const studentSession: StudentSession = studentCourse.feedbackSessions[rowIndex];
+    const feedbackSession: FeedbackSession = studentSession.session;
+    const outputData: string[] = [];
+
+    this.feedbackSessionsService.downloadStudentSessionResults(
+      feedbackSession.courseId,
+      feedbackSession.feedbackSessionName,
+      Intent.STUDENT_RESULT
+    ).subscribe({
+        next: result => {
+          outputData.push(result);
+        },
+        complete: () => {
+          const time: number = new Date().getTime();
+          const filename: string = `TEAMMATES Responses -${time}.csv`;
+          const blob: Blob = new Blob(outputData, { type: 'text/csv' });
+          saveAs(blob, filename);
+        }
+      }
+    )
   }
 
   /**
-   * Triggers the download of a student's submission as a text file.
+   * Triggers the download of a student's proof of submission as a text file.
    */
-  downloadSubmission(rowIndex: number, studentCourse: StudentCourse): void {
+  downloadProofOfSubmission(rowIndex: number, studentCourse: StudentCourse): void {
     const studentSession: StudentSession = studentCourse.feedbackSessions[rowIndex];
     const courseId = studentSession.session.courseId;
 
-    this.getStudent(courseId, (student: Student) => {
+    this.studentService.getStudent(courseId).subscribe((student: Student) => {
       this.processSubmission(student, studentSession);
     })
   }
 
-  /**
-   * Fetch the student, following which calls {@param onComplete} with the student.
-   * @param courseId The courseId the student is in.
-   * @param onComplete The function to call once student is fetched.
-   */
-  getStudent(courseId: string, onComplete: (student: Student) => void) {
-    this.studentService.getStudent(courseId).subscribe((student: Student) => {
-      onComplete(student);
-    })
-  }
-
-  processSubmission(student: Student, studentSession: StudentSession) {
+  private processSubmission(student: Student, studentSession: StudentSession) {
     const feedbackSession = studentSession.session;
     const time: number = new Date().getTime();
     const formattedTime: string = this.timezoneService.formatToString(
@@ -275,11 +285,11 @@ export class StudentHomePageComponent implements OnInit {
       feedbackSessionName: feedbackSession.feedbackSessionName,
       intent: Intent.STUDENT_SUBMISSION
     }).subscribe(async (response: FeedbackQuestions) => {
-      this.processQuestions(response.questions, 0, fileContent, time);
+      this.processSubmissionHelper(response.questions, 0, fileContent, time);
     })
   }
 
-  processQuestions(questions: FeedbackQuestion[], idx: number, fileContent: string[], time: number) {
+  private processSubmissionHelper(questions: FeedbackQuestion[], idx: number, fileContent: string[], time: number) {
     const question = questions[idx];
 
     this.feedbackResponsesService.getFeedbackResponse({
@@ -306,7 +316,7 @@ export class StudentHomePageComponent implements OnInit {
           const blob: Blob = new Blob([fileContent.join('\r\n')], {type: 'text/plain'});
           saveAs(blob, `TEAMMATES Proof of Submission - ${time}`);
         } else {
-          this.processQuestions(questions, idx + 1, fileContent, time);
+          this.processSubmissionHelper(questions, idx + 1, fileContent, time);
         }
       }
     })

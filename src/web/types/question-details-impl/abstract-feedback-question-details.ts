@@ -47,7 +47,7 @@ export abstract class AbstractFeedbackQuestionDetails {
    * Populates the {@code questionStatistics} with the responses and corresponding question.
    */
   populateQuestionStatistics<Q extends FeedbackQuestionDetails, R extends FeedbackResponseDetails>(
-      questionStatistics: QuestionStatistics<Q, R>, question: QuestionOutput): void {
+      questionStatistics: QuestionStatistics<Q, R>, question: QuestionOutput, isStudent: boolean = false): void {
     questionStatistics.responses = question.allResponses
         // Missing response is meaningless for statistics
         .filter((response: ResponseOutput) => !response.isMissingResponse)
@@ -55,6 +55,6 @@ export abstract class AbstractFeedbackQuestionDetails {
     questionStatistics.question =
         question.feedbackQuestion.questionDetails as unknown as Q;
     questionStatistics.recipientType = question.feedbackQuestion.recipientType;
-    questionStatistics.isStudent = false;
+    questionStatistics.isStudent = isStudent;
   }
 }
