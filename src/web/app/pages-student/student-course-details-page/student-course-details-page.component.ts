@@ -143,6 +143,8 @@ export class StudentCourseDetailsPageComponent implements OnInit {
                   const newPhotoUrl: string =
                     `${environment.backendUrl}/webapi/student/profilePic`
                     + `?courseid=${courseId}&studentemail=${student.email}`;
+                  
+                  console.log(studentProfile);
 
                   const newTeammateProfile: StudentProfileWithPicture = {
                     ...studentProfile,

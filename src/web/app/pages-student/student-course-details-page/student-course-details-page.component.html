@@ -104,6 +104,9 @@
             <div>
               <label>Email:</label>&nbsp;<a href="mailto:{{ teammateProfile.email }}">{{ teammateProfile.email }}</a>
             </div>
+            <div>
+              <label>Preferred Contact:</label> {{ teammateProfile.preferredContact }}
+            </div>
             <div *ngIf="teammateProfile.gender">
               <label>Gender:</label> {{ teammateProfile.gender | genderFormat }}
             </div>
