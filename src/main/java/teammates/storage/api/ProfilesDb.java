@@ -58,6 +58,7 @@ public class ProfilesDb extends EntitiesDb<StudentProfile, StudentProfileAttribu
                 this.<String>hasSameValue(studentProfile.getEmail(), newAttributes.getEmail())
                 && this.<String>hasSameValue(studentProfile.getShortName(), newAttributes.getShortName())
                 && this.<String>hasSameValue(studentProfile.getInstitute(), newAttributes.getInstitute())
+                && this.<String>hasSameValue(studentProfile.getPreferredContact(), newAttributes.getPreferredContact())
                 && this.<String>hasSameValue(studentProfile.getNationality(), newAttributes.getNationality())
                 && this.<String>hasSameValue(studentProfile.getGender(), newAttributes.getGender().name().toLowerCase())
                 && this.<String>hasSameValue(studentProfile.getMoreInfo(), newAttributes.getMoreInfo());
@@ -68,6 +69,7 @@ public class ProfilesDb extends EntitiesDb<StudentProfile, StudentProfileAttribu
 
         studentProfile.setShortName(newAttributes.shortName);
         studentProfile.setEmail(newAttributes.email);
+        studentProfile.setPreferredContact(newAttributes.preferredContact);
         studentProfile.setInstitute(newAttributes.institute);
         studentProfile.setNationality(newAttributes.nationality);
         studentProfile.setGender(newAttributes.gender.name().toLowerCase());

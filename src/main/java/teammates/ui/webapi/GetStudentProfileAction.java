@@ -46,7 +46,6 @@ class GetStudentProfileAction extends Action {
 
     @Override
     JsonResult execute() {
-
         String studentId;
         String studentEmail = getRequestParamValue(Const.ParamsNames.STUDENT_EMAIL);
         String courseId = getRequestParamValue(Const.ParamsNames.COURSE_ID);

@@ -26,6 +26,7 @@ public class StudentProfileAttributesTest extends BaseAttributesTest {
                 .withShortName("shor")
                 .withInstitute("institute")
                 .withEmail("valid@email.com")
+                .withPreferredContact("Preferred Contact")
                 .withNationality("Lebanese")
                 .withGender(StudentProfileAttributes.Gender.FEMALE)
                 .withMoreInfo("moreInfo can have a lot more than this...")
@@ -109,7 +110,7 @@ public class StudentProfileAttributesTest extends BaseAttributesTest {
 
     @Test
     public void testValueOf_withAllFieldPopulatedStudentProfile_shouldGenerateAttributesCorrectly() {
-        StudentProfile studentProfile = new StudentProfile("id", "Joe", "joe@gmail.com",
+        StudentProfile studentProfile = new StudentProfile("id", "Joe", "joe@gmail.com", "preferred contact",
                 "Teammates Institute", "American", StudentProfileAttributes.Gender.MALE.name().toLowerCase(),
                 "hello");
         StudentProfileAttributes profileAttributes = StudentProfileAttributes.valueOf(studentProfile);
@@ -117,6 +118,7 @@ public class StudentProfileAttributesTest extends BaseAttributesTest {
         assertEquals(studentProfile.getGoogleId(), profileAttributes.googleId);
         assertEquals(studentProfile.getShortName(), profileAttributes.shortName);
         assertEquals(studentProfile.getEmail(), profileAttributes.email);
+        assertEquals(studentProfile.getPreferredContact(), profileAttributes.preferredContact);
         assertEquals(studentProfile.getInstitute(), profileAttributes.institute);
         assertEquals(studentProfile.getNationality(), profileAttributes.nationality);
         assertEquals(studentProfile.getGender(), profileAttributes.gender.name().toLowerCase());
@@ -126,13 +128,14 @@ public class StudentProfileAttributesTest extends BaseAttributesTest {
 
     @Test
     public void testValueOf_withSomeFieldsPopulatedAsNull_shouldUseDefaultValues() {
-        StudentProfile studentProfile = new StudentProfile("id", null, null,
+        StudentProfile studentProfile = new StudentProfile("id", null, null, null,
                 null, null, null, null);
         StudentProfileAttributes profileAttributes = StudentProfileAttributes.valueOf(studentProfile);
 
         assertEquals(studentProfile.getGoogleId(), profileAttributes.googleId);
         assertEquals("", profileAttributes.shortName);
         assertEquals("", profileAttributes.email);
+        assertEquals("", profileAttributes.preferredContact);
         assertEquals("", profileAttributes.institute);
         assertEquals("", profileAttributes.nationality);
         assertEquals(StudentProfileAttributes.Gender.OTHER, profileAttributes.gender);
@@ -160,6 +163,7 @@ public class StudentProfileAttributesTest extends BaseAttributesTest {
         ______TS("Typical case: valid profile with empty attributes");
         validProfile.shortName = "";
         validProfile.email = "";
+        validProfile.preferredContact = "";
         validProfile.nationality = "";
         validProfile.institute = "";
 
@@ -186,6 +190,7 @@ public class StudentProfileAttributesTest extends BaseAttributesTest {
         assertEquals(SanitizationHelper.sanitizeGoogleId(profileToSanitizeExpected.googleId),
                      profileToSanitize.googleId);
         assertEquals(profileToSanitizeExpected.shortName, profileToSanitize.shortName);
+        assertEquals(profileToSanitizeExpected.preferredContact, profileToSanitize.preferredContact);
         assertEquals(profileToSanitizeExpected.institute, profileToSanitize.institute);
         assertEquals(profileToSanitizeExpected.email, profileToSanitize.email);
         assertEquals(profileToSanitizeExpected.nationality, profileToSanitize.nationality);
@@ -203,6 +208,7 @@ public class StudentProfileAttributesTest extends BaseAttributesTest {
         assertEquals(expectedEntity.getShortName(), actualEntity.getShortName());
         assertEquals(expectedEntity.getInstitute(), actualEntity.getInstitute());
         assertEquals(expectedEntity.getEmail(), actualEntity.getEmail());
+        assertEquals(expectedEntity.getPreferredContact(), actualEntity.getPreferredContact());
         assertEquals(expectedEntity.getNationality(), actualEntity.getNationality());
         assertEquals(expectedEntity.getGender(), actualEntity.getGender());
         assertEquals(expectedEntity.getMoreInfo(), actualEntity.getMoreInfo());
@@ -223,6 +229,7 @@ public class StudentProfileAttributesTest extends BaseAttributesTest {
                 StudentProfileAttributes.updateOptionsBuilder("testGoogleId")
                         .withShortName("testName")
                         .withEmail("test@email.com")
+                        .withPreferredContact("Preferred Contact")
                         .withInstitute("NUS")
                         .withNationality("Singapore")
                         .withGender(StudentProfileAttributes.Gender.MALE)
@@ -237,6 +244,7 @@ public class StudentProfileAttributesTest extends BaseAttributesTest {
 
         assertEquals("testName", profileAttributes.shortName);
         assertEquals("test@email.com", profileAttributes.email);
+        assertEquals("Preferred Contact", profileAttributes.preferredContact);
         assertEquals("NUS", profileAttributes.institute);
         assertEquals("Singapore", profileAttributes.nationality);
         assertEquals(StudentProfileAttributes.Gender.MALE, profileAttributes.gender);
@@ -255,6 +263,10 @@ public class StudentProfileAttributesTest extends BaseAttributesTest {
         assertThrows(AssertionError.class, () ->
                 StudentProfileAttributes.updateOptionsBuilder("validId")
                         .withEmail(null));
+
+        assertThrows(AssertionError.class, () ->
+                StudentProfileAttributes.updateOptionsBuilder("validId")
+                        .withPreferredContact(null));
 
         assertThrows(AssertionError.class, () ->
                 StudentProfileAttributes.updateOptionsBuilder("validId")
@@ -285,6 +297,7 @@ public class StudentProfileAttributesTest extends BaseAttributesTest {
                 .withShortName("shor")
                 .withInstitute("institute")
                 .withEmail("valid@email.com")
+                .withPreferredContact("Preferred Contact")
                 .withNationality("Lebanese")
                 .withGender(StudentProfileAttributes.Gender.FEMALE)
                 .withMoreInfo("moreInfo can have a lot more than this...")
@@ -314,6 +327,7 @@ public class StudentProfileAttributesTest extends BaseAttributesTest {
                 .withShortName("shor")
                 .withInstitute("institute")
                 .withEmail("valid@email.com")
+                .withPreferredContact("Preferred Contact")
                 .withNationality("Lebanese")
                 .withGender(StudentProfileAttributes.Gender.FEMALE)
                 .withMoreInfo("moreInfo can have a lot more than this...")
@@ -334,7 +348,7 @@ public class StudentProfileAttributesTest extends BaseAttributesTest {
 
     private StudentProfile createStudentProfileFrom(
             StudentProfileAttributes profile) {
-        return new StudentProfile(profile.googleId, profile.shortName, profile.email,
+        return new StudentProfile(profile.googleId, profile.shortName, profile.email, profile.preferredContact,
                                   profile.institute, profile.nationality, profile.gender.name().toLowerCase(),
                                   profile.moreInfo);
     }
@@ -368,6 +382,7 @@ public class StudentProfileAttributesTest extends BaseAttributesTest {
         String googleId = StringHelperExtension.generateStringOfLength(46);
         String shortName = "%%";
         String email = "invalid@email@com";
+        String preferredContact = ""; // invalid preferred contact
         String institute = StringHelperExtension.generateStringOfLength(FieldValidator.INSTITUTE_NAME_MAX_LENGTH + 1);
         String nationality = "$invalid nationality ";
         StudentProfileAttributes.Gender gender = StudentProfileAttributes.Gender.MALE;
@@ -376,6 +391,7 @@ public class StudentProfileAttributesTest extends BaseAttributesTest {
         return StudentProfileAttributes.builder(googleId)
                 .withShortName(shortName)
                 .withEmail(email)
+                .withPreferredContact(preferredContact)
                 .withInstitute(institute)
                 .withNationality(nationality)
                 .withGender(gender)
@@ -387,6 +403,7 @@ public class StudentProfileAttributesTest extends BaseAttributesTest {
         String googleId = " test.google@gmail.com ";
         String shortName = "<name>";
         String email = "'toSanitize@email.com'";
+        String preferredContact = " preferred contact ";
         String institute = "institute/\"";
         String nationality = "&\"invalid nationality &";
         StudentProfileAttributes.Gender gender = StudentProfileAttributes.Gender.OTHER;
@@ -395,6 +412,7 @@ public class StudentProfileAttributesTest extends BaseAttributesTest {
         return StudentProfileAttributes.builder(googleId)
                 .withShortName(shortName)
                 .withEmail(email)
+                .withPreferredContact(preferredContact)
                 .withInstitute(institute)
                 .withNationality(nationality)
                 .withGender(gender)

@@ -41,6 +41,7 @@ class UpdateStudentProfileAction extends Action {
                     StudentProfileAttributes.updateOptionsBuilder(studentId)
                             .withShortName(studentProfile.shortName)
                             .withEmail(studentProfile.email)
+                            .withPreferredContact(studentProfile.preferredContact)
                             .withGender(studentProfile.gender)
                             .withNationality(studentProfile.nationality)
                             .withInstitute(studentProfile.institute)
@@ -58,6 +59,7 @@ class UpdateStudentProfileAction extends Action {
 
         editedProfile.shortName = req.getShortName();
         editedProfile.email = req.getEmail();
+        editedProfile.preferredContact = req.getPreferredContact();
         editedProfile.institute = req.getInstitute();
         editedProfile.nationality = req.getNationality();
 
@@ -75,6 +77,7 @@ class UpdateStudentProfileAction extends Action {
     private StudentProfileAttributes sanitizeProfile(StudentProfileAttributes studentProfile) {
         studentProfile.shortName = StringHelper.trimIfNotNull(studentProfile.shortName);
         studentProfile.email = StringHelper.trimIfNotNull(studentProfile.email);
+        studentProfile.preferredContact = StringHelper.trimIfNotNull(studentProfile.preferredContact);
         studentProfile.nationality = StringHelper.trimIfNotNull(studentProfile.nationality);
         studentProfile.institute = StringHelper.trimIfNotNull(studentProfile.institute);
         studentProfile.moreInfo = StringHelper.trimIfNotNull(studentProfile.moreInfo);

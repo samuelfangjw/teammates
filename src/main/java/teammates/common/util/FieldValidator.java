@@ -47,6 +47,10 @@ public final class FieldValidator {
     public static final String EMAIL_FIELD_NAME = "email";
     public static final int EMAIL_MAX_LENGTH = 254;
 
+    // preferred-contact-related
+    public static final String PREFERRED_CONTACT_FIELD_NAME = "preferred contact";
+    public static final int PREFERRED_CONTACT_MAX_LENGTH = 254;
+
     // others
     public static final String STUDENT_ROLE_COMMENTS_FIELD_NAME = "comments about a student enrolled in a course";
     public static final int STUDENT_ROLE_COMMENTS_MAX_LENGTH = 500;
@@ -154,6 +158,12 @@ public final class FieldValidator {
     public static final String EMAIL_ERROR_MESSAGE_EMPTY_STRING =
             EMPTY_STRING_ERROR_INFO + " " + HINT_FOR_CORRECT_EMAIL;
 
+    public static final String HINT_FOR_CORRECT_PREFERRED_CONTACT =
+            "A preferred contact contains some text. "
+            + HINT_FOR_CORRECT_FORMAT_FOR_SIZE_CAPPED_NON_EMPTY_NO_SPACES;
+    public static final String PREFERRED_CONTACT_ERROR_MESSAGE_EMPTY_STRING =
+            EMPTY_STRING_ERROR_INFO + " " + HINT_FOR_CORRECT_PREFERRED_CONTACT;
+
     public static final String HINT_FOR_CORRECT_COURSE_ID =
             "A course ID can contain letters, numbers, fullstops, hyphens, underscores, and dollar signs. "
             + HINT_FOR_CORRECT_FORMAT_FOR_SIZE_CAPPED_NON_EMPTY_NO_SPACES;
@@ -260,6 +270,29 @@ public final class FieldValidator {
             return getPopulatedErrorMessage(EMAIL_ERROR_MESSAGE, email, EMAIL_FIELD_NAME,
                                             REASON_INCORRECT_FORMAT, EMAIL_MAX_LENGTH);
         }
+        return "";
+    }
+
+    /**
+     * Checks if {@code preferredContact} is not null, not empty, not longer than 
+     * {@code PREFERRED_CONTACT_MAX_LENGTH}.
+     * @return An explanation of why the {@code preferredContact} is not acceptable.
+     *         Returns an empty string if the {@code preferredContact} is acceptable.
+     */
+    public static String getInvalidityInfoForPreferredContact(String preferredContact) {
+
+        assert preferredContact != null;
+
+        if (preferredContact.isEmpty()) {
+            return getPopulatedEmptyStringErrorMessage(
+                PREFERRED_CONTACT_ERROR_MESSAGE_EMPTY_STRING,
+                PREFERRED_CONTACT_FIELD_NAME,
+                PREFERRED_CONTACT_MAX_LENGTH);
+        } else if (isUntrimmed(preferredContact)) {
+            return WHITESPACE_ONLY_OR_EXTRA_WHITESPACE_ERROR_MESSAGE.replace("${fieldName}",
+                PREFERRED_CONTACT_FIELD_NAME);
+        } 
+
         return "";
     }
 

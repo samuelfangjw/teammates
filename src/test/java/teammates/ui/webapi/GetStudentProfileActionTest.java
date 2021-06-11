@@ -120,6 +120,7 @@ public class GetStudentProfileActionTest extends BaseActionTest<GetStudentProfil
         assertEquals(expectedProfile.moreInfo, actualProfile.getMoreInfo());
         assertEquals(expectedProfile.nationality, actualProfile.getNationality());
         assertEquals(expectedProfile.gender, actualProfile.getGender());
+        assertEquals(expectedProfile.preferredContact, actualProfile.getPreferredContact());
     }
 
     private void testGetCorrectProfile(StudentProfileAttributes expectedProfile,
@@ -130,6 +131,7 @@ public class GetStudentProfileActionTest extends BaseActionTest<GetStudentProfil
         StudentProfileData actualProfile = (StudentProfileData) result.getOutput();
         assertEquals(expectedName, actualProfile.getName());
         assertEquals(expectedProfile.email, actualProfile.getEmail());
+        assertEquals(expectedProfile.preferredContact, actualProfile.getPreferredContact());
         assertEquals(expectedProfile.shortName, actualProfile.getShortName());
         assertEquals(expectedProfile.institute, actualProfile.getInstitute());
         assertEquals(expectedProfile.moreInfo, actualProfile.getMoreInfo());

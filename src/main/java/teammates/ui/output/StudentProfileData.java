@@ -10,6 +10,7 @@ public class StudentProfileData extends ApiOutput {
     private String name;
     private String shortName;
     private String email;
+    private String preferredContact;
     private String institute;
     private String nationality;
     private Gender gender;
@@ -19,6 +20,7 @@ public class StudentProfileData extends ApiOutput {
         this.name = name;
         this.shortName = profileAttributes.shortName;
         this.email = profileAttributes.email;
+        this.preferredContact = profileAttributes.preferredContact;
         this.institute = profileAttributes.institute;
         this.nationality = profileAttributes.nationality;
         this.gender = profileAttributes.gender;
@@ -39,6 +41,10 @@ public class StudentProfileData extends ApiOutput {
 
     public String getInstitute() {
         return institute;
+    }
+
+    public String getPreferredContact() {
+        return preferredContact;
     }
 
     public String getEmail() {

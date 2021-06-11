@@ -118,6 +118,17 @@ public class ProfilesDbTest extends BaseComponentTestCase {
         assertEquals("test@email.com", actualProfile.getEmail());
         assertEquals(actualProfile.getModifiedDate(), updatedProfile.getModifiedDate());
 
+        assertNotEquals("preferred contact", actualProfile.getPreferredContact());
+        updatedProfile =
+                profilesDb.updateOrCreateStudentProfile(
+                        StudentProfileAttributes.updateOptionsBuilder(typicalProfileWithoutPicture.getGoogleId())
+                                .withPreferredContact("preferred contact")
+                                .build());
+        actualProfile = profilesDb.getStudentProfile(typicalProfileWithoutPicture.getGoogleId());
+        assertEquals("preferred contact", updatedProfile.getPreferredContact());
+        assertEquals("preferred contact", actualProfile.getPreferredContact());
+        assertEquals(actualProfile.getModifiedDate(), updatedProfile.getModifiedDate());
+
         assertNotEquals("NUS", actualProfile.getInstitute());
         updatedProfile =
                 profilesDb.updateOrCreateStudentProfile(
@@ -194,6 +205,7 @@ public class ProfilesDbTest extends BaseComponentTestCase {
                         .withMoreInfo(typicalProfileWithPicture.moreInfo)
                         .withInstitute(typicalProfileWithPicture.institute)
                         .withEmail(typicalProfileWithPicture.email)
+                        .withPreferredContact(typicalProfileWithPicture.preferredContact)
                         .withNationality(typicalProfileWithPicture.nationality)
                         .build());
 

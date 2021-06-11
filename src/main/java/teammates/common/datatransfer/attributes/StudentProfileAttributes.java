@@ -20,6 +20,7 @@ public class StudentProfileAttributes extends EntityAttributes<StudentProfile> {
 
     public String shortName;
     public String email;
+    public String preferredContact;
     public String institute;
     public String nationality;
     public Gender gender;
@@ -30,6 +31,7 @@ public class StudentProfileAttributes extends EntityAttributes<StudentProfile> {
         this.googleId = googleId;
         this.shortName = "";
         this.email = "";
+        this.preferredContact = "";
         this.institute = "";
         this.nationality = "";
         this.gender = Gender.OTHER;
@@ -45,6 +47,9 @@ public class StudentProfileAttributes extends EntityAttributes<StudentProfile> {
         }
         if (sp.getEmail() != null) {
             studentProfileAttributes.email = sp.getEmail();
+        }
+        if (sp.getPreferredContact() != null) {
+            studentProfileAttributes.preferredContact = sp.getPreferredContact();
         }
         if (sp.getInstitute() != null) {
             studentProfileAttributes.institute = sp.getInstitute();
@@ -75,6 +80,7 @@ public class StudentProfileAttributes extends EntityAttributes<StudentProfile> {
 
         studentProfileAttributes.shortName = shortName;
         studentProfileAttributes.email = email;
+        studentProfileAttributes.preferredContact = preferredContact;
         studentProfileAttributes.institute = institute;
         studentProfileAttributes.gender = gender;
         studentProfileAttributes.nationality = nationality;
@@ -94,6 +100,10 @@ public class StudentProfileAttributes extends EntityAttributes<StudentProfile> {
 
     public String getEmail() {
         return email;
+    }
+
+    public String getPreferredContact() {
+        return preferredContact;
     }
 
     public String getInstitute() {
@@ -132,6 +142,10 @@ public class StudentProfileAttributes extends EntityAttributes<StudentProfile> {
             addNonEmptyError(FieldValidator.getInvalidityInfoForEmail(email), errors);
         }
 
+        if (!StringHelper.isEmpty(preferredContact)) {
+            addNonEmptyError(FieldValidator.getInvalidityInfoForPreferredContact(preferredContact), errors);
+        }
+
         if (!StringHelper.isEmpty(institute)) {
             addNonEmptyError(FieldValidator.getInvalidityInfoForInstituteName(institute), errors);
         }
@@ -157,7 +171,7 @@ public class StudentProfileAttributes extends EntityAttributes<StudentProfile> {
     public int hashCode() {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(this.email).append(this.shortName).append(this.institute)
-                .append(this.googleId).append(this.gender.toString());
+                .append(this.googleId).append(this.gender.toString()).append(preferredContact);
         return stringBuilder.toString().hashCode();
     }
 
@@ -173,7 +187,8 @@ public class StudentProfileAttributes extends EntityAttributes<StudentProfile> {
                     && Objects.equals(this.shortName, otherProfile.shortName)
                     && Objects.equals(this.institute, otherProfile.institute)
                     && Objects.equals(this.googleId, otherProfile.googleId)
-                    && Objects.equals(this.gender, otherProfile.gender);
+                    && Objects.equals(this.gender, otherProfile.gender)
+                    && Objects.equals(this.preferredContact, otherProfile.preferredContact);
         } else {
             return false;
         }
@@ -181,8 +196,8 @@ public class StudentProfileAttributes extends EntityAttributes<StudentProfile> {
 
     @Override
     public StudentProfile toEntity() {
-        return new StudentProfile(googleId, shortName, email, institute, nationality, gender.name().toLowerCase(),
-                                  moreInfo);
+        return new StudentProfile(googleId, shortName, email, preferredContact, institute, 
+                                  nationality, gender.name().toLowerCase(), moreInfo);
     }
 
     @Override
@@ -196,6 +211,7 @@ public class StudentProfileAttributes extends EntityAttributes<StudentProfile> {
     public void update(UpdateOptions updateOptions) {
         updateOptions.shortNameOption.ifPresent(s -> shortName = s);
         updateOptions.emailOption.ifPresent(s -> email = s);
+        updateOptions.preferredContactOption.ifPresent(s -> preferredContact = s);
         updateOptions.instituteOption.ifPresent(s -> institute = s);
         updateOptions.nationalityOption.ifPresent(s -> nationality = s);
         updateOptions.genderOption.ifPresent(s -> gender = s);
@@ -261,6 +277,7 @@ public class StudentProfileAttributes extends EntityAttributes<StudentProfile> {
 
         private UpdateOption<String> shortNameOption = UpdateOption.empty();
         private UpdateOption<String> emailOption = UpdateOption.empty();
+        private UpdateOption<String> preferredContactOption = UpdateOption.empty();
         private UpdateOption<String> instituteOption = UpdateOption.empty();
         private UpdateOption<String> nationalityOption = UpdateOption.empty();
         private UpdateOption<Gender> genderOption = UpdateOption.empty();
@@ -282,6 +299,7 @@ public class StudentProfileAttributes extends EntityAttributes<StudentProfile> {
                     + "googleId = " + googleId
                     + ", shortName = " + shortNameOption
                     + ", email = " + emailOption
+                    + ", preferredContact = " + preferredContactOption
                     + ", institute = " + instituteOption
                     + ", nationality = " + nationalityOption
                     + ", gender = " + genderOption
@@ -333,6 +351,13 @@ public class StudentProfileAttributes extends EntityAttributes<StudentProfile> {
             assert email != null;
 
             updateOptions.emailOption = UpdateOption.of(email);
+            return thisBuilder;
+        }
+
+        public B withPreferredContact(String preferredContact) {
+            assert preferredContact != null;
+
+            updateOptions.preferredContactOption = UpdateOption.of(preferredContact);
             return thisBuilder;
         }
 

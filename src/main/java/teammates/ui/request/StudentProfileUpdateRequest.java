@@ -7,6 +7,7 @@ public class StudentProfileUpdateRequest extends BasicRequest {
 
     private String shortName;
     private String email;
+    private String preferredContact;
     private String institute;
     private String nationality;
     private String gender;
@@ -15,6 +16,10 @@ public class StudentProfileUpdateRequest extends BasicRequest {
 
     public String getEmail() {
         return email;
+    }
+
+    public String getPreferredContact() {
+        return preferredContact;
     }
 
     public String getExistingNationality() {
@@ -47,6 +52,10 @@ public class StudentProfileUpdateRequest extends BasicRequest {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public void setPreferredContact(String preferredContact) {
+        this.preferredContact = preferredContact;
     }
 
     public void setExistingNationality(String existingNationality) {

@@ -161,6 +161,7 @@ public class UpdateStudentProfileActionTest extends BaseActionTest<UpdateStudent
 
         req.setShortName("short ");
         req.setEmail("e@email.com  ");
+        req.setPreferredContact(" preferred contact ");
         req.setInstitute(" TEAMMATES Test Institute 5   ");
         req.setNationality("American");
         req.setGender("  other   ");
@@ -174,6 +175,7 @@ public class UpdateStudentProfileActionTest extends BaseActionTest<UpdateStudent
 
         req.setShortName("$$short");
         req.setEmail("invalid.email");
+        req.setPreferredContact("");
         req.setInstitute("institute");
         req.setNationality("USA");
         req.setGender("female");
@@ -187,6 +189,7 @@ public class UpdateStudentProfileActionTest extends BaseActionTest<UpdateStudent
 
         req.setShortName("short%<script>alert(\"was here\");</script>");
         req.setEmail("<script>alert(\"was here\");</script>");
+        req.setPreferredContact("<script>alert(\"was here\");</script>");
         req.setInstitute("<script>alert(\"was here\");</script>");
         req.setNationality("USA<script>alert(\"was here\");</script>");
         req.setGender("female<script>alert(\"was here\");</script>");

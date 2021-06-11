@@ -29,6 +29,8 @@ public class StudentProfile extends BaseEntity {
 
     private String shortName;
 
+    private String preferredContact;
+
     private String email;
 
     private String institute;
@@ -59,6 +61,8 @@ public class StudentProfile extends BaseEntity {
      *            The shortened name of the user.
      * @param email
      *            The long-term (personal) email of the user.
+     * @param preferredContact
+     *            The preferred contact of the user.
      * @param institute
      *            The university/school/institute the student is from (useful
      *            for exchange students)
@@ -70,11 +74,12 @@ public class StudentProfile extends BaseEntity {
      * @param moreInfo
      *            Miscellaneous information, including external profile
      */
-    public StudentProfile(String googleId, String shortName, String email, String institute,
-                          String nationality, String gender, String moreInfo) {
+    public StudentProfile(String googleId, String shortName, String email, String preferredContact,
+                          String institute, String nationality, String gender, String moreInfo) {
         this.setGoogleId(googleId);
         this.setShortName(shortName);
         this.setEmail(email);
+        this.setPreferredContact(preferredContact);
         this.setInstitute(institute);
         this.setNationality(nationality);
         this.setGender(gender);
@@ -86,6 +91,7 @@ public class StudentProfile extends BaseEntity {
         this.setGoogleId(googleId);
         this.setShortName("");
         this.setEmail("");
+        this.setPreferredContact("");
         this.setInstitute("");
         this.setNationality("");
         this.setGender("other");
@@ -119,6 +125,14 @@ public class StudentProfile extends BaseEntity {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getPreferredContact() {
+        return this.preferredContact;
+    }
+
+    public void setPreferredContact(String preferredContact) {
+        this.preferredContact = preferredContact;
     }
 
     public String getInstitute() {
