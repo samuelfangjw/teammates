@@ -106,6 +106,7 @@ export class StudentProfilePageComponent implements OnInit {
     this.editForm = new FormGroup({
       studentshortname: new FormControl(profile.shortName),
       studentprofileemail: new FormControl(profile.email),
+      studentprofilepreferredcontact: new FormControl(profile.preferredContact),
       studentprofileinstitute: new FormControl(profile.institute),
       studentnationality: new FormControl(profile.nationality),
       existingNationality: new FormControl(profile.nationality),
@@ -175,6 +176,7 @@ export class StudentProfilePageComponent implements OnInit {
     this.studentProfileService.updateStudentProfile(this.id, {
       shortName: this.editForm.controls.studentshortname.value,
       email: this.editForm.controls.studentprofileemail.value,
+      preferredContact: this.editForm.controls.studentprofilepreferredcontact.value,
       institute: this.editForm.controls.studentprofileinstitute.value,
       nationality: this.editForm.controls.studentnationality.value,
       gender: this.editForm.controls.studentgender.value,

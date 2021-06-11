@@ -10,6 +10,7 @@ export const EXAMPLE_STUDENT_PROFILE: StudentProfile = {
   name: 'Alice Betsy',
   shortName: 'Alice',
   email: 'alice@email.com',
+  preferredContact: '9123 4567',
   institute: 'National University of Singapore',
   nationality: 'American',
   gender: Gender.FEMALE,

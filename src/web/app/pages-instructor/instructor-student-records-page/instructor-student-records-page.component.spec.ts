@@ -79,6 +79,7 @@ describe('InstructorStudentRecordsPageComponent', () => {
     const studentProfile: StudentProfile = {
       name: 'John Doe',
       shortName: 'JD',
+      preferredContact: '9123 4567',
       email: 'jd@jd.com',
       institute: 'Area51',
       nationality: 'Antarctican',
@@ -100,6 +101,7 @@ describe('InstructorStudentRecordsPageComponent', () => {
     const studentProfile: StudentProfile = {
       name: 'John Doe',
       shortName: 'JD',
+      preferredContact: '9123 4567',
       email: 'jd@jd.com',
       institute: 'Area51',
       nationality: 'Antarctican',

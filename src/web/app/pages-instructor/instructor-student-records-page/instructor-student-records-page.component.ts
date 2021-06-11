@@ -58,6 +58,7 @@ export class InstructorStudentRecordsPageComponent extends InstructorCommentsCom
     name: '',
     shortName: '',
     email: '',
+    preferredContact: '',
     institute: '',
     nationality: '',
     gender: Gender.OTHER,

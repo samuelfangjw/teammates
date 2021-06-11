@@ -74,6 +74,7 @@ describe('StudentCourseDetailsPageComponent', () => {
       {
         photoUrl: '/assets/images/profile_picture_default.png',
         email: 'iam2@hello.com',
+        preferredContact: '9123 4567',
         gender: Gender.MALE,
         institute: 'nus',
         moreInfo: 'Misc',

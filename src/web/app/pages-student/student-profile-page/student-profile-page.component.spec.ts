@@ -52,6 +52,7 @@ describe('StudentProfilePageComponent', () => {
       name: '',
       shortName: '',
       email: '',
+      preferredContact: '',
       institute: '',
       nationality: '',
       gender: Gender.MALE,
@@ -61,6 +62,7 @@ describe('StudentProfilePageComponent', () => {
     component.editForm = new FormGroup({
       studentshortname: new FormControl(''),
       studentprofileemail: new FormControl(''),
+      studentprofilepreferredcontact: new FormControl(''),
       studentprofileinstitute: new FormControl(''),
       studentnationality: new FormControl(''),
       existingNationality: new FormControl(''),
@@ -77,6 +79,7 @@ describe('StudentProfilePageComponent', () => {
       name: 'Ayush',
       shortName: 'Ash',
       email: 'ayush@nus.com',
+      preferredContact: '9123 4567',
       institute: 'NUS',
       nationality: 'Indian',
       gender: Gender.MALE,
@@ -91,6 +94,7 @@ describe('StudentProfilePageComponent', () => {
     component.editForm = new FormGroup({
       studentshortname: new FormControl('Ash'),
       studentprofileemail: new FormControl('ayush@nus.com'),
+      studentprofilepreferredcontact: new FormControl('9123 4567'),
       studentprofileinstitute: new FormControl('NUS'),
       studentnationality: new FormControl('Indian'),
       existingNationality: new FormControl('Indian'),

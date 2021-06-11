@@ -85,6 +85,7 @@ describe('InstructorCourseStudentDetailsPageComponent', () => {
     component.studentProfile = {
       name: 'name',
       shortName: 'shortName',
+      preferredContact: '9123 4567',
       email: 'profileEmail@email.com',
       institute: 'NUS',
       nationality: 'Indian',

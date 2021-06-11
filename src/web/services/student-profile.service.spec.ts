@@ -63,6 +63,7 @@ describe('StudentProfileService', () => {
     const googleId: string = '';
     const requestBody: StudentProfileUpdateRequest = new class implements StudentProfileUpdateRequest {
       email: string = '';
+      preferredContact: string = '';
       existingNationality: string = '';
       gender: string = '';
       institute: string = '';
