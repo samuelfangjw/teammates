@@ -394,6 +394,13 @@ exports[`StudentCourseDetailsPageComponent should snap with populated fields 1`]
                 
                 <div>
                   <label>
+                    Preferred Contact:
+                  </label>
+                   9123 4567 
+                </div>
+                
+                <div>
+                  <label>
                     Gender:
                   </label>
                    Male 

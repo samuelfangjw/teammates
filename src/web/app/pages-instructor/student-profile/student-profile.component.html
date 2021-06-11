@@ -25,6 +25,10 @@
                 <td id="personal-email"><span *ngIf="studentProfile?.email; else notSpecified">{{studentProfile?.email}}</span>
               </tr>
               <tr>
+                <td class="font-weight-bold">Preferred Contact</td>
+                <td id="preferred-contact"><span *ngIf="studentProfile?.preferredContact; else notSpecified">{{studentProfile?.preferredContact}}</span>
+              </tr>
+              <tr>
                 <td class="font-weight-bold">Institution</td>
                 <td id="institution"><span *ngIf="studentProfile?.institute; else notSpecified">{{studentProfile?.institute}}</span>
               </tr>
