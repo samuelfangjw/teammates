@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { NgbCalendar, NgbDateParserFormatter, NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbCalendar, NgbDateParserFormatter, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import moment from 'moment-timezone';
 import { TemplateSession } from '../../../services/feedback-sessions.service';
 import { SimpleModalService } from '../../../services/simple-modal.service';
@@ -16,31 +16,11 @@ import { SimpleModalType } from '../simple-modal/simple-modal-type';
 import { collapseAnim } from '../teammates-common/collapse-anim';
 import { SessionEditFormDatePickerFormatter } from './session-edit-form-datepicker-formatter';
 import { SessionEditFormMode, SessionEditFormModel } from './session-edit-form-model';
+import { DeadlineModalComponent } from './deadline-modal/deadline-modal.component';
 
 /**
  * Form to Add/Edit feedback sessions.
  */
-
- @Component({
-  selector: 'ngbd-modal-content',
-  template: `
-    <div class="modal-header">
-      <h4 class="modal-title">Hi there!</h4>
-      <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss('Cross click')">
-        <span aria-hidden="true">&times;</span>
-      </button>
-    </div>
-    <div class="modal-body">
-      <p>Hello!</p>
-    </div>
-    <div class="modal-footer">
-      <button type="button" class="btn btn-outline-dark" (click)="activeModal.close('Close click')">Close</button>
-    </div>
-  `
-})
-export class NgbdModalContent {
-  constructor(public activeModal: NgbActiveModal) {}
-}
 
 @Component({
   selector: 'tm-session-edit-form',
@@ -51,8 +31,6 @@ export class NgbdModalContent {
   
 })
 export class SessionEditFormComponent implements OnInit {
-  isOpen: boolean = false;
-
   // enum
   SessionEditFormMode: typeof SessionEditFormMode = SessionEditFormMode;
   SessionVisibleSetting: typeof SessionVisibleSetting = SessionVisibleSetting;
@@ -282,7 +260,6 @@ export class SessionEditFormComponent implements OnInit {
   }
 
   openModal(): void {
-    console.log("called");
-    this.modalService.open(NgbdModalContent);
+    this.modalService.open(DeadlineModalComponent);
   }
 }
