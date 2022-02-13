@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { NgbCalendar, NgbDateParserFormatter } from '@ng-bootstrap/ng-bootstrap';
+import { NgbCalendar, NgbDateParserFormatter, NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import moment from 'moment-timezone';
 import { TemplateSession } from '../../../services/feedback-sessions.service';
 import { SimpleModalService } from '../../../services/simple-modal.service';
@@ -20,15 +20,39 @@ import { SessionEditFormMode, SessionEditFormModel } from './session-edit-form-m
 /**
  * Form to Add/Edit feedback sessions.
  */
+
+ @Component({
+  selector: 'ngbd-modal-content',
+  template: `
+    <div class="modal-header">
+      <h4 class="modal-title">Hi there!</h4>
+      <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss('Cross click')">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body">
+      <p>Hello!</p>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-outline-dark" (click)="activeModal.close('Close click')">Close</button>
+    </div>
+  `
+})
+export class NgbdModalContent {
+  constructor(public activeModal: NgbActiveModal) {}
+}
+
 @Component({
   selector: 'tm-session-edit-form',
   templateUrl: './session-edit-form.component.html',
   styleUrls: ['./session-edit-form.component.scss'],
   providers: [{ provide: NgbDateParserFormatter, useClass: SessionEditFormDatePickerFormatter }],
   animations: [collapseAnim],
+  
 })
 export class SessionEditFormComponent implements OnInit {
   isOpen: boolean = false;
+
   // enum
   SessionEditFormMode: typeof SessionEditFormMode = SessionEditFormMode;
   SessionVisibleSetting: typeof SessionVisibleSetting = SessionVisibleSetting;
@@ -113,7 +137,7 @@ export class SessionEditFormComponent implements OnInit {
   @Output()
   closeEditFormEvent: EventEmitter<void> = new EventEmitter<void>();
 
-  constructor(private simpleModalService: SimpleModalService, public calendar: NgbCalendar) { }
+  constructor(private simpleModalService: SimpleModalService, public calendar: NgbCalendar, public modalService: NgbModal) { }
 
   ngOnInit(): void {
   }
@@ -255,5 +279,10 @@ export class SessionEditFormComponent implements OnInit {
    */
   closeEditFormHandler(): void {
     this.closeEditFormEvent.emit();
+  }
+
+  openModal(): void {
+    console.log("called");
+    this.modalService.open(NgbdModalContent);
   }
 }
