@@ -87,6 +87,8 @@ public class FeedbackRankRecipientQuestionE2ETest extends BaseFeedbackQuestionE2
     protected void testSubmitPage() {
         FeedbackSubmitPage feedbackSubmitPage = loginToFeedbackSubmitPage();
 
+        feedbackSubmitPage.waitForPageToLoad();
+
         ______TS("verify loaded question");
         FeedbackQuestionAttributes question = testData.feedbackQuestions.get("qn1ForFirstSession");
         InstructorAttributes receiver = testData.instructors.get("instructor");

@@ -87,6 +87,8 @@ public class FeedbackConstSumOptionQuestionE2ETest extends BaseFeedbackQuestionE
     protected void testSubmitPage() {
         FeedbackSubmitPage feedbackSubmitPage = loginToFeedbackSubmitPage();
 
+        feedbackSubmitPage.waitForPageToLoad();
+
         ______TS("verify loaded question");
         FeedbackQuestionAttributes question = testData.feedbackQuestions.get("qn1ForFirstSession");
         feedbackSubmitPage.verifyConstSumQuestion(1, "",

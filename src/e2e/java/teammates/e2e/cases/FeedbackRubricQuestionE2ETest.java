@@ -101,6 +101,8 @@ public class FeedbackRubricQuestionE2ETest extends BaseFeedbackQuestionE2ETest {
     protected void testSubmitPage() {
         FeedbackSubmitPage feedbackSubmitPage = loginToFeedbackSubmitPage();
 
+        feedbackSubmitPage.waitForPageToLoad();
+
         ______TS("verify loaded question");
         FeedbackQuestionAttributes question = testData.feedbackQuestions.get("qn1ForFirstSession");
         StudentAttributes receiver = testData.students.get("benny.tmms@FRubricQn.CS2104");

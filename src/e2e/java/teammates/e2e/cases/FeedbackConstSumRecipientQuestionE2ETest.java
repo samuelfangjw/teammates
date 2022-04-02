@@ -85,6 +85,8 @@ public class FeedbackConstSumRecipientQuestionE2ETest extends BaseFeedbackQuesti
     protected void testSubmitPage() {
         FeedbackSubmitPage feedbackSubmitPage = loginToFeedbackSubmitPage();
 
+        feedbackSubmitPage.waitForPageToLoad();
+
         ______TS("verify loaded question");
         FeedbackQuestionAttributes question = testData.feedbackQuestions.get("qn1ForFirstSession");
         StudentAttributes receiver = testData.students.get("benny.tmms@FCSumRcptQn.CS2104");

@@ -77,6 +77,8 @@ public class FeedbackTextQuestionE2ETest extends BaseFeedbackQuestionE2ETest {
     protected void testSubmitPage() {
         FeedbackSubmitPage feedbackSubmitPage = loginToFeedbackSubmitPage();
 
+        feedbackSubmitPage.waitForPageToLoad();
+
         ______TS("verify loaded question");
         FeedbackQuestionAttributes question = testData.feedbackQuestions.get("qn1ForFirstSession");
         InstructorAttributes receiver = testData.instructors.get("instructor");

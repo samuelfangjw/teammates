@@ -537,7 +537,8 @@ public class InstructorFeedbackResultsPage extends AppPage {
                                           Collection<InstructorAttributes> instructors,
                                           Collection<StudentAttributes> students) {
         click(responseRow.findElement(By.id("btn-add-comment")));
-        WebElement commentModal = waitForElementPresence(By.className("modal-body"));
+        waitUntilAnimationFinish();
+        WebElement commentModal = browser.driver.findElement(By.className("modal-body"));
 
         String editor = getName(comment.getCommentGiverType(), comment.getLastEditorEmail(), instructors, students);
         String commentGiver = getName(comment.getCommentGiverType(), comment.getCommentGiver(), instructors, students);
