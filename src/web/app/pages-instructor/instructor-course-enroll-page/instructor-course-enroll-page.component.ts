@@ -1,20 +1,17 @@
 import { NgIf, NgClass, NgFor } from '@angular/common';
-import { Component, Inject, Input, OnInit, DOCUMENT } from '@angular/core';
+import { Component, DOCUMENT, inject, Inject, signal, computed, viewChild, DestroyRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { HotTableRegisterer, HotTableModule } from '@handsontable/angular';
-import Handsontable from 'handsontable';
-import { DetailedSettings } from 'handsontable/plugins/contextMenu';
 import { PageScrollService } from 'ngx-page-scroll-core';
-import { concat, Observable } from 'rxjs';
-import { finalize } from 'rxjs/operators';
+import { combineLatest, from, of } from 'rxjs';
+import { bufferCount, catchError, concatMap, filter, finalize, map, switchMap, tap } from 'rxjs/operators';
 import { EnrollStatus } from './enroll-status';
 import { CourseService } from '../../../services/course.service';
 import { ProgressBarService } from '../../../services/progress-bar.service';
 import { SimpleModalService } from '../../../services/simple-modal.service';
 import { StatusMessageService } from '../../../services/status-message.service';
 import { StudentService } from '../../../services/student.service';
-import { EnrollStudents, HasResponses, JoinState, Student, Students } from '../../../types/api-output';
-import { StudentEnrollRequest, StudentsEnrollRequest } from '../../../types/api-request';
+import { EnrollStudents, JoinState, Student, Students } from '../../../types/api-output';
+import { StudentEnrollRequest } from '../../../types/api-request';
 import { AjaxLoadingComponent } from '../../components/ajax-loading/ajax-loading.component';
 import { AjaxPreloadComponent } from '../../components/ajax-preload/ajax-preload.component';
 import { LoadingRetryComponent } from '../../components/loading-retry/loading-retry.component';
@@ -26,12 +23,17 @@ import { StatusMessage } from '../../components/status-message/status-message';
 import { StatusMessageComponent } from '../../components/status-message/status-message.component';
 import { collapseAnim } from '../../components/teammates-common/collapse-anim';
 import { ErrorMessageOutput } from '../../error-message-output';
+import { registerAllModules } from 'handsontable/registry';
+import { DataGridComponent } from '../../components/data-grid/data-grid.component';
+import { takeUntilDestroyed, toObservable, toSignal } from '@angular/core/rxjs-interop';
 
 interface EnrollResultPanel {
   status: EnrollStatus;
   messageForEnrollmentStatus: string;
   studentList: Student[];
 }
+
+registerAllModules();
 
 /**
  * Instructor course enroll page.
@@ -48,14 +50,26 @@ interface EnrollResultPanel {
     StatusMessageComponent,
     AjaxPreloadComponent,
     PanelChevronComponent,
-    HotTableModule,
     NgClass,
     ProgressBarComponent,
     AjaxLoadingComponent,
     NgFor,
+    DataGridComponent,
   ],
 })
-export class InstructorCourseEnrollPageComponent implements OnInit {
+export class InstructorCourseEnrollPageComponent {
+  private readonly route = inject(ActivatedRoute);
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly statusMessageService = inject(StatusMessageService);
+  private readonly courseService = inject(CourseService);
+  private readonly studentService = inject(StudentService);
+  private readonly progressBarService = inject(ProgressBarService);
+  private readonly simpleModalService = inject(SimpleModalService);
+  private readonly pageScrollService = inject(PageScrollService);
+
+  // Reference to the new students data grid
+  newStudentsGrid = viewChild.required<DataGridComponent>('newStudentsGrid');
+
   GENERAL_ERROR_MESSAGE: string = `You may check that: "Section" and "Comment" are optional while "Team", "Name",
         and "Email" must be filled. "Section", "Team", "Name", and "Comment" should start with an
         alphabetical character, unless wrapped by curly brackets "{}", and should not contain vertical bar "|" and
@@ -64,368 +78,317 @@ export class InstructorCourseEnrollPageComponent implements OnInit {
   SECTION_ERROR_MESSAGE: string = 'Section cannot be empty if the total number of students is more than 100. ';
   TEAM_ERROR_MESSAGE: string = 'Duplicated team detected in different sections. ';
 
+  COL_HEADERS = ['Section', 'Team', 'Name', 'Email', 'Comments'] as const;
+  ENROLL_BATCH_SIZE = 50;
+
   // enum
   EnrollStatus: typeof EnrollStatus = EnrollStatus;
-  courseId: string = '';
-  coursePresent?: boolean;
-  isLoadingCourseEnrollPage: boolean = false;
+
+  private readonly queryParams = toSignal(this.route.queryParams);
+  courseId = computed<string>(() => this.queryParams()?.['courseid'] ?? '');
+  refreshExistingStudents = signal(0);
+
+  isEnrollingStudents = signal(false);
+  isLoadingCoursePresent = signal(true);
+  isLoadingExistingStudents = signal(true);
+  isLoadingCourseEnrollPage = computed(() => this.isLoadingCoursePresent() && this.isLoadingExistingStudents());
+
+  enrollErrorMessage = signal('');
+
+  coursePresent = toSignal(
+    toObservable(this.courseId).pipe(
+      filter((courseId) => !!courseId),
+      tap(() => this.isLoadingCoursePresent.set(true)),
+      switchMap((courseId) =>
+        this.courseService.hasResponsesForCourse(courseId).pipe(
+          tap((response) => response && this.openHasExistingResponsesModal()),
+          map(() => true),
+          catchError((resp: ErrorMessageOutput) => {
+            this.showErrorToast(resp.error.message);
+            return of(false)
+          }),
+          finalize(() => this.isLoadingCoursePresent.set(false)),
+        )
+      ),
+    )
+  )
+
+  existingStudents = toSignal(
+    combineLatest([
+      toObservable(this.courseId),
+      toObservable(this.refreshExistingStudents),
+    ]).pipe(
+      filter(([courseId]) => !!courseId),
+      tap(() => this.isLoadingExistingStudents.set(true)),
+      switchMap(([courseId]) =>
+        this.studentService.getStudentsFromCourse({ courseId }).pipe(
+          map((resp: Students) => resp.students),
+          catchError((resp: ErrorMessageOutput) => {
+            this.showErrorToast(resp.error.message);
+            return of([]);
+          }),
+          finalize(() => this.isLoadingExistingStudents.set(false)),
+        )
+      ),
+    ),
+    { initialValue: [] }
+  );
+
+  existingStudentsData = computed(() =>
+    this.mapStudentsToRows(this.existingStudents())
+  )
+
   showEnrollResults?: boolean = false;
-  enrollErrorMessage: string = '';
   statusMessage: StatusMessage[] = [];
   unsuccessfulEnrolls: { [email: string]: string } = {};
 
-  @Input() isNewStudentsPanelCollapsed: boolean = false;
-  @Input() isExistingStudentsPanelCollapsed: boolean = true;
-
-  colHeaders: string[] = ['Section', 'Team', 'Name', 'Email', 'Comments'];
-  contextMenuOptions: DetailedSettings = {
-    items: {
-      row_above: {},
-      row_below: {},
-      remove_row: {},
-      undo: {},
-      redo: {},
-      cut: {},
-      copy: {},
-      paste: {
-        key: 'paste',
-        name: 'Paste',
-        callback: this.pasteClick,
-      },
-      make_read_only: {},
-      alignment: {},
-    },
-  };
-
-  hotRegisterer: HotTableRegisterer = new HotTableRegisterer();
-  newStudentsHOT: string = 'newStudentsHOT';
+  isNewStudentsPanelOpen = signal(true);
+  isExistingStudentsPanelOpen = signal(false);
 
   enrollResultPanelList?: EnrollResultPanel[];
-  existingStudents: Student[] = [];
-
-  existingStudentsHOT: string = 'existingStudentsHOT';
   isExistingStudentsPresent: boolean = true;
-  hasLoadingStudentsFailed: boolean = false;
-  isLoadingExistingStudents: boolean = false;
-  isAjaxSuccess: boolean = true;
-  isEnrolling: boolean = false;
 
   allStudentChunks: StudentEnrollRequest[][] = [];
-  invalidRowsIndex: Set<number> = new Set();
-  newStudentRowsIndex: Set<number> = new Set();
-  modifiedStudentRowsIndex: Set<number> = new Set();
-  unchangedStudentRowsIndex: Set<number> = new Set();
-  numberOfStudentsPerRequest: number = 50; // at most 50 students per chunk
 
-  constructor(private route: ActivatedRoute,
-              private statusMessageService: StatusMessageService,
-              private courseService: CourseService,
-              private studentService: StudentService,
-              private progressBarService: ProgressBarService,
-              private simpleModalService: SimpleModalService,
-              private pageScrollService: PageScrollService,
-              @Inject(DOCUMENT) private document: Document) { }
+  invalidRowsIndex = signal(new Set<number>());
+  newStudentRowsIndex = signal(new Set<number>());
+  modifiedStudentRowsIndex = signal(new Set<number>());
+  unchangedStudentRowsIndex = signal(new Set<number>());
 
-  ngOnInit(): void {
-    this.route.queryParams.subscribe((queryParams: any) => {
-      this.courseId = queryParams.courseid;
-      this.getCourseEnrollPageData(queryParams.courseid);
+  constructor(@Inject(DOCUMENT) private document: Document) { }
+
+  addRowsToNewStudentsTable(numberOfRows: number): void {
+    this.newStudentsGrid().addRows(numberOfRows);
+  }
+
+  enrollStudents() {
+    this.resetEnrollmentState();
+    this.isEnrollingStudents.set(true);
+
+    const data = this.newStudentsGrid().getData();
+    const studentEnrollRequests: [number, StudentEnrollRequest][] = data
+      .map((row, index) => [index, row] as const)
+      .filter(([, row]) => !row.every((cell) => cell === null || cell === ''))
+      .map(([index, row]) => [index, {
+        section: String(row[0] ?? '').trim(),
+        team: String(row[1] ?? '').trim(),
+        name: String(row[2] ?? '').trim(),
+        email: String(row[3] ?? '').trim(),
+        comments: String(row[4] ?? '').trim(),
+      }]);
+
+    if (!this.validateEnrollmentData(studentEnrollRequests)) {
+      this.isEnrollingStudents.set(false);
+      return;
+    }
+
+    let currentProgress = 0
+    this.progressBarService.updateProgress(0);
+    const validEnrollRequests = studentEnrollRequests.filter(([idx, _]) => !this.invalidRowsIndex().has(idx));
+
+    const successfulEnrolls: Student[] = [];
+    // const unssuccessfulEnrolls: EnrollErrorResults[] = [];
+
+    from(validEnrollRequests).pipe(
+      bufferCount(this.ENROLL_BATCH_SIZE),
+      concatMap((studentChunk: [number, StudentEnrollRequest][]) => this.studentService.enrollStudents(
+        this.courseId(),
+        {
+          studentEnrollRequests: studentChunk.map(([_, request]) => request),
+        }
+      )),
+      finalize(() => this.isEnrollingStudents.set(false)),
+      takeUntilDestroyed(this.destroyRef),
+    ).subscribe({
+      next: (resp: EnrollStudents) => {
+        currentProgress += this.ENROLL_BATCH_SIZE;
+        const percentage: number = Math.max(100, Math.round(100 * currentProgress / validEnrollRequests.length));
+        this.progressBarService.updateProgress(percentage);
+
+        if (resp.studentsData.students) {
+          successfulEnrolls.push(...resp.studentsData.students);
+        }
+        // if (resp.unsuccessfulEnrolls != null) {
+        //   unssuccessfulEnrolls.push(...resp.unsuccessfulEnrolls);
+        // }
+      },
+      error: (resp: ErrorMessageOutput) => {
+        this.enrollErrorMessage.set(resp.error.message);
+      },
+      complete: () => {
+        this.showSuccessToast();
+        const result = this.processEnrollmentResults(successfulEnrolls, studentEnrollRequests, this.existingStudents());
+        this.enrollResultPanelList = result.panels;
+        this.newStudentsGrid().styleRows(result.rowIdxToClass);
+        this.showEnrollResults = true;
+        this.refreshExistingStudents.update(n => n + 1);
+      }
     });
+  }
+
+  private resetEnrollmentState(): void {
+    this.invalidRowsIndex.set(new Set());
+    this.newStudentRowsIndex.set(new Set());
+    this.modifiedStudentRowsIndex.set(new Set());
+    this.unchangedStudentRowsIndex.set(new Set());
+    this.enrollErrorMessage.set('');
+    this.showEnrollResults = false;
+  }
+
+  private mapStudentsToRows(students: Student[] | undefined): string[][] {
+    if (!students) {
+      return [];
+    }
+
+    return students.map((student: Student) => ([
+      student.sectionName,
+      student.teamName,
+      student.name,
+      student.email,
+      student.comments || '',
+    ]));
+  }
+
+  private validateEnrollmentData(studentEnrollRequests: [number, StudentEnrollRequest][]): boolean {
+    if (!this.checkStudentsNotEmpty(studentEnrollRequests)) {
+      this.enrollErrorMessage.set('No students to enroll.');
+      return false;
+    }
+
+    const invalidCompulsoryFieldsRows = this.checkCompulsoryFields(studentEnrollRequests);
+    const invalidEmailRows = this.checkValidEmails(studentEnrollRequests);
+    const invalidTeamRows = this.checkTeamsValid(studentEnrollRequests);
+
+    // TODO: clean this up
+    if (invalidCompulsoryFieldsRows.size > 0) {
+      this.enrollErrorMessage.set(this.enrollErrorMessage() + 'Found empty compulsory fields and/or sections with more than 100 students. ');
+      this.invalidRowsIndex.set(new Set([...this.invalidRowsIndex(), ...invalidCompulsoryFieldsRows]));
+    }
+
+    if (invalidEmailRows.size > 0) {
+      this.enrollErrorMessage.set(this.enrollErrorMessage() + 'Found duplicated emails. ');
+      this.invalidRowsIndex.set(new Set([...this.invalidRowsIndex(), ...invalidEmailRows]));
+    }
+
+    if (invalidTeamRows.size > 0) {
+      this.enrollErrorMessage.set(this.enrollErrorMessage() + 'Found duplicated teams in different sections. ');
+      this.invalidRowsIndex.set(new Set([...this.invalidRowsIndex(), ...invalidTeamRows]));
+    }
+
+    return invalidCompulsoryFieldsRows.size === 0 && invalidEmailRows.size === 0 && invalidTeamRows.size === 0;
   }
 
   /**
-   * Submits enroll data
+   * Checks that the number of students to enroll is non-zero.
    */
-  submitEnrollData(): void {
-    this.isEnrolling = true;
-    this.enrollErrorMessage = '';
-    this.allStudentChunks = [];
-    this.invalidRowsIndex = new Set();
-    this.newStudentRowsIndex = new Set();
-    this.modifiedStudentRowsIndex = new Set();
-    this.unchangedStudentRowsIndex = new Set();
-
-    const lastColIndex: number = 4;
-    const newStudentsHOTInstance: Handsontable =
-        this.hotRegisterer.getInstance(this.newStudentsHOT);
-    const hotInstanceColHeaders: string[] = (newStudentsHOTInstance.getColHeader() as string[]);
-
-    // Reset error highlighting on a new submission
-    this.resetTableStyle(newStudentsHOTInstance, 0,
-        newStudentsHOTInstance.getData().length - 1,
-        0,
-        hotInstanceColHeaders.indexOf(this.colHeaders[lastColIndex]));
-
-    // Remove error highlight on click
-    newStudentsHOTInstance.addHook('afterSelectionEnd', (row: number, column: number,
-                                                         row2: number, column2: number) => {
-      this.resetTableStyle(newStudentsHOTInstance, row, row2, column, column2);
-    });
-
-    // Record the row with its index on the table
-    const studentEnrollRequests: Map<number, StudentEnrollRequest> = new Map();
-
-    // Parse the user input to be requests.
-    // Handsontable contains null value initially,
-    // see https://github.com/handsontable/handsontable/issues/3927
-    newStudentsHOTInstance.getData()
-        .forEach((row: string[], index: number) => {
-          if (!row.every((cell: string) => cell === null || cell === '')) {
-            studentEnrollRequests.set(index, {
-              section: row[hotInstanceColHeaders.indexOf(this.colHeaders[0])] === null
-                  ? '' : row[hotInstanceColHeaders.indexOf(this.colHeaders[0])].trim(),
-              team: row[hotInstanceColHeaders.indexOf(this.colHeaders[1])] === null
-                  ? '' : row[hotInstanceColHeaders.indexOf(this.colHeaders[1])].trim(),
-              name: row[hotInstanceColHeaders.indexOf(this.colHeaders[2])] === null
-                  ? '' : row[hotInstanceColHeaders.indexOf(this.colHeaders[2])].trim(),
-              email: row[hotInstanceColHeaders.indexOf(this.colHeaders[3])] === null
-                  ? '' : row[hotInstanceColHeaders.indexOf(this.colHeaders[3])].trim(),
-              comments: row[hotInstanceColHeaders.indexOf(this.colHeaders[4])] === null
-                  ? '' : row[hotInstanceColHeaders.indexOf(this.colHeaders[4])].trim(),
-            });
-          }
-        });
-
-    if (studentEnrollRequests.size === 0) {
-      this.enrollErrorMessage = 'Empty table';
-      this.isEnrolling = false;
-      return;
-    }
-
-    this.checkCompulsoryFields(studentEnrollRequests);
-    this.checkEmailNotRepeated(studentEnrollRequests);
-    this.checkTeamsValid(studentEnrollRequests);
-
-    if (this.invalidRowsIndex.size > 0) {
-      this.setTableStyleBasedOnFieldChecks(newStudentsHOTInstance, hotInstanceColHeaders);
-      this.isEnrolling = false;
-      return;
-    }
-
-    this.partitionStudentEnrollRequests(Array.from(studentEnrollRequests.values()));
-    const enrolledStudents: Student[] = [];
-
-    // Use concat because we cannot afford to parallelize with forkJoin when there's data dependency
-    const enrollRequests: Observable<EnrollStudents> = concat(
-        ...this.allStudentChunks.map((studentChunk: StudentEnrollRequest[]) => {
-          const request: StudentsEnrollRequest = {
-            studentEnrollRequests: studentChunk,
-          };
-          return this.studentService.enrollStudents(
-              this.courseId, request,
-          );
-        }),
-    );
-
-    this.progressBarService.updateProgress(0);
-    enrollRequests.pipe(finalize(() => {
-      this.isEnrolling = false;
-    })).subscribe({
-      next: (resp: EnrollStudents) => {
-        enrolledStudents.push(...resp.studentsData.students);
-
-        if (resp.unsuccessfulEnrolls != null) {
-          for (const unsuccessfulEnroll of resp.unsuccessfulEnrolls) {
-            this.unsuccessfulEnrolls[unsuccessfulEnroll.studentEmail] = unsuccessfulEnroll.errorMessage;
-
-            for (const index of studentEnrollRequests.keys()) {
-              if (studentEnrollRequests.get(index)?.email === unsuccessfulEnroll.studentEmail) {
-                this.invalidRowsIndex.add(index);
-                break;
-              }
-            }
-          }
-        }
-        const percentage: number = Math.round(100 * enrolledStudents.length / studentEnrollRequests.size);
-        this.progressBarService.updateProgress(percentage);
-      },
-      complete: () => {
-        this.showEnrollResults = true;
-        this.statusMessage.pop(); // removes any existing error status message
-        this.statusMessageService.showSuccessToast('Enrollment successful. Summary given below.');
-        this.prepareEnrollmentResults(enrolledStudents, studentEnrollRequests);
-
-        if (this.invalidRowsIndex.size > 0
-          || this.newStudentRowsIndex.size > 0
-          || this.modifiedStudentRowsIndex.size > 0
-          || this.unchangedStudentRowsIndex.size > 0) {
-          this.setTableStyleBasedOnFieldChecks(newStudentsHOTInstance, hotInstanceColHeaders);
-        }
-      },
-      error: (resp: ErrorMessageOutput) => {
-        if (enrolledStudents.length > 0) {
-          this.showEnrollResults = true;
-          this.prepareEnrollmentResults(enrolledStudents, studentEnrollRequests);
-        }
-
-        // Set error message after populating result panels to avoid it being overridden
-        this.enrollErrorMessage = resp.error.message;
-      },
-    });
+  private checkStudentsNotEmpty(studentEnrollRequests: [number, StudentEnrollRequest][]): boolean {
+    return studentEnrollRequests.length > 0;
   }
 
-  private prepareEnrollmentResults(enrolledStudents: Student[],
-                                   studentEnrollRequests: Map<number, StudentEnrollRequest>): void {
-    this.enrollResultPanelList = this.populateEnrollResultPanelList(this.existingStudents,
-        enrolledStudents, studentEnrollRequests);
-
-    this.studentService.getStudentsFromCourse({ courseId: this.courseId }).subscribe((resp: Students) => {
-      this.existingStudents = resp.students;
-      if (!this.isExistingStudentsPanelCollapsed) {
-        const existingStudentTable: Handsontable = this.hotRegisterer.getInstance(this.existingStudentsHOT);
-        this.loadExistingStudentsData(existingStudentTable, this.existingStudents);
-      }
-      this.isExistingStudentsPresent = true;
-    });
-  }
-
-  private partitionStudentEnrollRequests(studentEnrollRequests: StudentEnrollRequest[]): void {
-    let currentStudentChunk: StudentEnrollRequest[] = [];
-    for (const request of studentEnrollRequests) {
-      currentStudentChunk.push(request);
-      if (currentStudentChunk.length >= this.numberOfStudentsPerRequest) {
-        this.allStudentChunks.push(currentStudentChunk);
-        currentStudentChunk = [];
-      }
-    }
-    if (currentStudentChunk.length > 0) {
-      this.allStudentChunks.push(currentStudentChunk);
-    }
-  }
-
-  private checkTeamsValid(studentEnrollRequests: Map<number, StudentEnrollRequest>): void {
+  /**
+   * Checks that teams are valid.
+   * 
+   * Teams are valid if no two students belonging to the same team are in different sections.
+   */
+  private checkTeamsValid(studentEnrollRequests: [number, StudentEnrollRequest][]): Set<number> {
+    const invalidTeams = new Set<string>();
     const teamSectionMap: Map<string, string> = new Map();
-    const teamIndexMap: Map<string, number> = new Map();
-    const invalidRowsOriginalSize: number = this.invalidRowsIndex.size;
 
-    Array.from(studentEnrollRequests.keys()).forEach((key: number) => {
-      const request: StudentEnrollRequest | undefined = studentEnrollRequests.get(key);
-      if (request === undefined) {
-        return;
+    for (const [_, request] of studentEnrollRequests) {
+      if (request.team in invalidTeams) {
+        continue;
       }
 
-      if (!teamSectionMap.has(request.team)) {
-        teamSectionMap.set(request.team, request.section);
-        teamIndexMap.set(request.team, key);
-        return;
+      if (teamSectionMap.has(request.team) && teamSectionMap.get(request.team) !== request.section) {
+        invalidTeams.add(request.team);
+        continue;
       }
 
-      if (teamSectionMap.get(request.team) !== request.section) {
-        this.invalidRowsIndex.add(key);
-        const firstIndex: number | undefined = teamIndexMap.get(request.team);
-        if (firstIndex !== undefined) {
-          this.invalidRowsIndex.add(firstIndex);
-        }
-      }
-    });
-    if (this.invalidRowsIndex.size > invalidRowsOriginalSize) {
-      this.enrollErrorMessage += 'Found duplicated teams in different sections. ';
+      teamSectionMap.set(request.team, request.section);
     }
-  }
 
-  private checkCompulsoryFields(studentEnrollRequests: Map<number, StudentEnrollRequest>): void {
-    const invalidRowsOriginalSize: number = this.invalidRowsIndex.size;
-
-    Array.from(studentEnrollRequests.keys()).forEach((key: number) => {
-      const request: StudentEnrollRequest | undefined = studentEnrollRequests.get(key);
-      if (request === undefined) {
-        return;
-      }
-
-      if ((studentEnrollRequests.size >= 100 && request.section === '')
-          || request.team === '' || request.name === '' || request.email === '') {
-        this.invalidRowsIndex.add(key);
-      }
-    });
-    if (this.invalidRowsIndex.size > invalidRowsOriginalSize) {
-      this.enrollErrorMessage += 'Found empty compulsory fields and/or sections with more than 100 students. ';
-    }
-  }
-
-  private checkEmailNotRepeated(studentEnrollRequests: Map<number, StudentEnrollRequest>): void {
-    const emailMap: Map<string, number> = new Map();
-    const invalidRowsOriginalSize: number = this.invalidRowsIndex.size;
-
-    Array.from(studentEnrollRequests.keys()).forEach((key: number) => {
-      const request: StudentEnrollRequest | undefined = studentEnrollRequests.get(key);
-      if (request === undefined) {
-        return;
-      }
-
-      if (!emailMap.has(request.email)) {
-        emailMap.set(request.email, key);
-        return;
-      }
-
-      this.invalidRowsIndex.add(key);
-      const firstIndex: number | undefined = emailMap.get(request.email);
-      if (firstIndex !== undefined) {
-        this.invalidRowsIndex.add(firstIndex);
-      }
-    });
-    if (this.invalidRowsIndex.size > invalidRowsOriginalSize) {
-      this.enrollErrorMessage += 'Found duplicated emails. ';
-    }
-  }
-
-  private resetTableStyle(newStudentsHOTInstance: Handsontable,
-                                 startRow: number, endRow: number, startCol: number, endCol: number): void {
-    for (let row: number = startRow; row <= endRow; row += 1) {
-      for (let col: number = startCol; col <= endCol; col += 1) {
-        newStudentsHOTInstance.setCellMeta(row, col, 'className', 'valid-row');
+    const invalidRows = new Set<number>();
+    for (const [idx, request] of studentEnrollRequests) {
+      if (invalidTeams.has(request.team)) {
+        invalidRows.add(idx);
       }
     }
-    newStudentsHOTInstance.render();
+
+    return invalidRows;
   }
 
-  private setTableStyleBasedOnFieldChecks(newStudentsHOTInstance: Handsontable,
-                                          hotInstanceColHeaders: string[]): void {
-    this.setRowStyle(this.invalidRowsIndex, 'invalid-row', newStudentsHOTInstance, hotInstanceColHeaders);
-    this.setRowStyle(this.newStudentRowsIndex, 'new-row', newStudentsHOTInstance, hotInstanceColHeaders);
-    this.setRowStyle(this.modifiedStudentRowsIndex, 'modified-row', newStudentsHOTInstance, hotInstanceColHeaders);
-    this.setRowStyle(this.unchangedStudentRowsIndex, 'unchanged-row', newStudentsHOTInstance, hotInstanceColHeaders);
+  /**
+   * Checks that compulsory fields are filled.
+   * 
+   * Compulsory fields are: Team, Name, Email.
+   * Section is also compulsory if there are more than 100 students.
+   */
+  private checkCompulsoryFields(studentEnrollRequests: [number, StudentEnrollRequest][]): Set<number> {
+    const invalidRows = new Set<number>();
+    const existingStudentsSize = this.existingStudents()?.length ?? 0;
+    const totalSizeAfterEnrollment = studentEnrollRequests.length + existingStudentsSize;
 
-    newStudentsHOTInstance.render();
-  }
-
-  private setRowStyle(rowsIndex: Set<number>, style: string, newStudentsHOTInstance: Handsontable,
-    hotInstanceColHeaders: string[]): void {
-    for (const index of rowsIndex) {
-      for (const header of this.colHeaders) {
-        newStudentsHOTInstance.setCellMeta(index, hotInstanceColHeaders.indexOf(header), 'className', style);
+    for (const [idx, request] of studentEnrollRequests) {
+      if ((totalSizeAfterEnrollment > 100 && !request.section)
+        || !request.team || !request.name || !request.email) {
+        invalidRows.add(idx);
       }
     }
+
+    return invalidRows;
   }
 
-  private populateEnrollResultPanelList(existingStudents: Student[], enrolledStudents: Student[],
-                                        enrollRequests: Map<number, StudentEnrollRequest>): EnrollResultPanel[] {
+  /**
+   * Checks that emails are valid.
+   * 
+   * Emails are valid if no two students have the same email.
+   */
+  private checkValidEmails(studentEnrollRequests: [number, StudentEnrollRequest][]): Set<number> {
+    const emails: Set<string> = new Set();
+    const invalidEmails: Set<string> = new Set();
 
+    for (const [_, request] of studentEnrollRequests) {
+      if (emails.has(request.email)) {
+        invalidEmails.add(request.email);
+      } else {
+        emails.add(request.email);
+      }
+    }
+
+    const invalidRows = new Set<number>();
+
+    for (const [idx, request] of studentEnrollRequests) {
+      if (invalidEmails.has(request.email)) {
+        invalidRows.add(idx);
+      }
+    }
+
+    return invalidRows;
+  }
+
+  private processEnrollmentResults(successfulyEnrolls: Student[], enrollRequests: [number, StudentEnrollRequest][], existingStudents: Student[]): { panels: EnrollResultPanel[], rowIdxToClass: Record<number, string> } {
     const panels: EnrollResultPanel[] = [];
-    const studentLists: Student[][] = [];
-    const statuses: (string | EnrollStatus)[] = Object.values(EnrollStatus)
-        .filter((value: string | EnrollStatus) => typeof value === 'string');
-
-    for (let i = 0; i < statuses.length; i += 1) {
-      studentLists.push([]);
-    }
-
-    const emailToIndexMap: Map<string, number> = new Map();
-    enrollRequests.forEach((enrollRequest: StudentEnrollRequest, index: number) => {
-      emailToIndexMap.set(enrollRequest.email, index);
-    });
+    const emailToIndexMap = new Map<string, number>(
+      enrollRequests.map(([index, enrollRequest]) => [enrollRequest.email, index])
+    );
+    const studentLists: Record<EnrollStatus, Student[]> = {
+      [EnrollStatus.UNMODIFIED]: [],
+      [EnrollStatus.MODIFIED_UNCHANGED]: [],
+      [EnrollStatus.MODIFIED]: [],
+      [EnrollStatus.NEW]: [],
+      [EnrollStatus.ERROR]: [],
+    };
+    const rowIdxToClass: Record<number, string> = {};
 
     // Identify students not in the enroll list.
     for (const existingStudent of existingStudents) {
-      const enrolledStudent: Student | undefined = enrolledStudents.find((student: Student) => {
-        return student.email === existingStudent.email;
-      });
-      if (enrolledStudent === undefined) {
+      if (!emailToIndexMap.has(existingStudent.email)) {
         studentLists[EnrollStatus.UNMODIFIED].push(existingStudent);
       }
     }
 
     // Identify new students, modified students, and students that are modified without any changes.
-    for (const enrolledStudent of enrolledStudents) {
+    for (const enrolledStudent of successfulyEnrolls) {
       const unchangedStudent: Student | undefined = existingStudents.find((student: Student) => {
         return this.isSameEnrollInformation(student, enrolledStudent);
       });
@@ -435,33 +398,36 @@ export class InstructorCourseEnrollPageComponent implements OnInit {
 
       if (unchangedStudent !== undefined) {
         studentLists[EnrollStatus.MODIFIED_UNCHANGED].push(enrolledStudent);
-        this.addToRowsIndexSet(enrolledStudent.email, emailToIndexMap, this.unchangedStudentRowsIndex);
+        this.unchangedStudentRowsIndex().add(emailToIndexMap.get(enrolledStudent.email)!);
+        rowIdxToClass[emailToIndexMap.get(enrolledStudent.email)!] = 'unchanged-row';
       } else if (unchangedStudent === undefined && modifiedStudent !== undefined) {
         studentLists[EnrollStatus.MODIFIED].push(enrolledStudent);
-        this.addToRowsIndexSet(enrolledStudent.email, emailToIndexMap, this.modifiedStudentRowsIndex);
+        this.modifiedStudentRowsIndex().add(emailToIndexMap.get(enrolledStudent.email)!);
+        rowIdxToClass[emailToIndexMap.get(enrolledStudent.email)!] = 'modified-row';
       } else if (unchangedStudent === undefined && modifiedStudent === undefined) {
         studentLists[EnrollStatus.NEW].push(enrolledStudent);
-        this.addToRowsIndexSet(enrolledStudent.email, emailToIndexMap, this.newStudentRowsIndex);
+        this.newStudentRowsIndex().add(emailToIndexMap.get(enrolledStudent.email)!);
+        rowIdxToClass[emailToIndexMap.get(enrolledStudent.email)!] = 'new-row';
       }
     }
 
     // Identify students that failed to enroll.
-    for (const request of enrollRequests.values()) {
-      const enrolledStudent: Student | undefined = enrolledStudents.find((student: Student) => {
+    for (const [_, request] of enrollRequests) {
+      const enrolledStudent: Student | undefined = successfulyEnrolls.find((student: Student) => {
         return student.email === request.email;
       });
 
       if (enrolledStudent === undefined) {
         studentLists[EnrollStatus.ERROR].push({
           email: request.email,
-          courseId: this.courseId,
+          courseId: this.courseId(),
           name: request.name,
           sectionName: request.section,
           teamName: request.team,
           comments: request.comments,
           joinState: JoinState.NOT_JOINED,
         });
-
+        rowIdxToClass[emailToIndexMap.get(request.email)!] = 'invalid-row';
       }
     }
 
@@ -473,196 +439,62 @@ export class InstructorCourseEnrollPageComponent implements OnInit {
       4: `${studentLists[EnrollStatus.UNMODIFIED].length} student(s) remain unmodified:`,
     };
 
-    for (const status of statuses) {
+    for (const status of [
+      EnrollStatus.ERROR,
+      EnrollStatus.NEW,
+      EnrollStatus.MODIFIED,
+      EnrollStatus.MODIFIED_UNCHANGED,
+      EnrollStatus.UNMODIFIED,
+    ]) {
       panels.push({
-        status: EnrollStatus[status as keyof typeof EnrollStatus],
-        messageForEnrollmentStatus: statusMessage[EnrollStatus[status as keyof typeof EnrollStatus]],
-        studentList: studentLists[EnrollStatus[status as keyof typeof EnrollStatus]],
+        status,
+        messageForEnrollmentStatus: statusMessage[status],
+        studentList: studentLists[status],
       });
     }
 
     if (studentLists[EnrollStatus.ERROR].length > 0) {
-      this.enrollErrorMessage = this.GENERAL_ERROR_MESSAGE;
-      this.statusMessageService.showErrorToast('Some students failed to be enrolled, see the summary below.');
+      this.enrollErrorMessage.set(this.GENERAL_ERROR_MESSAGE);
+      this.showErrorToast('Some students failed to be enrolled, see the summary below.');
     }
-    return panels;
-  }
 
-  private addToRowsIndexSet(email: string, emailToIndexMap: Map<string, number>, rowsIndex: Set<number>): void {
-    const index: number | undefined = emailToIndexMap.get(email);
-    if (index !== undefined) {
-      rowsIndex.add(index);
-    }
+    return {
+      panels,
+      rowIdxToClass
+    };
   }
 
   private isSameEnrollInformation(enrolledStudent: Student, existingStudent: Student): boolean {
     return enrolledStudent.email === existingStudent.email
-        && enrolledStudent.name === existingStudent.name
-        && enrolledStudent.teamName === existingStudent.teamName
-        && enrolledStudent.sectionName === existingStudent.sectionName
-        && enrolledStudent.comments === existingStudent.comments;
+      && enrolledStudent.name === existingStudent.name
+      && enrolledStudent.teamName === existingStudent.teamName
+      && enrolledStudent.sectionName === existingStudent.sectionName
+      && enrolledStudent.comments === existingStudent.comments;
   }
 
-  /**
-   * Adds new rows to the 'New students' spreadsheet interface
-   * according to user input
-   */
-  addRows(numOfRows: number): void {
-    this.hotRegisterer.getInstance(this.newStudentsHOT).alter(
-        'insert_row_below', [], numOfRows);
-  }
-
-  /**
-   * Toggles the view of 'New Students' spreadsheet interface
-   * and/or its affiliated buttons
-   */
   toggleNewStudentsPanel(): void {
-    this.isNewStudentsPanelCollapsed = !this.isNewStudentsPanelCollapsed;
+    this.isNewStudentsPanelOpen.update(value => !value);
   }
 
-  /**
-   * Returns the length of the current spreadsheet.
-   * Rows with all null values are filtered.
-   */
-  getSpreadsheetLength(dataHandsontable: string[][]): number {
-    return dataHandsontable
-        .filter((row: string[]) => (!row.every((cell: string) => cell === null)))
-        .length;
-  }
-
-  /**
-   * Transforms the first uppercase letter of a string into a lowercase letter.
-   */
-  unCapitalizeFirstLetter(targetString: string): string {
-    return targetString.charAt(0).toLowerCase() + targetString.slice(1);
-  }
-
-  /**
-   * Converts returned student list to a suitable format required by Handsontable.
-   */
-  studentListDataToHandsontableData(studentsData: Student[], handsontableColHeader: any[]): string[][] {
-    const headers: string[] = handsontableColHeader.map(this.unCapitalizeFirstLetter);
-    return studentsData.map((student: Student) => (headers.map(
-        (header: string) => {
-          if (header === 'team') {
-            return (student as any).teamName;
-          }
-          if (header === 'section') {
-            return (student as any).sectionName;
-          }
-          return (student as any)[header];
-        },
-    )));
-  }
-
-  /**
-   * Loads existing student data into the spreadsheet interface.
-   */
-  loadExistingStudentsData(existingStudentsHOTInstance: Handsontable, studentsData: Student[]): void {
-    existingStudentsHOTInstance.loadData(this.studentListDataToHandsontableData(
-        studentsData, (existingStudentsHOTInstance.getColHeader() as any[])));
-  }
-
-  /**
-   * Toggles the view of 'Existing Students' spreadsheet interface
-   */
   toggleExistingStudentsPanel(): void {
-    // Has to be done before the API call is made so that HOT is available for data population
-    this.isExistingStudentsPanelCollapsed = !this.isExistingStudentsPanelCollapsed;
-    this.isLoadingExistingStudents = true;
-    const existingStudentsHOTInstance: Handsontable =
-        this.hotRegisterer.getInstance(this.existingStudentsHOT);
-
-    // Calling REST API only the first time when spreadsheet has no data
-    if (this.getSpreadsheetLength(existingStudentsHOTInstance.getData()) !== 0) {
-      this.isLoadingExistingStudents = false;
-      return;
-    }
-
-    this.studentService.getStudentsFromCourse({ courseId: this.courseId }).subscribe({
-      next: (resp: Students) => {
-        if (resp.students.length) {
-          this.loadExistingStudentsData(existingStudentsHOTInstance, resp.students);
-        } else {
-          // Shows a message if there are no existing students. Panel would not be expanded.
-          this.isExistingStudentsPresent = false;
-          this.isExistingStudentsPanelCollapsed = !this.isExistingStudentsPanelCollapsed; // Collapse the panel again
-        }
-      },
-      error: (resp: ErrorMessageOutput) => {
-        this.statusMessageService.showErrorToast(resp.error.message);
-        this.isAjaxSuccess = false;
-        this.isExistingStudentsPanelCollapsed = !this.isExistingStudentsPanelCollapsed; // Collapse the panel again
-      },
-      complete: () => {
-        this.isLoadingExistingStudents = false;
-      },
-    });
+    this.isExistingStudentsPanelOpen.update(value => !value);
   }
 
-  /**
-   * Trigger click button
-   */
-  pasteClick(): void {
-    const element: HTMLElement =
-        (document.getElementById('paste') as HTMLElement);
-    element.click();
+  private showSuccessToast(): void {
+    this.statusMessageService.showSuccessToast('Enrollment successful. Summary given below.');
   }
 
-  /**
-   * Shows modal box when user clicks on the 'paste' option in the
-   * Handsontable context menu
-   */
-  showPasteModalBox(): void {
-    const modalContent: string =
-      `Pasting data through the context menu is not supported due to browser restrictions.<br>
-      Please use <kbd>Ctrl + V</kbd> or <kbd>⌘ + V</kbd> to paste your data instead.`;
-    this.simpleModalService.openInformationModal('Pasting data through the context menu',
-        SimpleModalType.WARNING, modalContent);
+  private showErrorToast(message: string): void {
+    this.statusMessageService.showErrorToast(message);
   }
 
-  /**
-   * Checks whether the course is present
-   */
-  getCourseEnrollPageData(courseid: string): void {
-    this.existingStudents = [];
-    this.hasLoadingStudentsFailed = false;
-    this.isLoadingCourseEnrollPage = true;
-    this.courseService.hasResponsesForCourse(courseid).subscribe({
-      next: (resp: HasResponses) => {
-        this.coursePresent = true;
-        this.courseId = courseid;
-        if (resp.hasResponsesBySession === undefined) {
-          return;
-        }
-        for (const sessionName of Object.keys(resp.hasResponsesBySession)) {
-          if (resp.hasResponsesBySession[sessionName]) {
-            const modalContent: string = `<p><strong>There are existing feedback responses for this course.</strong></p>
+  private openHasExistingResponsesModal() {
+    const modalContent = `<p><strong>There are existing feedback responses for this course.</strong></p>
           Modifying records of enrolled students will result in some existing responses
           from those modified students to be deleted. You may wish to download the data
           before you make the changes.`;
-            this.simpleModalService.openInformationModal(
-                'Existing feedback responses', SimpleModalType.WARNING, modalContent);
-          }
-        }
-      },
-      error: (resp: ErrorMessageOutput) => {
-        this.coursePresent = false;
-        this.statusMessageService.showErrorToast(resp.error.message);
-      },
-      complete: () => {
-        this.isLoadingCourseEnrollPage = false;
-      },
-    });
-    this.studentService.getStudentsFromCourse({ courseId: courseid }).subscribe({
-      next: (resp: Students) => {
-        this.existingStudents = resp.students;
-      },
-      error: (resp: ErrorMessageOutput) => {
-        this.hasLoadingStudentsFailed = true;
-        this.statusMessageService.showErrorToast(resp.error.message);
-      },
-    });
+    this.simpleModalService.openInformationModal(
+      'Existing feedback responses', SimpleModalType.WARNING, modalContent);
   }
 
   /**

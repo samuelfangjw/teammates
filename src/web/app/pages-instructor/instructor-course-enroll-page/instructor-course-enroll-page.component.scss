@@ -93,3 +93,27 @@ table td {
   height: 20px;
   margin: 5px;
 }
+
+.handsontable .invalid-row,
+.red-box {
+  background: #f19491;
+}
+
+.handsontable .new-row,
+.green-box {
+  background: #aeeba6;
+}
+
+.handsontable .modified-row,
+.yellow-box {
+  background: #fcf4b3;
+}
+
+.handsontable .unchanged-row,
+.grey-box {
+  background: #ddd !important;
+}
+
+.handsontable .valid-row {
+  background: white;
+}

@@ -1,0 +1,23 @@
+.handsontable .invalid-row,
+.invalid-row {
+  background: #f19491 !important;
+}
+
+.handsontable .new-row,
+.new-row {
+  background: #aeeba6 !important;
+}
+
+.handsontable .modified-row,
+.modified-row {
+  background: #fcf4b3 !important;
+}
+
+.handsontable .unchanged-row,
+.unchanged-row {
+  background: #ddd !important;
+}
+
+.handsontable .valid-row {
+  background: white !important;
+}
