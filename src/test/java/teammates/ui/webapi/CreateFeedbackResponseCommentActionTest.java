@@ -1,6 +1,6 @@
 package teammates.ui.webapi;
 
-import static org.mockito.Mockito.any;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 import static teammates.common.util.Const.InstructorPermissionRoleNames.INSTRUCTOR_PERMISSION_ROLE_OBSERVER;
@@ -830,9 +830,8 @@ public class CreateFeedbackResponseCommentActionTest extends BaseActionTest<Crea
     }
 
     private FeedbackSession getFeedbackSessionPastEndTime() {
-        return new FeedbackSession(
+        FeedbackSession feedbackSession = new FeedbackSession(
                 typicalFeedbackSession.getName(),
-                typicalFeedbackSession.getCourse(),
                 typicalFeedbackSession.getCreatorEmail(),
                 typicalFeedbackSession.getInstructions(),
                 Instant.now().minus(Duration.ofHours(2)),
@@ -842,6 +841,8 @@ public class CreateFeedbackResponseCommentActionTest extends BaseActionTest<Crea
                 Duration.ofMinutes(15),
                 false,
                 false);
+        typicalFeedbackSession.getCourse().addFeedbackSession(feedbackSession);
+        return feedbackSession;
     }
 
 }

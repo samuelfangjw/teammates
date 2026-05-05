@@ -98,8 +98,10 @@ public class DataBundleLogicIT extends BaseTestCaseWithDatabaseAccess {
         ______TS("verify read notifications deserialized correctly");
 
         ReadNotification actualReadNotification = dataBundle.readNotifications.get("notification1Instructor1");
-        ReadNotification expectedReadNotification = new ReadNotification(expectedInstructorAccount,
-                expectedNotification);
+        ReadNotification expectedReadNotification = new ReadNotification();
+        expectedInstructorAccount.addReadNotification(expectedReadNotification);
+        expectedNotification.addReadNotification(expectedReadNotification);
+
         expectedNotification.setId(actualNotification.getId());
         verifyEquals(expectedReadNotification, actualReadNotification);
 
@@ -167,7 +169,7 @@ public class DataBundleLogicIT extends BaseTestCaseWithDatabaseAccess {
         ______TS("verify feedback sessions");
 
         FeedbackSession actualSession1 = dataBundle.feedbackSessions.get("session1InTypicalCourse");
-        FeedbackSession expectedSession1 = new FeedbackSession("First feedback session", expectedTypicalCourse,
+        FeedbackSession expectedSession1 = new FeedbackSession("First feedback session",
                 "instr1@teammates.tmt", "Please please fill in the following questions.",
                 Instant.parse("2012-04-01T22:00:00Z"), Instant.parse("2027-04-30T22:00:00Z"),
                 Instant.parse("2012-03-28T22:00:00Z"), Instant.parse("2027-05-01T22:00:00Z"), Duration.ofMinutes(10),
@@ -175,6 +177,7 @@ public class DataBundleLogicIT extends BaseTestCaseWithDatabaseAccess {
         expectedSession1.setId(actualSession1.getId());
         expectedSession1.setOpenedEmailSent(actualSession1.isOpenedEmailSent());
         expectedSession1.setOpeningSoonEmailSent(actualSession1.isOpeningSoonEmailSent());
+        expectedTypicalCourse.addFeedbackSession(expectedSession1);
         verifyEquals(expectedSession1, actualSession1);
 
         ______TS("verify feedback questions deserialized correctly");

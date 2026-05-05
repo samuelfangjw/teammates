@@ -106,12 +106,11 @@ public class FeedbackSession extends BaseEntity {
         // required by Hibernate
     }
 
-    public FeedbackSession(String name, Course course, String creatorEmail, String instructions, Instant startTime,
+    public FeedbackSession(String name, String creatorEmail, String instructions, Instant startTime,
             Instant endTime, Instant sessionVisibleFromTime, Instant resultsVisibleFromTime, Duration gracePeriod,
             boolean isClosingSoonEmailEnabled, boolean isPublishedEmailEnabled) {
         this.setId(UUID.randomUUID());
         this.setName(name);
-        this.setCourse(course);
         this.setCreatorEmail(creatorEmail);
         this.setInstructions(StringUtils.defaultString(instructions));
         this.setStartTime(startTime);
@@ -389,22 +388,21 @@ public class FeedbackSession extends BaseEntity {
     }
 
     @Override
-    public int hashCode() {
-        return this.getId().hashCode();
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+
+        if (!(o instanceof FeedbackSession other)) {
+            return false;
+        }
+
+        return getId() != null && getId().equals(other.getId());
     }
 
     @Override
-    public boolean equals(Object other) {
-        if (other == null) {
-            return false;
-        } else if (this == other) {
-            return true;
-        } else if (this.getClass() == other.getClass()) {
-            FeedbackSession otherFs = (FeedbackSession) other;
-            return Objects.equals(this.getId(), otherFs.getId());
-        } else {
-            return false;
-        }
+    public int hashCode() {
+        return getClass().hashCode();
     }
 
     /**
