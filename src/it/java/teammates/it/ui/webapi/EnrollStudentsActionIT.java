@@ -19,6 +19,7 @@ import teammates.storage.entity.Section;
 import teammates.storage.entity.Student;
 import teammates.storage.entity.Team;
 import teammates.ui.output.EnrollStudentsData;
+import teammates.ui.request.StudentEnrollRequest;
 import teammates.ui.request.StudentsEnrollRequest;
 import teammates.ui.webapi.EnrollStudentsAction;
 import teammates.ui.webapi.InvalidOperationException;
@@ -50,9 +51,9 @@ public class EnrollStudentsActionIT extends BaseActionIT<EnrollStudentsAction> {
     }
 
     private StudentsEnrollRequest prepareRequest(List<Student> students) {
-        List<StudentsEnrollRequest.StudentEnrollRequest> studentEnrollRequests = new ArrayList<>();
+        List<StudentEnrollRequest> studentEnrollRequests = new ArrayList<>();
         students.forEach(student -> {
-            studentEnrollRequests.add(new StudentsEnrollRequest.StudentEnrollRequest(student.getName(),
+            studentEnrollRequests.add(new StudentEnrollRequest(student.getName(),
                     student.getEmail(), student.getTeamName(), student.getSectionName(), student.getComments()));
         });
 

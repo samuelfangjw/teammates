@@ -25,6 +25,7 @@ import teammates.storage.entity.Student;
 import teammates.storage.entity.Team;
 import teammates.ui.output.EnrollStudentsData;
 import teammates.ui.output.StudentData;
+import teammates.ui.request.StudentEnrollRequest;
 import teammates.ui.request.StudentsEnrollRequest;
 
 /**
@@ -289,9 +290,9 @@ public class EnrollStudentsActionTest extends BaseActionTest<EnrollStudentsActio
     }
 
     private StudentsEnrollRequest prepareRequest(Student... studentsToEnroll) {
-        List<StudentsEnrollRequest.StudentEnrollRequest> requestList = new ArrayList<>();
+        List<StudentEnrollRequest> requestList = new ArrayList<>();
         Arrays.stream(studentsToEnroll).forEach(student -> requestList.add(
-                new StudentsEnrollRequest.StudentEnrollRequest(student.getName(), student.getEmail(),
+                new StudentEnrollRequest(student.getName(), student.getEmail(),
                 "team", "section", student.getComments())));
         return new StudentsEnrollRequest(requestList);
     }

@@ -21,6 +21,7 @@ import teammates.ui.output.EnrollStudentsData;
 import teammates.ui.output.StudentData;
 import teammates.ui.output.StudentsData;
 import teammates.ui.request.InvalidHttpRequestBodyException;
+import teammates.ui.request.StudentEnrollRequest;
 import teammates.ui.request.StudentsEnrollRequest;
 
 /**
@@ -56,7 +57,7 @@ public class EnrollStudentsAction extends Action {
 
         String courseId = getNonNullRequestParamValue(Const.ParamsNames.COURSE_ID);
         StudentsEnrollRequest enrollRequests = getAndValidateRequestBody(StudentsEnrollRequest.class);
-        List<StudentsEnrollRequest.StudentEnrollRequest> studentEnrollRequests = enrollRequests.getStudentEnrollRequests();
+        List<StudentEnrollRequest> studentEnrollRequests = enrollRequests.getStudentEnrollRequests();
         Course course = logic.getCourse(courseId);
 
         List<Student> studentsToEnroll = new ArrayList<>();
@@ -88,7 +89,7 @@ public class EnrollStudentsAction extends Action {
                 .map(EnrollStudentsAction::normalizeEmail)
                 .collect(Collectors.toSet());
 
-        for (StudentsEnrollRequest.StudentEnrollRequest enrollRequest : studentEnrollRequests) {
+        for (StudentEnrollRequest enrollRequest : studentEnrollRequests) {
             RequestTracer.checkRemainingTime();
 
             String requestEmail = enrollRequest.getEmail();
