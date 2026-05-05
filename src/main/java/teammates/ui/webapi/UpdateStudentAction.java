@@ -90,7 +90,7 @@ public class UpdateStudentAction extends Action {
             studentToUpdate.setEmail(newEmail);
 
             studentToUpdate.setId(existingStudent.getId());
-            team.addUser(studentToUpdate);
+            studentToUpdate.setTeam(team);
             logic.updateStudentCascade(studentToUpdate);
 
             if (!SanitizationHelper.areEmailsEqual(studentEmail, updateRequest.getEmail())

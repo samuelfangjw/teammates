@@ -112,8 +112,8 @@ public class EnrollStudentsAction extends Action {
                     Student newStudent = new Student(
                             course, enrollRequest.getName(),
                             normalizedEmail, enrollRequest.getComments());
-                    team.addUser(newStudent);
                     newStudent.setId(existingStudent.getId());
+                    team.addUser(newStudent);
                     Student updatedStudent = logic.updateStudentCascade(newStudent);
                     enrolledStudents.add(updatedStudent);
                 } catch (InvalidParametersException | EntityDoesNotExistException
