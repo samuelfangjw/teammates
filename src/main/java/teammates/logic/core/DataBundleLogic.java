@@ -125,7 +125,6 @@ public final class DataBundleLogic {
             team.setId(UUID.randomUUID());
             teamsMap.put(placeholderId, team);
             Section section = sectionsMap.get(team.getSectionId());
-            team.setSection(section);
             section.addTeam(team);
         }
 

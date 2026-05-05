@@ -298,7 +298,7 @@ public final class CoursesLogic {
                     + teamName + " already exists in section " + section.getId());
         }
 
-        Team team = new Team(section, teamName);
+        Team team = new Team(teamName);
         section.addTeam(team);
 
         validateTeam(team);

@@ -50,7 +50,8 @@ public class EnrollStudentsActionTest extends BaseActionTest<EnrollStudentsActio
         course = new Course("course-id", "name", Const.DEFAULT_TIME_ZONE, "institute");
         section = new Section("section");
         course.addSection(section);
-        team = new Team(section, course.getId());
+        team = new Team(course.getId());
+        section.addTeam(team);
     }
 
     @Test

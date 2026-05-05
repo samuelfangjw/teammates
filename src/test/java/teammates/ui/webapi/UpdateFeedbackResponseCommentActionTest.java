@@ -426,8 +426,9 @@ public class UpdateFeedbackResponseCommentActionTest extends BaseActionTest<Upda
         Student differentStudentFromDifferentTeam = getTypicalStudent();
         Section section = new Section("Section C");
         typicalCourse.addSection(section);
-        differentStudentFromDifferentTeam.setTeam(new Team(
-                section, "different team"));
+        Team team = new Team("different team");
+        section.addTeam(team);
+        differentStudentFromDifferentTeam.setTeam(team);
 
         String[] params = new String[] {
                 Const.ParamsNames.INTENT, Intent.STUDENT_SUBMISSION.toString(),
@@ -453,8 +454,9 @@ public class UpdateFeedbackResponseCommentActionTest extends BaseActionTest<Upda
         Student differentStudentFromSameTeam = getTypicalStudent();
         Section section = new Section("Section C");
         typicalCourse.addSection(section);
-        differentStudentFromSameTeam.setTeam(new Team(
-                section, "first team"));
+        Team team = new Team("first team");
+        section.addTeam(team);
+        differentStudentFromSameTeam.setTeam(team);
 
         String[] params = new String[] {
                 Const.ParamsNames.INTENT, Intent.STUDENT_SUBMISSION.toString(),

@@ -729,7 +729,8 @@ public final class UsersDb {
         Team team = getTeam(section, teamName);
 
         if (team == null) {
-            team = new Team(section, teamName);
+            team = new Team(teamName);
+            section.addTeam(team);
             HibernateUtil.persist(team);
         }
 

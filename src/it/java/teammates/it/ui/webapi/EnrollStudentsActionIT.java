@@ -92,7 +92,8 @@ public class EnrollStudentsActionIT extends BaseActionIT<EnrollStudentsAction> {
         String expectedMessage = "Team \"%s\" is detected in both Section \"%s\" and Section \"%s\"."
                 + " Please use different team names in different sections.";
         Section newSection = logic.getSection(courseId, "Section 3");
-        Team newTeam = new Team(newSection, "Team 1");
+        Team newTeam = new Team("Team 1");
+        newSection.addTeam(newTeam);
         newStudent = new Student(course, "Test Student", "test@email.com", "Test Comment", newTeam);
         Student secondStudent = new Student(course, "Test Student 2", "test2@email.com", "Test Comment",
                 team);

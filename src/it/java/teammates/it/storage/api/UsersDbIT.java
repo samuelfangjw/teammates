@@ -44,7 +44,7 @@ public class UsersDbIT extends BaseTestCaseWithDatabaseAccess {
         Section section = new Section("test-section");
         coursesDb.createSection(section);
         course.addSection(section);
-        Team team = new Team(section, "test-team");
+        Team team = new Team("test-team");
         coursesDb.createTeam(team);
         section.addTeam(team);
 
@@ -158,7 +158,7 @@ public class UsersDbIT extends BaseTestCaseWithDatabaseAccess {
         Section section = new Section("section-name");
         coursesDb.createSection(section);
         course.addSection(section);
-        Team team = new Team(section, "team-name");
+        Team team = new Team("team-name");
         coursesDb.createTeam(team);
         section.addTeam(team);
 
@@ -200,14 +200,14 @@ public class UsersDbIT extends BaseTestCaseWithDatabaseAccess {
         Section firstSection = new Section("section-name1");
         coursesDb.createSection(firstSection);
         course.addSection(firstSection);
-        Team firstTeam = new Team(firstSection, "team-name1");
+        Team firstTeam = new Team("team-name1");
         coursesDb.createTeam(firstTeam);
         firstSection.addTeam(firstTeam);
 
         Section secondSection = new Section("section-name2");
         coursesDb.createSection(secondSection);
         course.addSection(secondSection);
-        Team secondTeam = new Team(secondSection, "team-name2");
+        Team secondTeam = new Team("team-name2");
         coursesDb.createTeam(secondTeam);
         secondSection.addTeam(secondTeam);
 
@@ -240,14 +240,14 @@ public class UsersDbIT extends BaseTestCaseWithDatabaseAccess {
         Section firstSection = new Section("section-name1");
         coursesDb.createSection(firstSection);
         course.addSection(firstSection);
-        Team firstTeam = new Team(firstSection, "team-name1");
+        Team firstTeam = new Team("team-name1");
         coursesDb.createTeam(firstTeam);
         firstSection.addTeam(firstTeam);
 
         Section secondSection = new Section("section-name2");
         coursesDb.createSection(secondSection);
         course.addSection(secondSection);
-        Team secondTeam = new Team(secondSection, "team-name2");
+        Team secondTeam = new Team("team-name2");
         coursesDb.createTeam(secondTeam);
         secondSection.addTeam(secondTeam);
 
@@ -281,7 +281,7 @@ public class UsersDbIT extends BaseTestCaseWithDatabaseAccess {
         Section section = new Section("section-name");
         coursesDb.createSection(section);
         course2.addSection(section);
-        Team team = new Team(section, "team-name");
+        Team team = new Team("team-name");
         coursesDb.createTeam(team);
         section.addTeam(team);
 

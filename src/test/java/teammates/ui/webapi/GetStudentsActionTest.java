@@ -93,15 +93,18 @@ public class GetStudentsActionTest extends BaseActionTest<GetStudentsAction> {
         // Section one
         Section stubSection = new Section("section-1");
         stubCourse.addSection(stubSection);
-        stubTeamOne = new Team(stubSection, "team-1");
-        Team stubTeamTwo = new Team(stubSection, "team-2");
+        stubTeamOne = new Team("team-1");
+        stubSection.addTeam(stubTeamOne);
+        Team stubTeamTwo = new Team("team-2");
+        stubSection.addTeam(stubTeamTwo);
         stubStudentListSectionOneTeamOne = new ArrayList<>();
         stubStudentListSectionOne = new ArrayList<>();
 
         //Section two
         Section stubSectionTwo = new Section("section-2");
         stubCourse.addSection(stubSectionTwo);
-        Team stubTeamThree = new Team(stubSectionTwo, "team-3");
+        Team stubTeamThree = new Team("team-3");
+        stubSectionTwo.addTeam(stubTeamThree);
         stubStudentListSectionTwo = new ArrayList<>();
 
         stubStudentListAll = new ArrayList<>();

@@ -123,7 +123,8 @@ public class DataBundleLogicIT extends BaseTestCaseWithDatabaseAccess {
         ______TS("verify teams deserialized correctly");
 
         Team actualTeam = dataBundle.teams.get("team1InTypicalCourse");
-        Team expectedTeam = new Team(expectedSection, "Team 1");
+        Team expectedTeam = new Team("Team 1");
+        expectedSection.addTeam(expectedTeam);
         expectedTeam.setId(actualTeam.getId());
         verifyEquals(expectedTeam, actualTeam);
 

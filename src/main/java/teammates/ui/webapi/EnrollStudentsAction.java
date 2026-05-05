@@ -64,7 +64,8 @@ public class EnrollStudentsAction extends Action {
             String normalizedEmail = normalizeEmail(studentEnrollRequest.getEmail());
             Section section = new Section(studentEnrollRequest.getSection());
             course.addSection(section);
-            Team team = new Team(section, studentEnrollRequest.getTeam());
+            Team team = new Team(studentEnrollRequest.getTeam());
+            section.addTeam(team);
             studentsToEnroll.add(new Student(
                     course, studentEnrollRequest.getName(),
                     normalizedEmail, studentEnrollRequest.getComments(), team));

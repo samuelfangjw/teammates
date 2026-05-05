@@ -150,7 +150,7 @@ public class BaseTestCase {
 
     protected Team getTypicalTeam() {
         Section section = getTypicalSection();
-        Team team = new Team(section, "test-team");
+        Team team = new Team("test-team");
         section.addTeam(team);
         return team;
     }

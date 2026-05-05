@@ -37,7 +37,7 @@ public class Team extends BaseEntity {
     private UUID sectionId;
 
     @OneToMany(mappedBy = "team")
-    private List<Student> users;
+    private List<Student> users = new ArrayList<>();
 
     @Column(nullable = false)
     private String name;
@@ -49,11 +49,9 @@ public class Team extends BaseEntity {
         // required by hibernate
     }
 
-    public Team(Section section, String name) {
+    public Team(String name) {
         this.setId(UUID.randomUUID());
-        this.setSection(section);
         this.setName(name);
-        this.setUsers(new ArrayList<>());
     }
 
     /**
