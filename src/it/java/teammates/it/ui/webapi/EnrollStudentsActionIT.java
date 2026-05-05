@@ -3,6 +3,7 @@ package teammates.it.ui.webapi;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -134,7 +135,7 @@ public class EnrollStudentsActionIT extends BaseActionIT<EnrollStudentsAction> {
 
         for (FeedbackResponse response : responsesToUser) {
             assertEquals(logic.getSection(courseId, "Section 3"), response.getRecipientSection());
-            List<FeedbackResponseComment> commentsFromUser = response.getFeedbackResponseComments();
+            Set<FeedbackResponseComment> commentsFromUser = response.getFeedbackResponseComments();
             for (FeedbackResponseComment comment : commentsFromUser) {
                 if (comment.getGiver().equals(giverEmail)) {
                     assertEquals(logic.getSection(courseId, "Section 3"), comment.getGiverSection());

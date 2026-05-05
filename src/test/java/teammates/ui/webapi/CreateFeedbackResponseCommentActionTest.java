@@ -774,7 +774,6 @@ public class CreateFeedbackResponseCommentActionTest extends BaseActionTest<Crea
 
     private FeedbackResponseComment getTypicalCommentForInstructorResult() {
         FeedbackResponseComment feedbackResponseComment = new FeedbackResponseComment(
-                typicalFeedbackResponse,
                 typicalInstructor.getEmail(),
                 FeedbackParticipantType.INSTRUCTORS,
                 typicalFeedbackResponse.getGiverSection(),
@@ -785,6 +784,7 @@ public class CreateFeedbackResponseCommentActionTest extends BaseActionTest<Crea
                 typicalRequestBody.getShowCommentTo(),
                 typicalRequestBody.getShowGiverNameTo(),
                 typicalInstructor.getEmail());
+        typicalFeedbackResponse.addFeedbackResponseComment(feedbackResponseComment);
         feedbackResponseComment.setId(UUID.fromString("00000000-0000-4000-8000-000000000001"));
         feedbackResponseComment.setCreatedAt(Instant.EPOCH);
         feedbackResponseComment.setUpdatedAt(Instant.EPOCH);
@@ -793,7 +793,6 @@ public class CreateFeedbackResponseCommentActionTest extends BaseActionTest<Crea
 
     private FeedbackResponseComment getTypicalCommentForInstructorSubmission() {
         FeedbackResponseComment feedbackResponseComment = new FeedbackResponseComment(
-                typicalFeedbackResponse,
                 typicalInstructor.getEmail(),
                 FeedbackParticipantType.INSTRUCTORS,
                 typicalFeedbackResponse.getGiverSection(),
@@ -804,6 +803,7 @@ public class CreateFeedbackResponseCommentActionTest extends BaseActionTest<Crea
                 typicalRequestBody.getShowCommentTo(),
                 typicalRequestBody.getShowGiverNameTo(),
                 typicalInstructor.getEmail());
+        typicalFeedbackResponse.addFeedbackResponseComment(feedbackResponseComment);
         feedbackResponseComment.setId(UUID.fromString("00000000-0000-4000-8000-000000000002"));
         feedbackResponseComment.setCreatedAt(Instant.EPOCH);
         feedbackResponseComment.setUpdatedAt(Instant.EPOCH);
@@ -812,7 +812,6 @@ public class CreateFeedbackResponseCommentActionTest extends BaseActionTest<Crea
 
     private FeedbackResponseComment getTypicalCommentForStudentSubmission() {
         FeedbackResponseComment feedbackResponseComment = new FeedbackResponseComment(
-                typicalFeedbackResponse,
                 typicalStudent.getEmail(),
                 FeedbackParticipantType.STUDENTS,
                 typicalFeedbackResponse.getGiverSection(),
@@ -823,6 +822,7 @@ public class CreateFeedbackResponseCommentActionTest extends BaseActionTest<Crea
                 typicalRequestBody.getShowCommentTo(),
                 typicalRequestBody.getShowGiverNameTo(),
                 typicalStudent.getEmail());
+        typicalFeedbackResponse.addFeedbackResponseComment(feedbackResponseComment);
         feedbackResponseComment.setId(UUID.fromString("00000000-0000-4000-8000-000000000003"));
         feedbackResponseComment.setCreatedAt(Instant.EPOCH);
         feedbackResponseComment.setUpdatedAt(Instant.EPOCH);

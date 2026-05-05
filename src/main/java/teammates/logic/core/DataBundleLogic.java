@@ -163,7 +163,6 @@ public final class DataBundleLogic {
             FeedbackResponse fr = responseMap.get(responseComment.getResponseId());
             Section giverSection = sectionsMap.get(responseComment.getGiverSectionId());
             Section recipientSection = sectionsMap.get(responseComment.getRecipientSectionId());
-            responseComment.setFeedbackResponse(fr);
             responseComment.setGiverSection(giverSection);
             responseComment.setRecipientSection(recipientSection);
             fr.addFeedbackResponseComment(responseComment);

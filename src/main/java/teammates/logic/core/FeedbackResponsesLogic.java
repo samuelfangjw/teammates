@@ -216,7 +216,7 @@ public final class FeedbackResponsesLogic {
         // TODO: do not pass detached entities around
         HibernateUtil.merge(feedbackResponse);
 
-        List<FeedbackResponseComment> oldResponseComments = oldResponse.getFeedbackResponseComments();
+        Set<FeedbackResponseComment> oldResponseComments = oldResponse.getFeedbackResponseComments();
 
         for (FeedbackResponseComment oldResponseComment : oldResponseComments) {
             oldResponseComment.setGiverSection(feedbackResponse.getGiverSection());

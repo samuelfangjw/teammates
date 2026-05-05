@@ -2,7 +2,9 @@ package teammates.storage.entity;
 
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import jakarta.persistence.CascadeType;
@@ -47,7 +49,7 @@ public abstract class FeedbackResponse extends BaseEntity {
     private UUID questionId;
 
     @OneToMany(mappedBy = "feedbackResponse", cascade = CascadeType.REMOVE)
-    private List<FeedbackResponseComment> feedbackResponseComments = new ArrayList<>();
+    private Set<FeedbackResponseComment> feedbackResponseComments = new HashSet<>();
 
     @Column(nullable = false)
     private String giver;
@@ -179,6 +181,7 @@ public abstract class FeedbackResponse extends BaseEntity {
      */
     public void addFeedbackResponseComment(FeedbackResponseComment feedbackResponseComment) {
         this.feedbackResponseComments.add(feedbackResponseComment);
+        feedbackResponseComment.setFeedbackResponse(this);
     }
 
     public UUID getId() {
@@ -205,11 +208,11 @@ public abstract class FeedbackResponse extends BaseEntity {
         this.questionId = feedbackQuestion == null ? null : feedbackQuestion.getId();
     }
 
-    public List<FeedbackResponseComment> getFeedbackResponseComments() {
+    public Set<FeedbackResponseComment> getFeedbackResponseComments() {
         return feedbackResponseComments;
     }
 
-    public void setFeedbackResponseComments(List<FeedbackResponseComment> feedbackResponseComments) {
+    public void setFeedbackResponseComments(Set<FeedbackResponseComment> feedbackResponseComments) {
         this.feedbackResponseComments = feedbackResponseComments;
     }
 

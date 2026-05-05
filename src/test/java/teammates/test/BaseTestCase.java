@@ -157,10 +157,11 @@ public class BaseTestCase {
         FeedbackSession typicalFeedbackSession = getTypicalFeedbackSessionForCourse(getTypicalCourse());
         FeedbackQuestion typicalFeedbackQuestion = getTypicalFeedbackQuestionForSession(typicalFeedbackSession);
         FeedbackResponse typicalFeedbackResponse = getTypicalFeedbackResponseForQuestion(typicalFeedbackQuestion);
-        FeedbackResponseComment feedbackResponseComment = new FeedbackResponseComment(typicalFeedbackResponse,
+        FeedbackResponseComment feedbackResponseComment = new FeedbackResponseComment(
                 "typical-giver", FeedbackParticipantType.RECEIVER, getTypicalSection(), getTypicalSection(),
                 "typical-comment", true, true, List.of(FeedbackParticipantType.GIVER, FeedbackParticipantType.INSTRUCTORS),
                 List.of(FeedbackParticipantType.RECEIVER, FeedbackParticipantType.INSTRUCTORS), "email");
+        typicalFeedbackResponse.addFeedbackResponseComment(feedbackResponseComment);
         feedbackResponseComment.setId(UUID.fromString("00000000-0000-4000-8000-000000000010"));
         feedbackResponseComment.setCreatedAt(Instant.now());
         feedbackResponseComment.setUpdatedAt(Instant.now());
@@ -206,7 +207,7 @@ public class BaseTestCase {
     }
 
     protected FeedbackResponseComment getTypicalResponseComment(UUID id) {
-        FeedbackResponseComment comment = new FeedbackResponseComment(null, "",
+        FeedbackResponseComment comment = new FeedbackResponseComment("",
                 FeedbackParticipantType.STUDENTS, null, null, "",
                 false, false,
                 null, null, null);

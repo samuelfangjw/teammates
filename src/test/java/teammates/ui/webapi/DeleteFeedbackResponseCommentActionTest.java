@@ -631,7 +631,6 @@ public class DeleteFeedbackResponseCommentActionTest extends BaseActionTest<Dele
 
     private FeedbackResponseComment getTypicalCommentFromStudent() {
         FeedbackResponseComment feedbackResponseComment = new FeedbackResponseComment(
-                typicalFeedbackResponse,
                 typicalStudent.getEmail(),
                 FeedbackParticipantType.STUDENTS,
                 typicalFeedbackResponse.getGiverSection(),
@@ -642,6 +641,7 @@ public class DeleteFeedbackResponseCommentActionTest extends BaseActionTest<Dele
                 Arrays.asList(FeedbackParticipantType.INSTRUCTORS),
                 Arrays.asList(FeedbackParticipantType.INSTRUCTORS),
                 typicalStudent.getEmail());
+        typicalFeedbackResponse.addFeedbackResponseComment(feedbackResponseComment);
         feedbackResponseComment.setId(UUID.fromString("00000000-0000-4000-8000-000000000001"));
         feedbackResponseComment.setCreatedAt(Instant.EPOCH);
         feedbackResponseComment.setUpdatedAt(Instant.EPOCH);
@@ -650,7 +650,6 @@ public class DeleteFeedbackResponseCommentActionTest extends BaseActionTest<Dele
 
     private FeedbackResponseComment getTypicalCommentFromInstructor() {
         FeedbackResponseComment feedbackResponseComment = new FeedbackResponseComment(
-                typicalFeedbackResponse,
                 typicalInstructor.getEmail(),
                 FeedbackParticipantType.INSTRUCTORS,
                 typicalFeedbackResponse.getGiverSection(),
@@ -661,6 +660,7 @@ public class DeleteFeedbackResponseCommentActionTest extends BaseActionTest<Dele
                 Arrays.asList(FeedbackParticipantType.INSTRUCTORS),
                 Arrays.asList(FeedbackParticipantType.INSTRUCTORS),
                 typicalInstructor.getEmail());
+        typicalFeedbackResponse.addFeedbackResponseComment(feedbackResponseComment);
         feedbackResponseComment.setId(UUID.fromString("00000000-0000-4000-8000-000000000002"));
         feedbackResponseComment.setCreatedAt(Instant.EPOCH);
         feedbackResponseComment.setUpdatedAt(Instant.EPOCH);
@@ -669,7 +669,6 @@ public class DeleteFeedbackResponseCommentActionTest extends BaseActionTest<Dele
 
     private FeedbackResponseComment getTypicalCommentFromInstructorAsParticipant() {
         FeedbackResponseComment feedbackResponseComment = new FeedbackResponseComment(
-                typicalFeedbackResponse,
                 typicalInstructor.getEmail(),
                 FeedbackParticipantType.INSTRUCTORS,
                 typicalFeedbackResponse.getGiverSection(),
@@ -680,6 +679,7 @@ public class DeleteFeedbackResponseCommentActionTest extends BaseActionTest<Dele
                 Arrays.asList(FeedbackParticipantType.INSTRUCTORS),
                 Arrays.asList(FeedbackParticipantType.INSTRUCTORS),
                 typicalInstructor.getEmail());
+        typicalFeedbackResponse.addFeedbackResponseComment(feedbackResponseComment);
         feedbackResponseComment.setId(UUID.fromString("00000000-0000-4000-8000-000000000003"));
         feedbackResponseComment.setCreatedAt(Instant.EPOCH);
         feedbackResponseComment.setUpdatedAt(Instant.EPOCH);
@@ -695,7 +695,6 @@ public class DeleteFeedbackResponseCommentActionTest extends BaseActionTest<Dele
                 "Section B", sectionB, getTypicalFeedbackResponseDetails());
         typicalFeedbackQuestion.addFeedbackResponse(typicalFeedbackResponse);
         FeedbackResponseComment feedbackResponseComment = new FeedbackResponseComment(
-                typicalFeedbackResponse,
                 "first team",
                 FeedbackParticipantType.TEAMS,
                 sectionA,
@@ -706,6 +705,7 @@ public class DeleteFeedbackResponseCommentActionTest extends BaseActionTest<Dele
                 Arrays.asList(FeedbackParticipantType.INSTRUCTORS),
                 Arrays.asList(FeedbackParticipantType.INSTRUCTORS),
                 "first team");
+        typicalFeedbackResponse.addFeedbackResponseComment(feedbackResponseComment);
         feedbackResponseComment.setId(UUID.fromString("00000000-0000-4000-8000-000000000004"));
         feedbackResponseComment.setCreatedAt(Instant.EPOCH);
         feedbackResponseComment.setUpdatedAt(Instant.EPOCH);

@@ -250,8 +250,10 @@ public class FeedbackSubmitPageE2ETest extends BaseE2ETestCase {
     }
 
     private FeedbackResponseComment getFeedbackResponseComment(FeedbackResponse response, String comment) {
-        return new FeedbackResponseComment(response, student.getEmail(),
+        FeedbackResponseComment feedbackResponseComment = new FeedbackResponseComment(student.getEmail(),
                 FeedbackParticipantType.STUDENTS, student.getSection(), student.getSection(), comment,
                 true, true, Collections.emptyList(), Collections.emptyList(), student.getEmail());
+        response.addFeedbackResponseComment(feedbackResponseComment);
+        return feedbackResponseComment;
     }
 }
