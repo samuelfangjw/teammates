@@ -125,7 +125,7 @@ public class FeedbackConstSumRecipientQuestionE2ETest extends BaseFeedbackQuesti
         FeedbackConstantSumResponseDetails details = new FeedbackConstantSumResponseDetails();
         details.setAnswers(Arrays.asList(answer));
         FeedbackResponse response = FeedbackResponse.makeResponse(student.getEmail(), student.getSection(),
-                receiver.getEmail(), receiver.getSection(), details);
+                receiver.getTeamName(), receiver.getSection(), details);
         question.addFeedbackResponse(response);
         return response;
     }
