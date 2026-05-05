@@ -420,12 +420,13 @@ public class DeleteFeedbackResponseCommentActionTest extends BaseActionTest<Dele
         typicalFeedbackQuestion.setGiverType(FeedbackParticipantType.TEAMS);
 
         FeedbackResponseComment typicalFeedbackResponseComment = getTypicalCommentFromTeam();
-
-        typicalStudent.setTeam(new Team(new Section(typicalCourse, "Section A"), "first team"));
+        Section section = new Section("Section A");
+        typicalCourse.addSection(section);
+        typicalStudent.setTeam(new Team(section, "first team"));
 
         Student differentStudentInSameTeam = new Student(typicalCourse, "differentStudent",
                 "differentstudent@teammates.tmt", "comments",
-                new Team(new Section(typicalCourse, "Section A"), "first team"));
+                new Team(section, "first team"));
 
         String[] params = new String[] {
                 Const.ParamsNames.FEEDBACK_RESPONSE_COMMENT_ID, typicalFeedbackResponseComment.getId().toString(),
@@ -680,8 +681,10 @@ public class DeleteFeedbackResponseCommentActionTest extends BaseActionTest<Dele
     }
 
     private FeedbackResponseComment getTypicalCommentFromTeam() {
-        Section sectionA = new Section(typicalCourse, "Section A");
-        Section sectionB = new Section(typicalCourse, "Section B");
+        Section sectionA = new Section("Section A");
+        typicalCourse.addSection(sectionA);
+        Section sectionB = new Section("Section B");
+        typicalCourse.addSection(sectionB);
         typicalFeedbackResponse = FeedbackResponse.makeResponse(typicalFeedbackQuestion, "Section A", sectionA,
                 "Section B", sectionB, getTypicalFeedbackResponseDetails());
         FeedbackResponseComment feedbackResponseComment = new FeedbackResponseComment(

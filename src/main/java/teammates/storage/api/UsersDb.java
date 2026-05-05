@@ -691,7 +691,8 @@ public final class UsersDb {
 
         if (section == null) {
             Course course = CoursesDb.inst().getCourse(courseId);
-            section = new Section(course, sectionName);
+            section = new Section(sectionName);
+            section.setCourse(course);
             HibernateUtil.persist(section);
         }
 

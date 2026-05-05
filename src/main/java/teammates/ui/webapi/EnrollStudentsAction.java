@@ -62,7 +62,8 @@ public class EnrollStudentsAction extends Action {
         List<Student> studentsToEnroll = new ArrayList<>();
         studentEnrollRequests.forEach(studentEnrollRequest -> {
             String normalizedEmail = normalizeEmail(studentEnrollRequest.getEmail());
-            Section section = new Section(course, studentEnrollRequest.getSection());
+            Section section = new Section(studentEnrollRequest.getSection());
+            course.addSection(section);
             Team team = new Team(section, studentEnrollRequest.getTeam());
             studentsToEnroll.add(new Student(
                     course, studentEnrollRequest.getName(),

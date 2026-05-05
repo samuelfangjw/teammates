@@ -6,8 +6,6 @@ import java.util.UUID;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import teammates.common.exception.EntityAlreadyExistsException;
-import teammates.common.exception.InvalidParametersException;
 import teammates.common.util.Const;
 import teammates.common.util.HibernateUtil;
 import teammates.it.test.BaseTestCaseWithDatabaseAccess;
@@ -43,7 +41,7 @@ public class UsersDbIT extends BaseTestCaseWithDatabaseAccess {
         course = new Course("course-id", "course-name", Const.DEFAULT_TIME_ZONE, "institute");
         coursesDb.createCourse(course);
 
-        Section section = new Section(course, "test-section");
+        Section section = new Section("test-section");
         coursesDb.createSection(section);
         course.addSection(section);
         Team team = new Team(section, "test-team");
@@ -142,7 +140,7 @@ public class UsersDbIT extends BaseTestCaseWithDatabaseAccess {
     }
 
     @Test
-    public void testGetAllUsersByGoogleId() throws InvalidParametersException, EntityAlreadyExistsException {
+    public void testGetAllUsersByGoogleId() {
         ______TS("success: gets all instructors and students by googleId");
         Account userSharedAccount = new Account("user-account", "user-name", "valid-user@email.tmt");
         accountsDb.createAccount(userSharedAccount);
@@ -157,7 +155,7 @@ public class UsersDbIT extends BaseTestCaseWithDatabaseAccess {
         usersDb.createInstructor(secondInstructor);
         secondInstructor.setAccount(userSharedAccount);
 
-        Section section = new Section(course, "section-name");
+        Section section = new Section("section-name");
         coursesDb.createSection(section);
         course.addSection(section);
         Team team = new Team(section, "team-name");
@@ -197,17 +195,16 @@ public class UsersDbIT extends BaseTestCaseWithDatabaseAccess {
     }
 
     @Test
-    public void testGetStudentsForSection()
-            throws InvalidParametersException, EntityAlreadyExistsException {
+    public void testGetStudentsForSection() {
         ______TS("success: typical case");
-        Section firstSection = new Section(course, "section-name1");
+        Section firstSection = new Section("section-name1");
         coursesDb.createSection(firstSection);
         course.addSection(firstSection);
         Team firstTeam = new Team(firstSection, "team-name1");
         coursesDb.createTeam(firstTeam);
         firstSection.addTeam(firstTeam);
 
-        Section secondSection = new Section(course, "section-name2");
+        Section secondSection = new Section("section-name2");
         coursesDb.createSection(secondSection);
         course.addSection(secondSection);
         Team secondTeam = new Team(secondSection, "team-name2");
@@ -238,17 +235,16 @@ public class UsersDbIT extends BaseTestCaseWithDatabaseAccess {
     }
 
     @Test
-    public void testGetStudentsForTeam()
-            throws InvalidParametersException, EntityAlreadyExistsException {
+    public void testGetStudentsForTeam() {
         ______TS("success: typical case");
-        Section firstSection = new Section(course, "section-name1");
+        Section firstSection = new Section("section-name1");
         coursesDb.createSection(firstSection);
         course.addSection(firstSection);
         Team firstTeam = new Team(firstSection, "team-name1");
         coursesDb.createTeam(firstTeam);
         firstSection.addTeam(firstTeam);
 
-        Section secondSection = new Section(course, "section-name2");
+        Section secondSection = new Section("section-name2");
         coursesDb.createSection(secondSection);
         course.addSection(secondSection);
         Team secondTeam = new Team(secondSection, "team-name2");
@@ -279,11 +275,10 @@ public class UsersDbIT extends BaseTestCaseWithDatabaseAccess {
     }
 
     @Test
-    public void testGetStudentsByGoogleId()
-            throws EntityAlreadyExistsException, InvalidParametersException {
+    public void testGetStudentsByGoogleId() {
         Course course2 = new Course("course-id-2", "course-name", Const.DEFAULT_TIME_ZONE, "institute");
         coursesDb.createCourse(course2);
-        Section section = new Section(course2, "section-name");
+        Section section = new Section("section-name");
         coursesDb.createSection(section);
         course2.addSection(section);
         Team team = new Team(section, "team-name");

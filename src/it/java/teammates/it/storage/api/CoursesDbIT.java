@@ -97,7 +97,7 @@ public class CoursesDbIT extends BaseTestCaseWithDatabaseAccess {
     public void testGetSectionByCourseIdAndTeam() {
         Course course = getTypicalCourse();
         coursesDb.createCourse(course);
-        Section section = new Section(course, "section-name");
+        Section section = new Section("section-name");
         coursesDb.createSection(section);
         course.addSection(section);
         Team team = new Team(section, "team-name");
@@ -120,7 +120,7 @@ public class CoursesDbIT extends BaseTestCaseWithDatabaseAccess {
         Course course = getTypicalCourse();
         coursesDb.createCourse(course);
 
-        Section section1 = new Section(course, "section-name1");
+        Section section1 = new Section("section-name1");
         coursesDb.createSection(section1);
         course.addSection(section1);
         Team team1 = new Team(section1, "team-name1");
@@ -130,7 +130,7 @@ public class CoursesDbIT extends BaseTestCaseWithDatabaseAccess {
         coursesDb.createTeam(team2);
         section1.addTeam(team2);
 
-        Section section2 = new Section(course, "section-name2");
+        Section section2 = new Section("section-name2");
         coursesDb.createSection(section2);
         course.addSection(section2);
         Team team3 = new Team(section2, "team-name3");

@@ -253,7 +253,7 @@ public final class CoursesLogic {
                     + sectionName + " already exists in course " + course.getId());
         }
 
-        Section section = new Section(course, sectionName);
+        Section section = new Section(sectionName);
         course.addSection(section);
 
         validateSection(section);

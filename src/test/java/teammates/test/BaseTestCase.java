@@ -143,7 +143,7 @@ public class BaseTestCase {
 
     protected Section getTypicalSection() {
         Course course = getTypicalCourse();
-        Section section = new Section(course, "test-section");
+        Section section = new Section("test-section");
         course.addSection(section);
         return section;
     }

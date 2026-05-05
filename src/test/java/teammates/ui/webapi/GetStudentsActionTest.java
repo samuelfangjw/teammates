@@ -91,14 +91,16 @@ public class GetStudentsActionTest extends BaseActionTest<GetStudentsAction> {
         stubInstructorWithCourseLevelPrivilege.setPrivileges(customInstructorPrivileges3);
 
         // Section one
-        Section stubSection = new Section(stubCourse, "section-1");
+        Section stubSection = new Section("section-1");
+        stubCourse.addSection(stubSection);
         stubTeamOne = new Team(stubSection, "team-1");
         Team stubTeamTwo = new Team(stubSection, "team-2");
         stubStudentListSectionOneTeamOne = new ArrayList<>();
         stubStudentListSectionOne = new ArrayList<>();
 
         //Section two
-        Section stubSectionTwo = new Section(stubCourse, "section-2");
+        Section stubSectionTwo = new Section("section-2");
+        stubCourse.addSection(stubSectionTwo);
         Team stubTeamThree = new Team(stubSectionTwo, "team-3");
         stubStudentListSectionTwo = new ArrayList<>();
 

@@ -117,7 +117,6 @@ public final class DataBundleLogic {
             section.setId(UUID.randomUUID());
             sectionsMap.put(placeholderId, section);
             Course course = coursesMap.get(section.getCourseId());
-            section.setCourse(course);
             course.addSection(section);
         }
 

@@ -115,7 +115,8 @@ public class DataBundleLogicIT extends BaseTestCaseWithDatabaseAccess {
         ______TS("verify sections deserialized correctly");
 
         Section actualSection = dataBundle.sections.get("section1InTypicalCourse");
-        Section expectedSection = new Section(expectedTypicalCourse, "Section 1");
+        Section expectedSection = new Section("Section 1");
+        expectedTypicalCourse.addSection(expectedSection);
         expectedSection.setId(actualSection.getId());
         verifyEquals(expectedSection, actualSection);
 

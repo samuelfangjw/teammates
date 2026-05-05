@@ -54,11 +54,9 @@ public class Section extends BaseEntity {
         // required by hibernate
     }
 
-    public Section(Course course, String name) {
+    public Section(String name) {
         this.setId(UUID.randomUUID());
-        this.setCourse(course);
         this.setName(name);
-        this.setTeams(new ArrayList<>());
     }
 
     @Override

@@ -424,9 +424,10 @@ public class UpdateFeedbackResponseCommentActionTest extends BaseActionTest<Upda
         FeedbackResponseComment typicalComment = getTypicalCommentFromTeam();
 
         Student differentStudentFromDifferentTeam = getTypicalStudent();
+        Section section = new Section("Section C");
+        typicalCourse.addSection(section);
         differentStudentFromDifferentTeam.setTeam(new Team(
-                new Section(typicalCourse, "Section C"),
-                "different team"));
+                section, "different team"));
 
         String[] params = new String[] {
                 Const.ParamsNames.INTENT, Intent.STUDENT_SUBMISSION.toString(),
@@ -450,9 +451,10 @@ public class UpdateFeedbackResponseCommentActionTest extends BaseActionTest<Upda
         FeedbackResponseComment typicalComment = getTypicalCommentFromTeam();
 
         Student differentStudentFromSameTeam = getTypicalStudent();
+        Section section = new Section("Section C");
+        typicalCourse.addSection(section);
         differentStudentFromSameTeam.setTeam(new Team(
-                new Section(typicalCourse, "Section C"),
-                "first team"));
+                section, "first team"));
 
         String[] params = new String[] {
                 Const.ParamsNames.INTENT, Intent.STUDENT_SUBMISSION.toString(),
@@ -790,8 +792,10 @@ public class UpdateFeedbackResponseCommentActionTest extends BaseActionTest<Upda
     }
 
     private FeedbackResponseComment getTypicalCommentFromTeam() {
-        Section sectionA = new Section(typicalCourse, "Section A");
-        Section sectionB = new Section(typicalCourse, "Section B");
+        Section sectionA = new Section("Section A");
+        typicalCourse.addSection(sectionA);
+        Section sectionB = new Section("Section B");
+        typicalCourse.addSection(sectionB);
         typicalFeedbackResponse = FeedbackResponse.makeResponse(typicalFeedbackQuestion, "Section A", sectionA,
                 "Section B", sectionB, getTypicalFeedbackResponseDetails());
         FeedbackResponseComment feedbackResponseComment = new FeedbackResponseComment(
