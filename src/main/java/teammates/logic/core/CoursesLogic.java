@@ -284,8 +284,9 @@ public final class CoursesLogic {
 
         return course.getSections()
                 .stream()
-                .map(section -> section.getName())
-                .collect(Collectors.toList());
+                .map(Section::getName)
+                .sorted()
+                .toList();
     }
 
     /**
