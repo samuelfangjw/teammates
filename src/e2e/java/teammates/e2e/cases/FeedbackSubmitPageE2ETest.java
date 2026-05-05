@@ -243,8 +243,10 @@ public class FeedbackSubmitPageE2ETest extends BaseE2ETestCase {
         } else {
             details.setAnswer(answer);
         }
-        return FeedbackResponse.makeResponse(question, student.getEmail(), student.getSection(),
+        FeedbackResponse response = FeedbackResponse.makeResponse(student.getEmail(), student.getSection(),
                 recipient, student.getSection(), details);
+        question.addFeedbackResponse(response);
+        return response;
     }
 
     private FeedbackResponseComment getFeedbackResponseComment(FeedbackResponse response, String comment) {

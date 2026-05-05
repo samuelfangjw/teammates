@@ -76,12 +76,10 @@ public abstract class FeedbackResponse extends BaseEntity {
         // required by Hibernate
     }
 
-    public FeedbackResponse(
-            FeedbackQuestion feedbackQuestion, String giver,
-            Section giverSection, String recipient, Section recipientSection
+    protected FeedbackResponse(
+            String giver, Section giverSection, String recipient, Section recipientSection
     ) {
         this.setId(UUID.randomUUID());
-        this.setFeedbackQuestion(feedbackQuestion);
         this.setGiver(giver);
         this.setGiverSection(giverSection);
         this.setRecipient(recipient);
@@ -92,57 +90,56 @@ public abstract class FeedbackResponse extends BaseEntity {
      * Creates a feedback response according to its {@code FeedbackQuestionType}.
      */
     public static FeedbackResponse makeResponse(
-            FeedbackQuestion feedbackQuestion, String giver,
-            Section giverSection, String receiver, Section receiverSection,
+            String giver, Section giverSection, String receiver, Section receiverSection,
             FeedbackResponseDetails responseDetails
     ) {
         FeedbackResponse feedbackResponse = null;
         switch (responseDetails.getQuestionType()) {
         case TEXT:
             feedbackResponse = new FeedbackTextResponse(
-                    feedbackQuestion, giver, giverSection, receiver, receiverSection, responseDetails
+                    giver, giverSection, receiver, receiverSection, responseDetails
             );
             break;
         case MCQ:
             feedbackResponse = new FeedbackMcqResponse(
-                    feedbackQuestion, giver, giverSection, receiver, receiverSection, responseDetails
+                    giver, giverSection, receiver, receiverSection, responseDetails
             );
             break;
         case MSQ:
             feedbackResponse = new FeedbackMsqResponse(
-                    feedbackQuestion, giver, giverSection, receiver, receiverSection, responseDetails
+                    giver, giverSection, receiver, receiverSection, responseDetails
             );
             break;
         case NUMSCALE:
             feedbackResponse = new FeedbackNumericalScaleResponse(
-                    feedbackQuestion, giver, giverSection, receiver, receiverSection, responseDetails
+                    giver, giverSection, receiver, receiverSection, responseDetails
             );
             break;
         case CONSTSUM:
         case CONSTSUM_OPTIONS:
         case CONSTSUM_RECIPIENTS:
             feedbackResponse = new FeedbackConstantSumResponse(
-                    feedbackQuestion, giver, giverSection, receiver, receiverSection, responseDetails
+                    giver, giverSection, receiver, receiverSection, responseDetails
             );
             break;
         case CONTRIB:
             feedbackResponse = new FeedbackContributionResponse(
-                    feedbackQuestion, giver, giverSection, receiver, receiverSection, responseDetails
+                    giver, giverSection, receiver, receiverSection, responseDetails
             );
             break;
         case RUBRIC:
             feedbackResponse = new FeedbackRubricResponse(
-                    feedbackQuestion, giver, giverSection, receiver, receiverSection, responseDetails
+                    giver, giverSection, receiver, receiverSection, responseDetails
             );
             break;
         case RANK_OPTIONS:
             feedbackResponse = new FeedbackRankOptionsResponse(
-                    feedbackQuestion, giver, giverSection, receiver, receiverSection, responseDetails
+                    giver, giverSection, receiver, receiverSection, responseDetails
             );
             break;
         case RANK_RECIPIENTS:
             feedbackResponse = new FeedbackRankRecipientsResponse(
-                    feedbackQuestion, giver, giverSection, receiver, receiverSection, responseDetails
+                    giver, giverSection, receiver, receiverSection, responseDetails
             );
             break;
         }
@@ -158,14 +155,15 @@ public abstract class FeedbackResponse extends BaseEntity {
             Section giverSection, String receiver, Section receiverSection,
             FeedbackResponseDetails responseDetails
     ) {
+        // TODO: update should be in logic layer
         FeedbackResponse updatedFeedbackResponse = makeResponse(
-                feedbackQuestion,
                 giver,
                 giverSection,
                 receiver,
                 receiverSection,
                 responseDetails
         );
+        feedbackQuestion.addFeedbackResponse(updatedFeedbackResponse);
         updatedFeedbackResponse.setCreatedAt(originalFeedbackResponse.getCreatedAt());
         updatedFeedbackResponse.setId(originalFeedbackResponse.getId());
         return updatedFeedbackResponse;

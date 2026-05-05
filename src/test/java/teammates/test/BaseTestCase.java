@@ -194,8 +194,11 @@ public class BaseTestCase {
     }
 
     protected FeedbackResponse getTypicalFeedbackResponseForQuestion(FeedbackQuestion question) {
-        return FeedbackResponse.makeResponse(question, "test-giver", getTypicalSection(), "test-recipient",
+        FeedbackResponse feedbackResponse = FeedbackResponse.makeResponse(
+                "test-giver", getTypicalSection(), "test-recipient",
                 getTypicalSection(), getTypicalFeedbackResponseDetails());
+        question.addFeedbackResponse(feedbackResponse);
+        return feedbackResponse;
     }
 
     protected FeedbackResponseDetails getTypicalFeedbackResponseDetails() {

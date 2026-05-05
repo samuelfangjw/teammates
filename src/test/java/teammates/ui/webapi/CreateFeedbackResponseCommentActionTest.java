@@ -499,12 +499,12 @@ public class CreateFeedbackResponseCommentActionTest extends BaseActionTest<Crea
         typicalFeedbackSession.addFeedbackQuestion(contributionQuestion);
 
         FeedbackResponse contributionResponse = FeedbackResponse.makeResponse(
-                contributionQuestion,
                 "test giver",
                 getTypicalSection(),
                 "test recipient",
                 getTypicalSection(),
                 new FeedbackContributionResponseDetails());
+        contributionQuestion.addFeedbackResponse(contributionResponse);
 
         String[] params = new String[] {
                 Const.ParamsNames.INTENT, Intent.INSTRUCTOR_RESULT.toString(), Const.ParamsNames.FEEDBACK_RESPONSE_ID,
@@ -659,12 +659,12 @@ public class CreateFeedbackResponseCommentActionTest extends BaseActionTest<Crea
         FeedbackSession feedbackSessionPastEndTime = getFeedbackSessionPastEndTime();
         FeedbackQuestion feedbackQuestion = getTypicalFeedbackQuestionForSession(feedbackSessionPastEndTime);
         FeedbackResponse feedbackResponse = FeedbackResponse.makeResponse(
-                feedbackQuestion,
                 typicalInstructor.getEmail(),
                 getTypicalSection(),
                 "test recipient",
                 getTypicalSection(),
                 getTypicalFeedbackResponseDetails());
+        feedbackQuestion.addFeedbackResponse(feedbackResponse);
 
         when(mockLogic.getFeedbackResponse(feedbackResponse.getId())).thenReturn(feedbackResponse);
         when(mockLogic.getInstructorByGoogleId(typicalCourse.getId(), typicalInstructor.getGoogleId()))
@@ -689,12 +689,12 @@ public class CreateFeedbackResponseCommentActionTest extends BaseActionTest<Crea
         FeedbackSession feedbackSessionPastEndTime = getFeedbackSessionPastEndTime();
         FeedbackQuestion feedbackQuestion = getTypicalFeedbackQuestionForSession(feedbackSessionPastEndTime);
         FeedbackResponse feedbackResponse = FeedbackResponse.makeResponse(
-                feedbackQuestion,
                 typicalInstructor.getEmail(),
                 getTypicalSection(),
                 "test recipient",
                 getTypicalSection(),
                 getTypicalFeedbackResponseDetails());
+        feedbackQuestion.addFeedbackResponse(feedbackResponse);
 
         when(mockLogic.getFeedbackResponse(feedbackResponse.getId())).thenReturn(feedbackResponse);
         when(mockLogic.getInstructorByGoogleId(typicalCourse.getId(), typicalInstructor.getGoogleId()))
@@ -718,12 +718,12 @@ public class CreateFeedbackResponseCommentActionTest extends BaseActionTest<Crea
         FeedbackQuestion feedbackQuestion = getTypicalFeedbackQuestionForSession(feedbackSessionPastEndTime);
         feedbackQuestion.setGiverType(FeedbackParticipantType.STUDENTS);
         FeedbackResponse feedbackResponse = FeedbackResponse.makeResponse(
-                feedbackQuestion,
                 typicalStudent.getEmail(),
                 getTypicalSection(),
                 "test recipient",
                 getTypicalSection(),
                 getTypicalFeedbackResponseDetails());
+        feedbackQuestion.addFeedbackResponse(feedbackResponse);
 
         when(mockLogic.getFeedbackResponse(feedbackResponse.getId())).thenReturn(feedbackResponse);
         when(mockLogic.getStudentByGoogleId(typicalCourse.getId(), typicalStudent.getGoogleId()))
@@ -749,12 +749,12 @@ public class CreateFeedbackResponseCommentActionTest extends BaseActionTest<Crea
         FeedbackQuestion feedbackQuestion = getTypicalFeedbackQuestionForSession(feedbackSessionPastEndTime);
         feedbackQuestion.setGiverType(FeedbackParticipantType.STUDENTS);
         FeedbackResponse feedbackResponse = FeedbackResponse.makeResponse(
-                feedbackQuestion,
                 typicalStudent.getEmail(),
                 getTypicalSection(),
                 "test recipient",
                 getTypicalSection(),
                 getTypicalFeedbackResponseDetails());
+        feedbackQuestion.addFeedbackResponse(feedbackResponse);
 
         when(mockLogic.getFeedbackResponse(feedbackResponse.getId())).thenReturn(feedbackResponse);
         when(mockLogic.getStudentByGoogleId(typicalCourse.getId(), typicalStudent.getGoogleId()))

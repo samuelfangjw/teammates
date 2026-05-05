@@ -144,7 +144,9 @@ public class FeedbackMsqQuestionE2ETest extends BaseFeedbackQuestionE2ETest {
         }
         details.setAnswers(answers);
 
-        return FeedbackResponse.makeResponse(feedbackQuestion, student.getEmail(), student.getSection(),
+        FeedbackResponse response = FeedbackResponse.makeResponse(student.getEmail(), student.getSection(),
                 receiver.getEmail(), receiver.getSection(), details);
+        feedbackQuestion.addFeedbackResponse(response);
+        return response;
     }
 }

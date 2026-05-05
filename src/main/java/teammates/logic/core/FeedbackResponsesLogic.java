@@ -247,7 +247,7 @@ public final class FeedbackResponsesLogic {
      * Deletes all feedback responses of a question and its associated comments.
      */
     public void deleteFeedbackResponsesForQuestionCascade(FeedbackQuestion feedbackQuestion) {
-        List<FeedbackResponse> responses = feedbackQuestion.getFeedbackResponses();
+        Set<FeedbackResponse> responses = feedbackQuestion.getFeedbackResponses();
         for (FeedbackResponse response : responses) {
             deleteFeedbackResponsesAndCommentsCascade(response);
         }

@@ -140,7 +140,9 @@ public class FeedbackRubricQuestionE2ETest extends BaseFeedbackQuestionE2ETest {
         FeedbackRubricResponseDetails details = new FeedbackRubricResponseDetails();
         details.setAnswer(answers);
 
-        return FeedbackResponse.makeResponse(question, student.getEmail(), student.getSection(),
+        FeedbackResponse response = FeedbackResponse.makeResponse(student.getEmail(), student.getSection(),
                 receiver.getEmail(), receiver.getSection(), details);
+        question.addFeedbackResponse(response);
+        return response;
     }
 }

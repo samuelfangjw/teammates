@@ -377,13 +377,13 @@ public class FeedbackSessionsLogicTest extends BaseTestCase {
         // Mock responses from different givers
         FeedbackResponse response1 = getTypicalFeedbackResponseForQuestion(question1);
         response1.setGiver("student1@email.com");
+        question1.addFeedbackResponse(response1);
         FeedbackResponse response2 = getTypicalFeedbackResponseForQuestion(question1);
         response2.setGiver("student2@email.com");
+        question1.addFeedbackResponse(response2);
         FeedbackResponse response3 = getTypicalFeedbackResponseForQuestion(question2);
         response3.setGiver("student1@email.com"); // Same giver as response1
-
-        question1.setFeedbackResponses(List.of(response1, response2));
-        question2.setFeedbackResponses(List.of(response3));
+        question2.addFeedbackResponse(response3);
 
         int result = fsLogic.getActualTotalSubmission(session);
 
@@ -397,7 +397,7 @@ public class FeedbackSessionsLogicTest extends BaseTestCase {
         FeedbackSession session = getTypicalFeedbackSessionForCourse(course);
         FeedbackQuestion question = getTypicalFeedbackQuestionForSession(session);
         session.setFeedbackQuestions(Set.of(question));
-        question.setFeedbackResponses(new ArrayList<>());
+        question.setFeedbackResponses(new HashSet<>());
 
         int result = fsLogic.getActualTotalSubmission(session);
 

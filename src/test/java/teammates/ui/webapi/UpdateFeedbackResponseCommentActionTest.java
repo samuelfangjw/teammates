@@ -798,8 +798,9 @@ public class UpdateFeedbackResponseCommentActionTest extends BaseActionTest<Upda
         typicalCourse.addSection(sectionA);
         Section sectionB = new Section("Section B");
         typicalCourse.addSection(sectionB);
-        typicalFeedbackResponse = FeedbackResponse.makeResponse(typicalFeedbackQuestion, "Section A", sectionA,
+        typicalFeedbackResponse = FeedbackResponse.makeResponse("Section A", sectionA,
                 "Section B", sectionB, getTypicalFeedbackResponseDetails());
+        typicalFeedbackQuestion.addFeedbackResponse(typicalFeedbackResponse);
         FeedbackResponseComment feedbackResponseComment = new FeedbackResponseComment(
                 typicalFeedbackResponse,
                 "first team",

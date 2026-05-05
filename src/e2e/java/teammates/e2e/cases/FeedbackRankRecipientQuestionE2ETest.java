@@ -126,7 +126,9 @@ public class FeedbackRankRecipientQuestionE2ETest extends BaseFeedbackQuestionE2
     private FeedbackResponse getResponse(FeedbackQuestion question, Instructor receiver, int answer) {
         FeedbackRankRecipientsResponseDetails details = new FeedbackRankRecipientsResponseDetails();
         details.setAnswer(answer);
-        return FeedbackResponse.makeResponse(question, student.getEmail(),
+        FeedbackResponse response = FeedbackResponse.makeResponse(student.getEmail(),
                 student.getSection(), receiver.getEmail(), null, details);
+        question.addFeedbackResponse(response);
+        return response;
     }
 }
