@@ -153,7 +153,7 @@ public class UpdateDeadlineExtensionsAction extends Action {
                             ? logic.getInstructorForEmail(courseId, entry.getKey())
                             : logic.getStudentForEmail(courseId, entry.getKey());
                     DeadlineExtension newDeadlineExtension = new DeadlineExtension(u, entry.getValue());
-                    newDeadlineExtension.setFeedbackSession(session);
+                    session.addDeadlineExtension(newDeadlineExtension);
                     return newDeadlineExtension;
                 })
                 .forEach(deadlineExtension -> {

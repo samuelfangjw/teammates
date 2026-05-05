@@ -79,7 +79,6 @@ public class UpdateStudentAction extends Action {
         Team team = logic.getTeamOrCreate(section, updateRequest.getTeam());
         Student studentToUpdate = new Student(course, updateRequest.getName(), updateRequest.getEmail(),
                 updateRequest.getComments());
-        team.addUser(studentToUpdate);
 
         try {
             //we swap out email before we validate
@@ -90,6 +89,7 @@ public class UpdateStudentAction extends Action {
             studentToUpdate.setEmail(newEmail);
 
             studentToUpdate.setId(existingStudent.getId());
+            team.addUser(studentToUpdate);
             logic.updateStudentCascade(studentToUpdate);
 
             if (!SanitizationHelper.areEmailsEqual(studentEmail, updateRequest.getEmail())

@@ -144,7 +144,7 @@ public class EnrollStudentsAction extends Action {
         List<StudentData> studentDataList = enrolledStudents
                 .stream()
                 .map(StudentData::new)
-                .collect(Collectors.toList());
+                .toList();
         StudentsData data = new StudentsData();
 
         data.setStudents(studentDataList);
