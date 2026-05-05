@@ -1,5 +1,7 @@
 package teammates.ui.request;
 
+import java.util.Locale;
+
 import com.fasterxml.jackson.annotation.JsonCreator;
 
 import teammates.common.util.Const;
@@ -38,7 +40,7 @@ public class StudentEnrollRequest extends BasicRequest {
     }
 
     public String getEmail() {
-        return this.email;
+        return this.email == null ? null : this.email.toLowerCase(Locale.ROOT);
     }
 
     public String getTeam() {

@@ -2,7 +2,6 @@ package teammates.ui.request;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -38,14 +37,10 @@ public class StudentsEnrollRequest extends BasicRequest {
 
         Set<String> emails = new HashSet<>();
         for (StudentEnrollRequest request : studentEnrollRequests) {
-            String normalizedEmail = normalizeEmail(request.getEmail());
+            String normalizedEmail = request.getEmail();
             assertTrue(!emails.contains(normalizedEmail),
                     String.format(ERROR_MESSAGE_DUPLICATE_EMAIL, request.getEmail()));
             emails.add(normalizedEmail);
         }
-    }
-
-    private static String normalizeEmail(String email) {
-        return email.toLowerCase(Locale.ROOT);
     }
 }

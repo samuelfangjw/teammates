@@ -57,7 +57,7 @@ public class StudentsEnrollRequestTest extends BaseTestCase {
                 assertThrows(InvalidHttpRequestBodyException.class, enrollRequest::validate);
 
         assertEquals(actualException.getMessage(),
-                "Error, duplicated email addresses detected in the input: Typical0@Email.com");
+                "Error, duplicated email addresses detected in the input: typical0@email.com");
     }
 
     private StudentEnrollRequest getTypicalStudentEnrollRequest(int index) {

@@ -2,7 +2,6 @@ package teammates.ui.webapi;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -18,7 +17,6 @@ import teammates.storage.entity.Section;
 import teammates.storage.entity.Student;
 import teammates.storage.entity.Team;
 import teammates.ui.output.EnrollStudentsData;
-import teammates.ui.output.StudentData;
 import teammates.ui.output.StudentsData;
 import teammates.ui.request.InvalidHttpRequestBodyException;
 import teammates.ui.request.StudentEnrollRequest;
@@ -62,7 +60,7 @@ public class EnrollStudentsAction extends Action {
 
         List<Student> studentsToEnroll = new ArrayList<>();
         studentEnrollRequests.forEach(studentEnrollRequest -> {
-            String normalizedEmail = normalizeEmail(studentEnrollRequest.getEmail());
+            String normalizedEmail = studentEnrollRequest.getEmail();
             Section section = new Section(studentEnrollRequest.getSection());
             course.addSection(section);
             Team team = new Team(studentEnrollRequest.getTeam());
@@ -81,22 +79,19 @@ public class EnrollStudentsAction extends Action {
 
         List<Student> enrolledStudents = new ArrayList<>();
         List<EnrollStudentsData.EnrollErrorResults> failToEnrollStudents = new ArrayList<>();
-        Set<String> existingStudentsEmail;
 
         List<Student> existingStudents = logic.getStudentsForCourse(courseId);
-        existingStudentsEmail = existingStudents.stream()
+        Set<String> existingStudentsEmail = existingStudents.stream()
                 .map(Student::getEmail)
-                .map(EnrollStudentsAction::normalizeEmail)
                 .collect(Collectors.toSet());
 
         for (StudentEnrollRequest enrollRequest : studentEnrollRequests) {
             RequestTracer.checkRemainingTime();
 
             String requestEmail = enrollRequest.getEmail();
-            String normalizedEmail = normalizeEmail(requestEmail);
 
             // Check if email already belongs to an instructor in this course
-            Instructor existingInstructor = logic.getInstructorForEmail(courseId, normalizedEmail);
+            Instructor existingInstructor = logic.getInstructorForEmail(courseId, requestEmail);
             if (existingInstructor != null) {
                 failToEnrollStudents.add(new EnrollStudentsData.EnrollErrorResults(requestEmail,
                         "Cannot enroll student with email " + requestEmail
@@ -104,15 +99,15 @@ public class EnrollStudentsAction extends Action {
                 continue;
             }
 
-            if (existingStudentsEmail.contains(normalizedEmail)) {
+            if (existingStudentsEmail.contains(requestEmail)) {
                 // The student has been enrolled in the course.
                 try {
                     Section section = logic.getSectionOrCreate(courseId, enrollRequest.getSection());
                     Team team = logic.getTeamOrCreate(section, enrollRequest.getTeam());
-                    Student existingStudent = logic.getStudentForEmail(courseId, normalizedEmail);
+                    Student existingStudent = logic.getStudentForEmail(courseId, requestEmail);
                     Student newStudent = new Student(
                             course, enrollRequest.getName(),
-                            normalizedEmail, enrollRequest.getComments());
+                            requestEmail, enrollRequest.getComments());
                     newStudent.setId(existingStudent.getId());
                     team.addUser(newStudent);
                     Student updatedStudent = logic.updateStudentCascade(newStudent);
@@ -130,7 +125,7 @@ public class EnrollStudentsAction extends Action {
                     Team team = logic.getTeamOrCreate(section, enrollRequest.getTeam());
                     Student newStudent = new Student(
                             course, enrollRequest.getName(),
-                            normalizedEmail, enrollRequest.getComments());
+                            requestEmail, enrollRequest.getComments());
                     team.addUser(newStudent);
                     newStudent = logic.createStudent(newStudent);
                     enrolledStudents.add(newStudent);
@@ -142,18 +137,8 @@ public class EnrollStudentsAction extends Action {
             }
         }
 
-        List<StudentData> studentDataList = enrolledStudents
-                .stream()
-                .map(StudentData::new)
-                .toList();
-        StudentsData data = new StudentsData();
-
-        data.setStudents(studentDataList);
+        StudentsData data = new StudentsData(enrolledStudents);
 
         return new JsonResult(new EnrollStudentsData(data, failToEnrollStudents));
-    }
-
-    private static String normalizeEmail(String email) {
-        return email == null ? null : email.toLowerCase(Locale.ROOT);
     }
 }
