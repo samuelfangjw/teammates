@@ -85,6 +85,7 @@ public class UpdateStudentAction extends Action {
             //TODO: this is duct tape at the moment, need to refactor how we do the validation
             String newEmail = studentToUpdate.getEmail();
             studentToUpdate.setEmail(existingStudent.getEmail());
+            studentToUpdate.setTeam(team);
             logic.validateSectionsAndTeams(Arrays.asList(studentToUpdate), courseId);
             studentToUpdate.setEmail(newEmail);
 
