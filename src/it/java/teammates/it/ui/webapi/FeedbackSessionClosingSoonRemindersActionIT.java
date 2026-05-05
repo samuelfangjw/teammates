@@ -2,9 +2,7 @@ package teammates.it.ui.webapi;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import org.testng.annotations.BeforeMethod;
@@ -39,7 +37,7 @@ public class FeedbackSessionClosingSoonRemindersActionIT extends BaseActionIT<Fe
     private void prepareSession() {
         // DEADLINE EXTENSIONS
         String[] deKeys = {"student1InCourse1Session1", "instructor1InCourse1Session1"};
-        List<DeadlineExtension> exts = new ArrayList<>();
+        Set<DeadlineExtension> exts = new HashSet<>();
         for (String deKey : deKeys) {
             exts.add(typicalBundle.deadlineExtensions.get(deKey));
         }
@@ -125,7 +123,7 @@ public class FeedbackSessionClosingSoonRemindersActionIT extends BaseActionIT<Fe
         session.setEndTime(now.plusSeconds((oneHour * 23) + 60));
         session.setGracePeriod(noGracePeriod);
 
-        DeadlineExtension de = session.getDeadlineExtensions().get(0);
+        DeadlineExtension de = session.getDeadlineExtensions().iterator().next();
         de.setEndTime(now.plusSeconds(oneHour * 16));
 
         String[] params = {};
@@ -159,7 +157,7 @@ public class FeedbackSessionClosingSoonRemindersActionIT extends BaseActionIT<Fe
         session.setEndTime(now.plusSeconds((oneHour * 23) + 60));
         session.setGracePeriod(noGracePeriod);
 
-        DeadlineExtension de = session.getDeadlineExtensions().get(0);
+        DeadlineExtension de = session.getDeadlineExtensions().iterator().next();
         de.setEndTime(now.plusSeconds(oneHour * 16));
         de.setClosingSoonEmailSent(false);
 
@@ -192,7 +190,7 @@ public class FeedbackSessionClosingSoonRemindersActionIT extends BaseActionIT<Fe
         session.setEndTime(now.plusSeconds((oneHour * 23) + 60));
         session.setGracePeriod(noGracePeriod);
 
-        DeadlineExtension de = session.getDeadlineExtensions().get(0);
+        DeadlineExtension de = session.getDeadlineExtensions().iterator().next();
         de.setEndTime(now.plusSeconds(oneHour * 16));
         de.setClosingSoonEmailSent(true);
 
@@ -222,7 +220,7 @@ public class FeedbackSessionClosingSoonRemindersActionIT extends BaseActionIT<Fe
         session.setEndTime(now.plusSeconds((oneHour * 23) + 60));
         session.setGracePeriod(noGracePeriod);
 
-        DeadlineExtension de = session.getDeadlineExtensions().get(0);
+        DeadlineExtension de = session.getDeadlineExtensions().iterator().next();
         de.setEndTime(now.plusSeconds(oneHour * 16));
         de.setClosingSoonEmailSent(false);
 
@@ -258,7 +256,7 @@ public class FeedbackSessionClosingSoonRemindersActionIT extends BaseActionIT<Fe
         session.setEndTime(now.minusSeconds(oneHour * 12));
         session.setGracePeriod(noGracePeriod);
 
-        DeadlineExtension de = session.getDeadlineExtensions().get(0);
+        DeadlineExtension de = session.getDeadlineExtensions().iterator().next();
         de.setEndTime(now.plusSeconds(oneHour * 16));
         de.setClosingSoonEmailSent(false);
 

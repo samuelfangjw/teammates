@@ -231,7 +231,6 @@ public final class DataBundleLogic {
         for (DeadlineExtension deadlineExtension : deadlineExtensions) {
             deadlineExtension.setId(UUID.randomUUID());
             FeedbackSession session = sessionsMap.get(deadlineExtension.getSessionId());
-            deadlineExtension.setFeedbackSession(session);
             session.addDeadlineExtension(deadlineExtension);
             User user = usersMap.get(deadlineExtension.getUserId());
             deadlineExtension.setUser(user);

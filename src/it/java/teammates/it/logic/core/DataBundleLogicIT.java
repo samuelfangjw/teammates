@@ -296,7 +296,7 @@ public class DataBundleLogicIT extends BaseTestCaseWithDatabaseAccess {
                 + "related to session1InTypicalCourse are removed correctly");
 
         Set<FeedbackQuestion> fqs = session1InTypicalCourse.getFeedbackQuestions();
-        List<DeadlineExtension> des = session1InTypicalCourse.getDeadlineExtensions();
+        Set<DeadlineExtension> des = session1InTypicalCourse.getDeadlineExtensions();
         List<FeedbackResponse> frs = new ArrayList<>();
         List<FeedbackResponseComment> frcs = new ArrayList<>();
 

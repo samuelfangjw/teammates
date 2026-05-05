@@ -225,17 +225,19 @@ public class BaseTestCase {
     }
 
     protected DeadlineExtension getTypicalDeadlineExtensionStudent() {
-        return new DeadlineExtension(
+        DeadlineExtension de = new DeadlineExtension(
                 getTypicalStudent(),
-                getTypicalFeedbackSessionForCourse(getTypicalCourse()),
                 Instant.now());
+        getTypicalFeedbackSessionForCourse(getTypicalCourse()).addDeadlineExtension(de);
+        return de;
     }
 
     protected DeadlineExtension getTypicalDeadlineExtensionInstructor() {
-        return new DeadlineExtension(
+        DeadlineExtension de = new DeadlineExtension(
                 getTypicalInstructor(),
-                getTypicalFeedbackSessionForCourse(getTypicalCourse()),
                 Instant.now());
+        getTypicalFeedbackSessionForCourse(getTypicalCourse()).addDeadlineExtension(de);
+        return de;
     }
 
     /**

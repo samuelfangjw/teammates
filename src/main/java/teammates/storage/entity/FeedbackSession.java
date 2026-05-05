@@ -93,7 +93,7 @@ public class FeedbackSession extends BaseEntity {
 
     @OneToMany(mappedBy = "feedbackSession", cascade = CascadeType.REMOVE)
     @OnDelete(action = OnDeleteAction.CASCADE)
-    private List<DeadlineExtension> deadlineExtensions = new ArrayList<>();
+    private Set<DeadlineExtension> deadlineExtensions = new HashSet<>();
 
     @OneToMany(mappedBy = "feedbackSession", cascade = CascadeType.REMOVE)
     @OnDelete(action = OnDeleteAction.CASCADE)
@@ -196,6 +196,7 @@ public class FeedbackSession extends BaseEntity {
      */
     public void addDeadlineExtension(DeadlineExtension deadlineExtension) {
         this.deadlineExtensions.add(deadlineExtension);
+        deadlineExtension.setFeedbackSession(this);
     }
 
     public UUID getId() {
@@ -302,11 +303,11 @@ public class FeedbackSession extends BaseEntity {
         this.isPublishedEmailEnabled = isPublishedEmailEnabled;
     }
 
-    public List<DeadlineExtension> getDeadlineExtensions() {
+    public Set<DeadlineExtension> getDeadlineExtensions() {
         return deadlineExtensions;
     }
 
-    public void setDeadlineExtensions(List<DeadlineExtension> deadlineExtensions) {
+    public void setDeadlineExtensions(Set<DeadlineExtension> deadlineExtensions) {
         this.deadlineExtensions = deadlineExtensions;
     }
 

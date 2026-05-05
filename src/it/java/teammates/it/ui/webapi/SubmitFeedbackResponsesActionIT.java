@@ -128,9 +128,8 @@ public class SubmitFeedbackResponsesActionIT extends BaseActionIT<SubmitFeedback
             existingDeadline.setEndTime(endTime);
             logic.updateDeadlineExtension(existingDeadline);
         } else {
-            DeadlineExtension newDeadline = new DeadlineExtension(user, session, endTime);
-            newDeadline.setFeedbackSession(session);
-            newDeadline.setUser(user);
+            DeadlineExtension newDeadline = new DeadlineExtension(user, endTime);
+            session.addDeadlineExtension(newDeadline);
             logic.createDeadlineExtension(newDeadline);
         }
     }
