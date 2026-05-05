@@ -78,7 +78,8 @@ public class FeedbackMcqQuestionE2ETest extends BaseFeedbackQuestionE2ETest {
         List<String> choices = questionDetails.getMcqChoices();
         choices.add("Edited choice");
         questionDetails.setMcqChoices(choices);
-        loadedQuestion = testData.feedbackQuestions.get("qn1ForFirstSession").makeDeepCopy(feedbackSession);
+        loadedQuestion = testData.feedbackQuestions.get("qn1ForFirstSession").makeDeepCopy();
+        feedbackSession.addFeedbackQuestion(loadedQuestion);
         loadedQuestion.setQuestionDetails(questionDetails);
         feedbackEditPage.editMcqQuestion(2, questionDetails);
         feedbackEditPage.waitForPageToLoad();

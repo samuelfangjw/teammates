@@ -4,6 +4,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
@@ -187,10 +188,11 @@ public class DataBundleLogicIT extends BaseTestCaseWithDatabaseAccess {
         FeedbackQuestion actualQuestion1 = dataBundle.feedbackQuestions.get("qn1InSession1InCourse1");
         FeedbackQuestionDetails questionDetails1 =
                 new FeedbackTextQuestionDetails("What is the best selling point of your product?");
-        FeedbackQuestion expectedQuestion1 = FeedbackQuestion.makeQuestion(expectedSession1, 1,
+        FeedbackQuestion expectedQuestion1 = FeedbackQuestion.makeQuestion(1,
                 "This is a text question.", FeedbackParticipantType.STUDENTS, FeedbackParticipantType.SELF,
                 1, List.of(FeedbackParticipantType.INSTRUCTORS), List.of(FeedbackParticipantType.INSTRUCTORS),
                 List.of(FeedbackParticipantType.INSTRUCTORS), questionDetails1);
+        expectedSession1.addFeedbackQuestion(expectedQuestion1);
         expectedQuestion1.setId(actualQuestion1.getId());
         verifyEquals(expectedQuestion1, actualQuestion1);
 
@@ -293,7 +295,7 @@ public class DataBundleLogicIT extends BaseTestCaseWithDatabaseAccess {
         ______TS("verify feedback questions, responses, response comments and deadline extensions "
                 + "related to session1InTypicalCourse are removed correctly");
 
-        List<FeedbackQuestion> fqs = session1InTypicalCourse.getFeedbackQuestions();
+        Set<FeedbackQuestion> fqs = session1InTypicalCourse.getFeedbackQuestions();
         List<DeadlineExtension> des = session1InTypicalCourse.getDeadlineExtensions();
         List<FeedbackResponse> frs = new ArrayList<>();
         List<FeedbackResponseComment> frcs = new ArrayList<>();

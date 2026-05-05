@@ -115,7 +115,7 @@ public final class FeedbackResponsesLogic {
     /**
      * Checks whether a giver has responded a session.
      */
-    public boolean hasGiverRespondedForSession(String giverIdentifier, List<FeedbackQuestion> questions) {
+    public boolean hasGiverRespondedForSession(String giverIdentifier, Set<FeedbackQuestion> questions) {
         assert questions != null;
 
         for (FeedbackQuestion question : questions) {

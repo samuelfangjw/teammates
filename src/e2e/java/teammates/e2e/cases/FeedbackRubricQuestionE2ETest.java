@@ -53,11 +53,12 @@ public class FeedbackRubricQuestionE2ETest extends BaseFeedbackQuestionE2ETest {
         ______TS("add new question");
         // add new question exactly like loaded question
         FeedbackRubricQuestion newQuestion = new FeedbackRubricQuestion(
-                loadedQuestion.getFeedbackSession(), 2, loadedQuestion.getDescription(),
+                2, loadedQuestion.getDescription(),
                 loadedQuestion.getGiverType(), loadedQuestion.getRecipientType(),
                 loadedQuestion.getNumOfEntitiesToGiveFeedbackTo(),
                 loadedQuestion.getShowResponsesTo(), loadedQuestion.getShowGiverNameTo(),
                 loadedQuestion.getShowRecipientNameTo(), questionDetails);
+        loadedQuestion.getFeedbackSession().addFeedbackQuestion(newQuestion);
         feedbackEditPage.addRubricQuestion(newQuestion);
 
         feedbackEditPage.verifyRubricQuestionDetails(2, questionDetails);

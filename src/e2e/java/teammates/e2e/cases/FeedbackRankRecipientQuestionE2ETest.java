@@ -46,7 +46,8 @@ public class FeedbackRankRecipientQuestionE2ETest extends BaseFeedbackQuestionE2
 
         ______TS("verify loaded question");
         FeedbackQuestion loadedQuestion = testData.feedbackQuestions.get("qn1ForFirstSession")
-                .makeDeepCopy(feedbackSession);
+                .makeDeepCopy();
+        feedbackSession.addFeedbackQuestion(loadedQuestion);
         FeedbackRankRecipientsQuestionDetails questionDetails =
                 (FeedbackRankRecipientsQuestionDetails) loadedQuestion.getQuestionDetailsCopy();
         feedbackEditPage.verifyRankQuestionDetails(1, questionDetails);

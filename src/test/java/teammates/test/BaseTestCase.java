@@ -185,10 +185,12 @@ public class BaseTestCase {
     }
 
     protected FeedbackQuestion getTypicalFeedbackQuestionForSession(FeedbackSession session) {
-        return FeedbackQuestion.makeQuestion(session, 1, "test-description",
+        FeedbackQuestion fq = FeedbackQuestion.makeQuestion(1, "test-description",
                 FeedbackParticipantType.SELF, FeedbackParticipantType.SELF, 1, new ArrayList<>(),
                 new ArrayList<>(), new ArrayList<>(),
                 new FeedbackTextQuestionDetails("test question text"));
+        session.addFeedbackQuestion(fq);
+        return fq;
     }
 
     protected FeedbackResponse getTypicalFeedbackResponseForQuestion(FeedbackQuestion question) {

@@ -487,7 +487,6 @@ public class CreateFeedbackResponseCommentActionTest extends BaseActionTest<Crea
     @Test
     void testAccessControl_contributionQuestionResponse_instructorNotAllowedToAddComment() {
         FeedbackQuestion contributionQuestion = FeedbackQuestion.makeQuestion(
-                typicalFeedbackSession,
                 2,
                 "contribution question",
                 FeedbackParticipantType.SELF,
@@ -497,6 +496,7 @@ public class CreateFeedbackResponseCommentActionTest extends BaseActionTest<Crea
                 new ArrayList<>(),
                 new ArrayList<>(),
                 new FeedbackContributionQuestionDetails("test contribution question"));
+        typicalFeedbackSession.addFeedbackQuestion(contributionQuestion);
 
         FeedbackResponse contributionResponse = FeedbackResponse.makeResponse(
                 contributionQuestion,

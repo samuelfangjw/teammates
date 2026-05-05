@@ -93,7 +93,7 @@ public abstract class FeedbackQuestion extends BaseEntity implements Comparable<
     }
 
     protected FeedbackQuestion(
-            FeedbackSession feedbackSession, Integer questionNumber,
+            Integer questionNumber,
             String description, FeedbackParticipantType giverType, FeedbackParticipantType recipientType,
             Integer numOfEntitiesToGiveFeedbackTo, List<FeedbackParticipantType> showResponsesTo,
             List<FeedbackParticipantType> showGiverNameTo, List<FeedbackParticipantType> showRecipientNameTo
@@ -123,13 +123,13 @@ public abstract class FeedbackQuestion extends BaseEntity implements Comparable<
     /**
      * Make a copy of the FeedbackQuestion.
      */
-    public abstract FeedbackQuestion makeDeepCopy(FeedbackSession newFeedbackSession);
+    public abstract FeedbackQuestion makeDeepCopy();
 
     /**
      * Creates a feedback question according to its {@code FeedbackQuestionType}.
      */
     public static FeedbackQuestion makeQuestion(
-            FeedbackSession feedbackSession, Integer questionNumber,
+            Integer questionNumber,
             String description, FeedbackParticipantType giverType, FeedbackParticipantType recipientType,
             Integer numOfEntitiesToGiveFeedbackTo, List<FeedbackParticipantType> showResponsesTo,
             List<FeedbackParticipantType> showGiverNameTo, List<FeedbackParticipantType> showRecipientNameTo,
@@ -139,63 +139,63 @@ public abstract class FeedbackQuestion extends BaseEntity implements Comparable<
         switch (feedbackQuestionDetails.getQuestionType()) {
         case TEXT:
             feedbackQuestion = new FeedbackTextQuestion(
-                    feedbackSession, questionNumber, description, giverType, recipientType,
+                    questionNumber, description, giverType, recipientType,
                     numOfEntitiesToGiveFeedbackTo, showResponsesTo, showGiverNameTo, showRecipientNameTo,
                     feedbackQuestionDetails
             );
             break;
         case MCQ:
             feedbackQuestion = new FeedbackMcqQuestion(
-                    feedbackSession, questionNumber, description, giverType, recipientType,
+                    questionNumber, description, giverType, recipientType,
                     numOfEntitiesToGiveFeedbackTo, showResponsesTo, showGiverNameTo, showRecipientNameTo,
                     feedbackQuestionDetails
             );
             break;
         case MSQ:
             feedbackQuestion = new FeedbackMsqQuestion(
-                    feedbackSession, questionNumber, description, giverType, recipientType,
+                    questionNumber, description, giverType, recipientType,
                     numOfEntitiesToGiveFeedbackTo, showResponsesTo, showGiverNameTo, showRecipientNameTo,
                     feedbackQuestionDetails
             );
             break;
         case NUMSCALE:
             feedbackQuestion = new FeedbackNumericalScaleQuestion(
-                    feedbackSession, questionNumber, description, giverType, recipientType,
+                    questionNumber, description, giverType, recipientType,
                     numOfEntitiesToGiveFeedbackTo, showResponsesTo, showGiverNameTo, showRecipientNameTo,
                     feedbackQuestionDetails
             );
             break;
         case CONSTSUM, CONSTSUM_OPTIONS, CONSTSUM_RECIPIENTS:
             feedbackQuestion = new FeedbackConstantSumQuestion(
-                    feedbackSession, questionNumber, description, giverType, recipientType,
+                    questionNumber, description, giverType, recipientType,
                     numOfEntitiesToGiveFeedbackTo, showResponsesTo, showGiverNameTo, showRecipientNameTo,
                     feedbackQuestionDetails
             );
             break;
         case CONTRIB:
             feedbackQuestion = new FeedbackContributionQuestion(
-                    feedbackSession, questionNumber, description, giverType, recipientType,
+                    questionNumber, description, giverType, recipientType,
                     numOfEntitiesToGiveFeedbackTo, showResponsesTo, showGiverNameTo, showRecipientNameTo,
                     feedbackQuestionDetails
             );
             break;
         case RUBRIC:
             feedbackQuestion = new FeedbackRubricQuestion(
-                    feedbackSession, questionNumber, description, giverType, recipientType,
+                    questionNumber, description, giverType, recipientType,
                     numOfEntitiesToGiveFeedbackTo, showResponsesTo, showGiverNameTo, showRecipientNameTo,
                     feedbackQuestionDetails
             );
             break;
         case RANK_OPTIONS:
             feedbackQuestion = new FeedbackRankOptionsQuestion(
-                    feedbackSession, questionNumber, description, giverType, recipientType,
+                    questionNumber, description, giverType, recipientType,
                     numOfEntitiesToGiveFeedbackTo, showResponsesTo, showGiverNameTo, showRecipientNameTo,
                     feedbackQuestionDetails
             );
             break;
         case RANK_RECIPIENTS:
             feedbackQuestion = new FeedbackRankRecipientsQuestion(
-                    feedbackSession, questionNumber, description, giverType, recipientType,
+                    questionNumber, description, giverType, recipientType,
                     numOfEntitiesToGiveFeedbackTo, showResponsesTo, showGiverNameTo, showRecipientNameTo,
                     feedbackQuestionDetails
             );

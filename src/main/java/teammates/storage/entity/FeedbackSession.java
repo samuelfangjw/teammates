@@ -3,8 +3,10 @@ package teammates.storage.entity;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 
 import jakarta.persistence.CascadeType;
@@ -95,7 +97,7 @@ public class FeedbackSession extends BaseEntity {
 
     @OneToMany(mappedBy = "feedbackSession", cascade = CascadeType.REMOVE)
     @OnDelete(action = OnDeleteAction.CASCADE)
-    private List<FeedbackQuestion> feedbackQuestions = new ArrayList<>();
+    private Set<FeedbackQuestion> feedbackQuestions = new HashSet<>();
 
     @UpdateTimestamp
     private Instant updatedAt;
@@ -186,6 +188,7 @@ public class FeedbackSession extends BaseEntity {
      */
     public void addFeedbackQuestion(FeedbackQuestion feedbackQuestion) {
         this.feedbackQuestions.add(feedbackQuestion);
+        feedbackQuestion.setFeedbackSession(this);
     }
 
     /**
@@ -307,11 +310,11 @@ public class FeedbackSession extends BaseEntity {
         this.deadlineExtensions = deadlineExtensions;
     }
 
-    public List<FeedbackQuestion> getFeedbackQuestions() {
+    public Set<FeedbackQuestion> getFeedbackQuestions() {
         return feedbackQuestions;
     }
 
-    public void setFeedbackQuestions(List<FeedbackQuestion> feedbackQuestions) {
+    public void setFeedbackQuestions(Set<FeedbackQuestion> feedbackQuestions) {
         this.feedbackQuestions = feedbackQuestions;
     }
 

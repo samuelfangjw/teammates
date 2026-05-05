@@ -142,7 +142,6 @@ public final class DataBundleLogic {
             question.setId(UUID.randomUUID());
             questionMap.put(placeholderId, question);
             FeedbackSession fs = sessionsMap.get(question.getSessionId());
-            question.setFeedbackSession(fs);
             fs.addFeedbackQuestion(question);
         }
 

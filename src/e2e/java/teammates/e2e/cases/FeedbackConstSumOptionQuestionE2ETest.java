@@ -47,7 +47,8 @@ public class FeedbackConstSumOptionQuestionE2ETest extends BaseFeedbackQuestionE
 
         ______TS("verify loaded question");
         FeedbackQuestion loadedQuestion = testData.feedbackQuestions.get("qn1ForFirstSession")
-                .makeDeepCopy(feedbackSession);
+                .makeDeepCopy();
+        feedbackSession.addFeedbackQuestion(loadedQuestion);
         FeedbackConstantSumQuestionDetails questionDetails =
                 (FeedbackConstantSumQuestionDetails) loadedQuestion.getQuestionDetailsCopy();
         feedbackEditPage.verifyConstSumQuestionDetails(1, questionDetails);
