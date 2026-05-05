@@ -163,14 +163,12 @@ public class UsersDbIT extends BaseTestCaseWithDatabaseAccess {
         section.addTeam(team);
 
         Student firstStudent = getTypicalStudent();
-        firstStudent.setTeam(team);
         team.addUser(firstStudent);
         firstStudent.setEmail("valid-student-1@email.tmt");
         usersDb.createStudent(firstStudent);
         firstStudent.setAccount(userSharedAccount);
 
         Student secondStudent = getTypicalStudent();
-        secondStudent.setTeam(team);
         team.addUser(secondStudent);
         secondStudent.setEmail("valid-student-2@email.tmt");
         usersDb.createStudent(secondStudent);
@@ -288,7 +286,6 @@ public class UsersDbIT extends BaseTestCaseWithDatabaseAccess {
         Student student2 = getTypicalStudent();
         Account account = new Account("google-id", student.getName(), student.getEmail());
 
-        student2.setTeam(team);
         team.addUser(student2);
         accountsDb.createAccount(account);
         student.setAccount(account);

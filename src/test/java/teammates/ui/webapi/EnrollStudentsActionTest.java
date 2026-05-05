@@ -60,7 +60,8 @@ public class EnrollStudentsActionTest extends BaseActionTest<EnrollStudentsActio
         // Ensure instructor has the required permissions
         instructor.getPrivileges().updatePrivilege(Const.InstructorPermissions.CAN_MODIFY_STUDENT, true);
         loginAsInstructor(instructor.getGoogleId());
-        Student newStudent = new Student(course, "name", "email.com", "", team);
+        Student newStudent = new Student(course, "name", "email.com", "");
+        team.addUser(newStudent);
         when(mockLogic.getCourse(course.getId())).thenReturn(course);
         when(mockLogic.getStudentsForCourse(course.getId())).thenReturn(new ArrayList<>());
         when(mockLogic.getStudentForEmail(course.getId(), newStudent.getEmail())).thenReturn(null);
@@ -92,8 +93,10 @@ public class EnrollStudentsActionTest extends BaseActionTest<EnrollStudentsActio
         // Ensure instructor has the required permissions
         instructor.getPrivileges().updatePrivilege(Const.InstructorPermissions.CAN_MODIFY_STUDENT, true);
         loginAsInstructor(instructor.getGoogleId());
-        Student newStudent = new Student(course, "name", "email.com", "", team);
-        Student existingStudent = new Student(course, "oldName", "email.com", "", team);
+        Student newStudent = new Student(course, "name", "email.com", "");
+        team.addUser(newStudent);
+        Student existingStudent = new Student(course, "oldName", "email.com", "");
+        team.addUser(existingStudent);
         when(mockLogic.getStudentsForCourse(course.getId())).thenReturn(new ArrayList<>(List.of(existingStudent)));
         when(mockLogic.getCourse(course.getId())).thenReturn(course);
         when(mockLogic.getStudentForEmail(course.getId(), newStudent.getEmail())).thenReturn(existingStudent);
@@ -125,9 +128,12 @@ public class EnrollStudentsActionTest extends BaseActionTest<EnrollStudentsActio
         instructor.getPrivileges().updatePrivilege(Const.InstructorPermissions.CAN_MODIFY_STUDENT, true);
         loginAsInstructor(instructor.getGoogleId());
 
-        Student existingStudent = new Student(course, "oldName", "email.com", "", team);
-        Student requestStudent = new Student(course, "name", "Email.Com", "", team);
-        Student updatedStudent = new Student(course, "name", "email.com", "", team);
+        Student existingStudent = new Student(course, "oldName", "email.com", "");
+        team.addUser(existingStudent);
+        Student requestStudent = new Student(course, "name", "Email.Com", "");
+        team.addUser(requestStudent);
+        Student updatedStudent = new Student(course, "name", "email.com", "");
+        team.addUser(updatedStudent);
 
         when(mockLogic.getStudentsForCourse(course.getId())).thenReturn(new ArrayList<>(List.of(existingStudent)));
         when(mockLogic.getCourse(course.getId())).thenReturn(course);
@@ -164,7 +170,8 @@ public class EnrollStudentsActionTest extends BaseActionTest<EnrollStudentsActio
         // Ensure instructor has the required permissions
         instructor.getPrivileges().updatePrivilege(Const.InstructorPermissions.CAN_MODIFY_STUDENT, true);
         loginAsInstructor(instructor.getGoogleId());
-        Student newStudent = new Student(course, "name", "email.com", "", team);
+        Student newStudent = new Student(course, "name", "email.com", "");
+        team.addUser(newStudent);
         when(mockLogic.getStudentsForCourse(course.getId())).thenReturn(new ArrayList<>());
         when(mockLogic.getCourse(course.getId())).thenReturn(course);
         when(mockLogic.getStudentForEmail(course.getId(), newStudent.getEmail())).thenReturn(null);
@@ -196,7 +203,8 @@ public class EnrollStudentsActionTest extends BaseActionTest<EnrollStudentsActio
 
         doThrow(new InvalidParametersException("")).when(mockLogic).updateStudentCascade(any(Student.class));
 
-        Student newStudent = new Student(course, "name", "email.com", "", team);
+        Student newStudent = new Student(course, "name", "email.com", "");
+        team.addUser(newStudent);
         when(mockLogic.getCourse(course.getId())).thenReturn(course);
         when(mockLogic.getStudentsForCourse(course.getId())).thenReturn(new ArrayList<>(List.of(newStudent)));
         when(mockLogic.getStudentForEmail(course.getId(), newStudent.getEmail())).thenReturn(newStudent);

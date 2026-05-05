@@ -66,7 +66,8 @@ public class EnrollStudentsActionIT extends BaseActionIT<EnrollStudentsAction> {
         Course course = logic.getCourse(courseId);
         Section section = logic.getSection(courseId, "Section 1");
         Team team = logic.getTeamOrCreate(section, "Team 1");
-        Student newStudent = new Student(course, "Test Student", "test@email.com", "Test Comment", team);
+        Student newStudent = new Student(course, "Test Student", "test@email.com", "Test Comment");
+        team.addUser(newStudent);
 
         loginAsInstructor(instructor.getGoogleId());
 
@@ -94,9 +95,10 @@ public class EnrollStudentsActionIT extends BaseActionIT<EnrollStudentsAction> {
         Section newSection = logic.getSection(courseId, "Section 3");
         Team newTeam = new Team("Team 1");
         newSection.addTeam(newTeam);
-        newStudent = new Student(course, "Test Student", "test@email.com", "Test Comment", newTeam);
-        Student secondStudent = new Student(course, "Test Student 2", "test2@email.com", "Test Comment",
-                team);
+        newStudent = new Student(course, "Test Student", "test@email.com", "Test Comment");
+        newTeam.addUser(newStudent);
+        Student secondStudent = new Student(course, "Test Student 2", "test2@email.com", "Test Comment");
+        newTeam.addUser(secondStudent);
         StudentsEnrollRequest req = prepareRequest(Arrays.asList(secondStudent, newStudent));
         InvalidOperationException exception = verifyInvalidOperation(req, params);
         assertEquals(String.format(expectedMessage, "Team 1", "Section 3", "Section 1"), exception.getMessage());
@@ -106,7 +108,8 @@ public class EnrollStudentsActionIT extends BaseActionIT<EnrollStudentsAction> {
         Section section3 = logic.getSection(courseId, "Section 3");
         Team team3 = logic.getTeamOrCreate(section3, "Team 3");
 
-        Student changedTeam = new Student(course, "Student 1", "student1@teammates.tmt", "Test Comment", team3);
+        Student changedTeam = new Student(course, "Student 1", "student1@teammates.tmt", "Test Comment");
+        team3.addUser(changedTeam);
 
         request = prepareRequest(Arrays.asList(changedTeam));
         enrollStudentsAction = getAction(request, params);

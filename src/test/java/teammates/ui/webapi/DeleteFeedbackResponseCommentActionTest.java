@@ -399,7 +399,8 @@ public class DeleteFeedbackResponseCommentActionTest extends BaseActionTest<Dele
         Team differentTeam = new Team("different team");
         section.addTeam(differentTeam);
         Student differentStudentInDifferentTeam = new Student(typicalCourse, "differentStudent",
-                "differentstudent@teammates.tmt", "comments", differentTeam);
+                "differentstudent@teammates.tmt", "comments");
+        differentTeam.addUser(differentStudentInDifferentTeam);
 
         String[] params = new String[] {
                 Const.ParamsNames.FEEDBACK_RESPONSE_COMMENT_ID, typicalFeedbackResponseComment.getId().toString(),
@@ -430,7 +431,8 @@ public class DeleteFeedbackResponseCommentActionTest extends BaseActionTest<Dele
         typicalStudent.setTeam(team);
 
         Student differentStudentInSameTeam = new Student(typicalCourse, "differentStudent",
-                "differentstudent@teammates.tmt", "comments", team);
+                "differentstudent@teammates.tmt", "comments");
+        team.addUser(differentStudentInSameTeam);
 
         String[] params = new String[] {
                 Const.ParamsNames.FEEDBACK_RESPONSE_COMMENT_ID, typicalFeedbackResponseComment.getId().toString(),

@@ -66,9 +66,11 @@ public class EnrollStudentsAction extends Action {
             course.addSection(section);
             Team team = new Team(studentEnrollRequest.getTeam());
             section.addTeam(team);
-            studentsToEnroll.add(new Student(
+            Student student = new Student(
                     course, studentEnrollRequest.getName(),
-                    normalizedEmail, studentEnrollRequest.getComments(), team));
+                    normalizedEmail, studentEnrollRequest.getComments());
+            team.addUser(student);
+            studentsToEnroll.add(student);
         });
         try {
             logic.validateSectionsAndTeams(studentsToEnroll, courseId);
@@ -109,7 +111,8 @@ public class EnrollStudentsAction extends Action {
                     Student existingStudent = logic.getStudentForEmail(courseId, normalizedEmail);
                     Student newStudent = new Student(
                             course, enrollRequest.getName(),
-                            normalizedEmail, enrollRequest.getComments(), team);
+                            normalizedEmail, enrollRequest.getComments());
+                    team.addUser(newStudent);
                     newStudent.setId(existingStudent.getId());
                     Student updatedStudent = logic.updateStudentCascade(newStudent);
                     enrolledStudents.add(updatedStudent);
@@ -126,7 +129,8 @@ public class EnrollStudentsAction extends Action {
                     Team team = logic.getTeamOrCreate(section, enrollRequest.getTeam());
                     Student newStudent = new Student(
                             course, enrollRequest.getName(),
-                            normalizedEmail, enrollRequest.getComments(), team);
+                            normalizedEmail, enrollRequest.getComments());
+                    team.addUser(newStudent);
                     newStudent = logic.createStudent(newStudent);
                     enrolledStudents.add(newStudent);
                 } catch (InvalidParametersException | EntityAlreadyExistsException exception) {

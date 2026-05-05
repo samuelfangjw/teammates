@@ -134,8 +134,6 @@ public class BaseTestCase {
         Team team = getTypicalTeam();
         Course course = team.getSection().getCourse();
         Student student = new Student(course, "student-name", "validstudent@teammates.tmt", "comments");
-
-        student.setTeam(team);
         team.addUser(student);
 
         return student;

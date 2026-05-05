@@ -112,15 +112,18 @@ public class GetStudentsActionTest extends BaseActionTest<GetStudentsAction> {
         // Students in section one
         stubStudentOne = getTypicalStudent();
         stubStudentOne.setTeam(stubTeamOne);
-        stubStudentTwo = new Student(stubCourse, "student-2", "student2@teammates.tmt", "comments", stubTeamTwo);
-        Student stubStudentThree = new Student(stubCourse, "student-3", "student3@teammates.tmt", "comments", stubTeamTwo);
+        stubStudentTwo = new Student(stubCourse, "student-2", "student2@teammates.tmt", "comments");
+        stubTeamTwo.addUser(stubStudentTwo);
+        Student stubStudentThree = new Student(stubCourse, "student-3", "student3@teammates.tmt", "comments");
+        stubTeamTwo.addUser(stubStudentThree);
         stubStudentListSectionOne.add(stubStudentOne);
         stubStudentListSectionOne.add(stubStudentTwo);
         stubStudentListSectionOne.add(stubStudentThree);
         stubStudentListSectionOneTeamOne.add(stubStudentOne);
 
         // Students in section two
-        Student stubStudentFour = new Student(stubCourse, "student-4", "student4@teammates.tmt", "comments", stubTeamThree);
+        Student stubStudentFour = new Student(stubCourse, "student-4", "student4@teammates.tmt", "comments");
+        stubTeamThree.addUser(stubStudentFour);
         stubStudentListSectionTwo.add(stubStudentFour);
 
         // Students in the entire Course

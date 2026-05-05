@@ -78,7 +78,9 @@ public class UpdateStudentAction extends Action {
         Section section = logic.getSectionOrCreate(courseId, updateRequest.getSection());
         Team team = logic.getTeamOrCreate(section, updateRequest.getTeam());
         Student studentToUpdate = new Student(course, updateRequest.getName(), updateRequest.getEmail(),
-                updateRequest.getComments(), team);
+                updateRequest.getComments());
+        team.addUser(studentToUpdate);
+
         try {
             //we swap out email before we validate
             //TODO: this is duct tape at the moment, need to refactor how we do the validation
