@@ -7,6 +7,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
+import static teammates.ui.webapi.UpdateStudentAction.SUCCESSFUL_UPDATE_BUT_EMAIL_FAILED;
 import static teammates.ui.webapi.UpdateStudentAction.SUCCESSFUL_UPDATE_WITH_EMAIL;
 
 import java.util.UUID;
@@ -103,6 +104,45 @@ public class UpdateStudentActionTest extends BaseActionTest<UpdateStudentAction>
         );
         verifyNumberOfEmailsSent(1);
         assertEquals(SUCCESSFUL_UPDATE_WITH_EMAIL, actionOutput.getMessage());
+    }
+
+    @Test
+    void testExecute_isSessionSummarySendEmailTrue_successWithEmailFailedToSend()
+            throws EntityAlreadyExistsException, InvalidParametersException, EntityDoesNotExistException, EnrollException {
+        StudentUpdateRequest studentUpdateRequest = new StudentUpdateRequest(newName, newEmail, team.getName(),
+                section.getName(), student.getComments(), true);
+
+        Student updatedStudent = new Student(course, newName, newEmail, student.getComments());
+        team.addUser(updatedStudent);
+        updatedStudent.setId(student.getId());
+        when(mockLogic.updateStudent(eq(student.getId()), any())).thenReturn(updatedStudent);
+
+        EmailWrapper mockEmail = mock(EmailWrapper.class);
+        when(mockEmailGenerator.generateFeedbackSessionSummaryOfCourse(
+                course.getId(),
+                updatedStudent.getEmail(),
+                EmailType.STUDENT_EMAIL_CHANGED
+        )).thenReturn(mockEmail);
+        mockEmailSender.setShouldFail(true);
+
+        String[] params = {
+                Const.ParamsNames.COURSE_ID, course.getId(),
+                Const.ParamsNames.STUDENT_SQL_ID, student.getId().toString(),
+        };
+
+        UpdateStudentAction action = getAction(studentUpdateRequest, params);
+        MessageOutput actionOutput = (MessageOutput) getJsonResult(action).getOutput();
+
+        verify(mockLogic, times(1)).updateStudent(eq(student.getId()), any());
+
+        verify(mockEmailGenerator, times(1)).generateFeedbackSessionSummaryOfCourse(
+                course.getId(),
+                updatedStudent.getEmail(),
+                EmailType.STUDENT_EMAIL_CHANGED
+        );
+
+        verifyNoEmailsSent();
+        assertEquals(SUCCESSFUL_UPDATE_BUT_EMAIL_FAILED, actionOutput.getMessage());
     }
 
     @Test
