@@ -51,8 +51,6 @@ import teammates.ui.request.StudentUpdateRequest;
  */
 public final class UsersLogic {
 
-    static final String ERROR_INVALID_TEAM_NAME =
-            "Team \"%s\" is detected in both Section \"%s\" and Section \"%s\".";
     static final String ERROR_INVALID_TEAM_NAME_INSTRUCTION =
             "Please use different team names in different sections.";
     static final String ERROR_ENROLL_EXCEED_SECTION_LIMIT =
