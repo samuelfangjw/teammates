@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
@@ -843,8 +844,8 @@ public final class FeedbackResponsesLogic {
 
                     // skip responses not in current section
                     if (sectionName != null
-                            && !giverInfo.getSectionName().equals(sectionName)
-                            && !recipientInfo.getSectionName().equals(sectionName)) {
+                            && !Objects.equals(giverInfo.getSectionName(), sectionName)
+                            && !Objects.equals(recipientInfo.getSectionName(), sectionName)) {
                         continue;
                     }
 
