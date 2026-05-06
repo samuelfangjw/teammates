@@ -756,7 +756,7 @@ public final class UsersLogic {
     public Student updateStudentCascade(Student student, String newEmail, String newName, Team newTeam, String newComments)
             throws InvalidParametersException {
         String courseId = student.getCourseId();
-        
+
         if (newName != null) {
             student.setName(newName);
         }

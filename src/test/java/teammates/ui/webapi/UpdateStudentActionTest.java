@@ -88,7 +88,6 @@ public class UpdateStudentActionTest extends BaseActionTest<UpdateStudentAction>
         mockEmailSender.setShouldFail(false);
 
         String[] params = {
-                Const.ParamsNames.COURSE_ID, course.getId(),
                 Const.ParamsNames.STUDENT_SQL_ID, student.getId().toString(),
         };
 
@@ -126,7 +125,6 @@ public class UpdateStudentActionTest extends BaseActionTest<UpdateStudentAction>
         mockEmailSender.setShouldFail(true);
 
         String[] params = {
-                Const.ParamsNames.COURSE_ID, course.getId(),
                 Const.ParamsNames.STUDENT_SQL_ID, student.getId().toString(),
         };
 
@@ -151,7 +149,6 @@ public class UpdateStudentActionTest extends BaseActionTest<UpdateStudentAction>
                 section.getName(), student.getComments(), true);
 
         String[] params = {
-                Const.ParamsNames.COURSE_ID, course.getId(),
                 Const.ParamsNames.STUDENT_SQL_ID, UUID.randomUUID().toString(),
         };
 
@@ -176,7 +173,6 @@ public class UpdateStudentActionTest extends BaseActionTest<UpdateStudentAction>
         when(mockLogic.updateStudent(eq(student.getId()), any())).thenThrow(InvalidParametersException.class);
 
         String[] params = {
-                Const.ParamsNames.COURSE_ID, course.getId(),
                 Const.ParamsNames.STUDENT_SQL_ID, student.getId().toString(),
         };
 
@@ -192,7 +188,6 @@ public class UpdateStudentActionTest extends BaseActionTest<UpdateStudentAction>
                 section.getName(), student.getComments(), true);
 
         String[] params = {
-                Const.ParamsNames.COURSE_ID, course.getId(),
                 Const.ParamsNames.STUDENT_SQL_ID, student.getId().toString(),
         };
 
@@ -205,43 +200,14 @@ public class UpdateStudentActionTest extends BaseActionTest<UpdateStudentAction>
     }
 
     @Test
-    void testExecute_missingStudentId_throwsInvalidHttpParameterException() {
-        String[] params = {
-                Const.ParamsNames.COURSE_ID, course.getId(),
-        };
-        verifyHttpParameterFailure(params);
-    }
-
-    @Test
-    void testExecute_missingCourseId_throwsInvalidHttpParameterException() {
-        String[] params = {
-                Const.ParamsNames.STUDENT_SQL_ID, student.getId().toString(),
-        };
-        verifyHttpParameterFailure(params);
-    }
-
-    @Test
     void testSpecificAccessControl_admin_cannotAccess() {
         loginAsAdmin();
 
         String[] params = {
-                Const.ParamsNames.COURSE_ID, course.getId(),
                 Const.ParamsNames.STUDENT_SQL_ID, student.getId().toString(),
         };
 
         verifyCannotAccess(params);
-        verifyNoMoreInteractions(mockLogic, mockEmailGenerator);
-    }
-
-    @Test
-    void testSpecificAccessControl_missingCourseId_throwsInvalidHttpParameterException() {
-        loginAsInstructor("instructor-googleId");
-
-        String[] params = {
-                Const.ParamsNames.STUDENT_SQL_ID, student.getId().toString(),
-        };
-
-        verifyHttpParameterFailureAcl(params);
         verifyNoMoreInteractions(mockLogic, mockEmailGenerator);
     }
 
@@ -249,17 +215,14 @@ public class UpdateStudentActionTest extends BaseActionTest<UpdateStudentAction>
     void testSpecificAccessControl_nonExistentInstructorId_cannotAccess() {
         String nonExistentInstructorId = "RANDOM_ID";
         when(mockLogic.getInstructorByGoogleId(course.getId(), nonExistentInstructorId)).thenReturn(null);
+        when(mockLogic.getStudent(student.getId())).thenReturn(student);
         loginAsInstructor(nonExistentInstructorId);
 
         String[] params = {
-                Const.ParamsNames.COURSE_ID, course.getId(),
                 Const.ParamsNames.STUDENT_SQL_ID, student.getId().toString(),
         };
 
         verifyCannotAccess(params);
-        verify(mockLogic, times(1)).getInstructorByGoogleId(course.getId(), nonExistentInstructorId);
-        verify(mockLogic, times(1)).getCourse(course.getId());
-        verifyNoMoreInteractions(mockLogic, mockEmailGenerator);
     }
 
     @Test
@@ -268,17 +231,14 @@ public class UpdateStudentActionTest extends BaseActionTest<UpdateStudentAction>
         // Instructor with co-owner role can modify student
         Instructor instructor = getTypicalInstructor();
         when(mockLogic.getInstructorByGoogleId(course.getId(), instructorId)).thenReturn(instructor);
+        when(mockLogic.getStudent(student.getId())).thenReturn(student);
         loginAsInstructor(instructorId);
 
         String[] params = {
-                Const.ParamsNames.COURSE_ID, course.getId(),
                 Const.ParamsNames.STUDENT_SQL_ID, student.getId().toString(),
         };
 
         verifyCanAccess(params);
-        verify(mockLogic, times(1)).getInstructorByGoogleId(course.getId(), instructorId);
-        verify(mockLogic, times(1)).getCourse(course.getId());
-        verifyNoMoreInteractions(mockLogic, mockEmailGenerator);
     }
 
     @Test
@@ -290,17 +250,14 @@ public class UpdateStudentActionTest extends BaseActionTest<UpdateStudentAction>
                 new InstructorPrivileges(Const.InstructorPermissionRoleNames.INSTRUCTOR_PERMISSION_ROLE_OBSERVER);
         instructor.setPrivileges(instructorPrivileges);
         when(mockLogic.getInstructorByGoogleId(course.getId(), instructorId)).thenReturn(instructor);
+        when(mockLogic.getStudent(student.getId())).thenReturn(student);
         loginAsInstructor(instructorId);
 
         String[] params = {
-                Const.ParamsNames.COURSE_ID, course.getId(),
                 Const.ParamsNames.STUDENT_SQL_ID, student.getId().toString(),
         };
 
         verifyCannotAccess(params);
-        verify(mockLogic, times(1)).getInstructorByGoogleId(course.getId(), instructorId);
-        verify(mockLogic, times(1)).getCourse(course.getId());
-        verifyNoMoreInteractions(mockLogic, mockEmailGenerator);
     }
 
     @Test
@@ -308,7 +265,6 @@ public class UpdateStudentActionTest extends BaseActionTest<UpdateStudentAction>
         loginAsStudent("student-googleId");
 
         String[] params = {
-                Const.ParamsNames.COURSE_ID, course.getId(),
                 Const.ParamsNames.STUDENT_SQL_ID, student.getId().toString(),
         };
 
@@ -321,7 +277,6 @@ public class UpdateStudentActionTest extends BaseActionTest<UpdateStudentAction>
         logoutUser();
 
         String[] params = {
-                Const.ParamsNames.COURSE_ID, course.getId(),
                 Const.ParamsNames.STUDENT_SQL_ID, student.getId().toString(),
         };
 
@@ -334,7 +289,6 @@ public class UpdateStudentActionTest extends BaseActionTest<UpdateStudentAction>
         loginAsUnregistered("instructor-googleId");
 
         String[] params = {
-                Const.ParamsNames.COURSE_ID, course.getId(),
                 Const.ParamsNames.STUDENT_SQL_ID, student.getId().toString(),
         };
 

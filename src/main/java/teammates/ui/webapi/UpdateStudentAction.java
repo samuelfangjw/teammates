@@ -53,16 +53,19 @@ public class UpdateStudentAction extends Action {
         if (!userInfo.isInstructor) {
             throw new UnauthorizedAccessException("Instructor privilege is required to access this resource.");
         }
-        String courseId = getNonNullRequestParamValue(Const.ParamsNames.COURSE_ID);
+        UUID studentId = getUuidRequestParamValue(Const.ParamsNames.STUDENT_SQL_ID);
+        Student existingStudent = logic.getStudent(studentId);
+        if (existingStudent == null) {
+            throw new EntityNotFoundException(STUDENT_NOT_FOUND_FOR_EDIT);
+        }
 
-        Instructor instructor = logic.getInstructorByGoogleId(courseId, userInfo.id);
+        Instructor instructor = logic.getInstructorByGoogleId(existingStudent.getCourseId(), userInfo.id);
         gateKeeper.verifyAccessible(
-                instructor, logic.getCourse(courseId), Const.InstructorPermissions.CAN_MODIFY_STUDENT);
+                instructor, logic.getCourse(existingStudent.getCourseId()), Const.InstructorPermissions.CAN_MODIFY_STUDENT);
     }
 
     @Override
     public JsonResult execute() throws InvalidHttpRequestBodyException, InvalidOperationException {
-        String courseId = getNonNullRequestParamValue(Const.ParamsNames.COURSE_ID);
         UUID studentId = getUuidRequestParamValue(Const.ParamsNames.STUDENT_SQL_ID);
         StudentUpdateRequest updateRequest = getAndValidateRequestBody(StudentUpdateRequest.class);
 
@@ -84,6 +87,7 @@ public class UpdateStudentAction extends Action {
         }
 
         if (updateRequest.getIsSessionSummarySendEmail()) {
+            String courseId = existingStudent.getCourseId();
             boolean emailSent = sendEmail(courseId, updateRequest.getEmail());
             String statusMessage = emailSent ? SUCCESSFUL_UPDATE_WITH_EMAIL
                     : SUCCESSFUL_UPDATE_BUT_EMAIL_FAILED;

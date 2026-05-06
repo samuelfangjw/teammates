@@ -57,23 +57,8 @@ public class UpdateStudentActionIT extends BaseActionIT<UpdateStudentAction> {
 
     @Test
     public void testExecute_invalidParameters_failure() {
-        Student student1 = typicalBundle.students.get("student1InCourse1");
-
         ______TS("no parameters");
         verifyHttpParameterFailure();
-
-        ______TS("null student id");
-        String[] invalidParams = new String[] {
-                Const.ParamsNames.COURSE_ID, student1.getCourseId(),
-        };
-        verifyHttpParameterFailure(invalidParams);
-
-        ______TS("null course id");
-        invalidParams = new String[] {
-                Const.ParamsNames.STUDENT_SQL_ID, student1.getId().toString(),
-        };
-        verifyHttpParameterFailure(invalidParams);
-        verifyNoTasksAdded();
     }
 
     @Test
@@ -91,7 +76,6 @@ public class UpdateStudentActionIT extends BaseActionIT<UpdateStudentAction> {
                 newStudentTeam, student1.getSectionName(), newStudentComments, true);
 
         String[] submissionParams = new String[] {
-                Const.ParamsNames.COURSE_ID, student1.getCourseId(),
                 Const.ParamsNames.STUDENT_SQL_ID, student1.getId().toString(),
         };
 
@@ -131,7 +115,6 @@ public class UpdateStudentActionIT extends BaseActionIT<UpdateStudentAction> {
                 newStudentTeamToBeTrimmed, student1.getSectionName(), newStudentCommentsToBeTrimmed, true);
 
         String[] submissionParamsToBeTrimmed = new String[] {
-                Const.ParamsNames.COURSE_ID, student1.getCourseId(),
                 Const.ParamsNames.STUDENT_SQL_ID, student1.getId().toString(),
         };
 
@@ -156,7 +139,6 @@ public class UpdateStudentActionIT extends BaseActionIT<UpdateStudentAction> {
                 student1.getTeamName(), student1.getSectionName(), student1.getComments(), false);
 
         String[] submissionParams = new String[] {
-                Const.ParamsNames.COURSE_ID, student1.getCourseId(),
                 Const.ParamsNames.STUDENT_SQL_ID, student1.getId().toString(),
         };
 
@@ -181,7 +163,6 @@ public class UpdateStudentActionIT extends BaseActionIT<UpdateStudentAction> {
                 student1.getTeamName(), student1.getSectionName(), student1.getComments(), false);
 
         String[] submissionParams = new String[] {
-                Const.ParamsNames.COURSE_ID, student1.getCourseId(),
                 Const.ParamsNames.STUDENT_SQL_ID, student1.getId().toString(),
         };
 
@@ -199,7 +180,6 @@ public class UpdateStudentActionIT extends BaseActionIT<UpdateStudentAction> {
                 student1.getTeamName(), student1.getSectionName(), student1.getComments(), false);
 
         String[] submissionParams = new String[] {
-                Const.ParamsNames.COURSE_ID, student1.getCourseId(),
                 Const.ParamsNames.STUDENT_SQL_ID, UUID.randomUUID().toString(),
         };
 
@@ -221,7 +201,6 @@ public class UpdateStudentActionIT extends BaseActionIT<UpdateStudentAction> {
                 student4.getTeamName(), student1.getSectionName(), student1.getComments(), true);
 
         String[] submissionParams = new String[] {
-                Const.ParamsNames.COURSE_ID, student1.getCourseId(),
                 Const.ParamsNames.STUDENT_SQL_ID, student1.getId().toString(),
         };
 
@@ -259,7 +238,6 @@ public class UpdateStudentActionIT extends BaseActionIT<UpdateStudentAction> {
                         studentToJoinMaxSection.getComments(), true);
 
         String[] submissionParams = new String[] {
-                Const.ParamsNames.COURSE_ID, studentToJoinMaxSection.getCourseId(),
                 Const.ParamsNames.STUDENT_SQL_ID, studentToJoinMaxSection.getId().toString(),
         };
 
@@ -282,7 +260,6 @@ public class UpdateStudentActionIT extends BaseActionIT<UpdateStudentAction> {
                 student4.getTeamName(), "", student4.getComments(), true);
 
         String[] emptySectionSubmissionParams = new String[] {
-                Const.ParamsNames.COURSE_ID, student4.getCourseId(),
                 Const.ParamsNames.STUDENT_SQL_ID, student4.getId().toString(),
         };
 
@@ -312,7 +289,6 @@ public class UpdateStudentActionIT extends BaseActionIT<UpdateStudentAction> {
         Course course = typicalBundle.courses.get("course1");
 
         String[] submissionParams = new String[] {
-                Const.ParamsNames.COURSE_ID, student1.getCourseId(),
                 Const.ParamsNames.STUDENT_SQL_ID, student1.getId().toString(),
         };
 

@@ -53,16 +53,16 @@ describe('StudentService', () => {
 
   it('should execute PUT when updating students in a course', () => {
     const paramMap: Record<string, string> = {
-      courseid: 'CS3281',
       studentid: '12345',
     };
     jest.spyOn(spyHttpRequestService, 'put');
 
-    service.updateStudent({
-      courseId: paramMap['courseid'],
-      studentId: paramMap['studentid'],
-      requestBody: defaultStudentUpdateRequest,
-    });
+    service.updateStudent(
+      {
+        studentId: paramMap['studentid'],
+      },
+      defaultStudentUpdateRequest,
+    );
 
     expect(spyHttpRequestService.put).toHaveBeenCalledWith(
       ResourceEndpoints.STUDENT,
