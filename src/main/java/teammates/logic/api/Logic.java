@@ -11,6 +11,7 @@ import jakarta.annotation.Nullable;
 
 import teammates.common.datatransfer.AccountRequestStatus;
 import teammates.common.datatransfer.DataBundle;
+import teammates.common.datatransfer.EnrollResults;
 import teammates.common.datatransfer.FeedbackQuestionRecipient;
 import teammates.common.datatransfer.FeedbackResultFetchType;
 import teammates.common.datatransfer.NotificationStyle;
@@ -59,6 +60,7 @@ import teammates.ui.request.FeedbackQuestionUpdateRequest;
 import teammates.ui.request.FeedbackResponseCommentUpdateRequest;
 import teammates.ui.request.FeedbackSessionUpdateRequest;
 import teammates.ui.request.InstructorCreateRequest;
+import teammates.ui.request.StudentEnrollRequest;
 
 /**
  * Provides the business logic for production usage of the system.
@@ -925,6 +927,14 @@ public class Logic {
      */
     public Student getStudentForEmail(String courseId, String email) {
         return usersLogic.getStudentForEmail(courseId, email);
+    }
+
+    /**
+     * Enrolls students in a course according to the enroll requests, creating the section and team if needed.
+     */
+    public EnrollResults enrollStudents(Course course,
+            List<StudentEnrollRequest> enrollRequests) throws EnrollException {
+        return usersLogic.enrollStudents(course, enrollRequests);
     }
 
     /**

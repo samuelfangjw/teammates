@@ -1,23 +1,13 @@
 package teammates.ui.webapi;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
+import teammates.common.datatransfer.EnrollResults;
 import teammates.common.exception.EnrollException;
-import teammates.common.exception.EntityAlreadyExistsException;
-import teammates.common.exception.EntityDoesNotExistException;
-import teammates.common.exception.InvalidParametersException;
 import teammates.common.util.Const;
-import teammates.common.util.RequestTracer;
 import teammates.storage.entity.Course;
 import teammates.storage.entity.Instructor;
-import teammates.storage.entity.Section;
-import teammates.storage.entity.Student;
-import teammates.storage.entity.Team;
 import teammates.ui.output.EnrollStudentsData;
-import teammates.ui.output.StudentsData;
 import teammates.ui.request.InvalidHttpRequestBodyException;
 import teammates.ui.request.StudentEnrollRequest;
 import teammates.ui.request.StudentsEnrollRequest;
@@ -57,88 +47,17 @@ public class EnrollStudentsAction extends Action {
         StudentsEnrollRequest enrollRequests = getAndValidateRequestBody(StudentsEnrollRequest.class);
         List<StudentEnrollRequest> studentEnrollRequests = enrollRequests.getStudentEnrollRequests();
         Course course = logic.getCourse(courseId);
+        if (course == null) {
+            throw new EntityNotFoundException("Course with id " + courseId + " not found.");
+        }
 
-        List<Student> studentsToEnroll = new ArrayList<>();
-        studentEnrollRequests.forEach(studentEnrollRequest -> {
-            String normalizedEmail = studentEnrollRequest.getEmail();
-            Section section = new Section(studentEnrollRequest.getSection());
-            course.addSection(section);
-            Team team = new Team(studentEnrollRequest.getTeam());
-            section.addTeam(team);
-            Student student = new Student(
-                    course, studentEnrollRequest.getName(),
-                    normalizedEmail, studentEnrollRequest.getComments());
-            team.addUser(student);
-            studentsToEnroll.add(student);
-        });
+        EnrollResults enrollResults;
         try {
-            logic.validateSectionsAndTeams(studentsToEnroll, courseId);
+            enrollResults = logic.enrollStudents(course, studentEnrollRequests);
         } catch (EnrollException e) {
             throw new InvalidOperationException(e);
         }
 
-        List<Student> enrolledStudents = new ArrayList<>();
-        List<EnrollStudentsData.EnrollErrorResults> failToEnrollStudents = new ArrayList<>();
-
-        List<Student> existingStudents = logic.getStudentsForCourse(courseId);
-        Set<String> existingStudentsEmail = existingStudents.stream()
-                .map(Student::getEmail)
-                .collect(Collectors.toSet());
-
-        for (StudentEnrollRequest enrollRequest : studentEnrollRequests) {
-            RequestTracer.checkRemainingTime();
-
-            String requestEmail = enrollRequest.getEmail();
-
-            // Check if email already belongs to an instructor in this course
-            Instructor existingInstructor = logic.getInstructorForEmail(courseId, requestEmail);
-            if (existingInstructor != null) {
-                failToEnrollStudents.add(new EnrollStudentsData.EnrollErrorResults(requestEmail,
-                        "Cannot enroll student with email " + requestEmail
-                        + " as this email is already used by an instructor in course " + courseId));
-                continue;
-            }
-
-            if (existingStudentsEmail.contains(requestEmail)) {
-                // The student has been enrolled in the course.
-                try {
-                    Section section = logic.getSectionOrCreate(courseId, enrollRequest.getSection());
-                    Team team = logic.getTeamOrCreate(section, enrollRequest.getTeam());
-                    Student existingStudent = logic.getStudentForEmail(courseId, requestEmail);
-                    Student newStudent = new Student(
-                            course, enrollRequest.getName(),
-                            requestEmail, enrollRequest.getComments());
-                    newStudent.setId(existingStudent.getId());
-                    team.addUser(newStudent);
-                    Student updatedStudent = logic.updateStudentCascade(newStudent);
-                    enrolledStudents.add(updatedStudent);
-                } catch (InvalidParametersException | EntityDoesNotExistException
-                        | EntityAlreadyExistsException exception) {
-                    // Unsuccessfully enrolled students will not be returned.
-                    failToEnrollStudents.add(new EnrollStudentsData.EnrollErrorResults(requestEmail,
-                            exception.getMessage()));
-                }
-            } else {
-                // The student is new.
-                try {
-                    Section section = logic.getSectionOrCreate(courseId, enrollRequest.getSection());
-                    Team team = logic.getTeamOrCreate(section, enrollRequest.getTeam());
-                    Student newStudent = new Student(
-                            course, enrollRequest.getName(),
-                            requestEmail, enrollRequest.getComments());
-                    team.addUser(newStudent);
-                    newStudent = logic.createStudent(newStudent);
-                    enrolledStudents.add(newStudent);
-                } catch (InvalidParametersException | EntityAlreadyExistsException exception) {
-                    // Unsuccessfully enrolled students will not be returned.
-                    failToEnrollStudents.add(new EnrollStudentsData.EnrollErrorResults(requestEmail,
-                            exception.getMessage()));
-                }
-            }
-        }
-
-        StudentsData data = new StudentsData(enrolledStudents);
-
-        return new JsonResult(new EnrollStudentsData(data, failToEnrollStudents));
+        return new JsonResult(new EnrollStudentsData(enrollResults));
     }
 }
