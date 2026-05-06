@@ -227,7 +227,7 @@ export class InstructorCourseStudentEditPageComponent implements OnInit, OnDestr
     this.studentService
       .updateStudent({
         courseId: this.courseId,
-        studentEmail: this.student.email,
+        studentId: this.student.userId,
         requestBody: reqBody,
       })
       .pipe(

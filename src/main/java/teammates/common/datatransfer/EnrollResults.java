@@ -20,6 +20,11 @@ public class EnrollResults {
         this.unsuccessfulEnrolls = new HashMap<>();
     }
 
+    public EnrollResults(List<Student> enrolledStudents, Map<String, String> unsuccessfulEnrolls) {
+        this.enrolledStudents = enrolledStudents;
+        this.unsuccessfulEnrolls = unsuccessfulEnrolls;
+    }
+
     public List<Student> getEnrolledStudents() {
         return enrolledStudents;
     }

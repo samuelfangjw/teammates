@@ -1,6 +1,5 @@
 package teammates.logic.core;
 
-import static teammates.common.util.Const.ERROR_CREATE_ENTITY_ALREADY_EXISTS;
 import static teammates.common.util.Const.ERROR_UPDATE_NON_EXISTENT;
 
 import java.util.ArrayList;
@@ -42,6 +41,7 @@ import teammates.storage.entity.Team;
 import teammates.storage.entity.User;
 import teammates.ui.request.InstructorCreateRequest;
 import teammates.ui.request.StudentEnrollRequest;
+import teammates.ui.request.StudentUpdateRequest;
 
 /**
  * Handles operations related to user (instructor & student).
@@ -216,26 +216,18 @@ public final class UsersLogic {
     }
 
     /**
-     * Creates a student.
-     *
-     * @return the created student
-     * @throws InvalidParametersException   if the student is not valid
-     * @throws EntityAlreadyExistsException if the student already exists in the
-     *                                      database.
-     */
-    public Student createStudent(Student student) throws InvalidParametersException, EntityAlreadyExistsException {
-        validateUser(student);
-        return usersDb.createStudent(student);
-    }
-
-    /**
      * Creates a student with the given parameters.
      */
     public Student createStudent(Course course, Team team, String name, String email, String comments)
             throws InvalidParametersException, EntityAlreadyExistsException {
         Student student = new Student(course, name, email, comments);
+        if (getStudentForEmail(course.getId(), email) != null) {
+            throw new EntityAlreadyExistsException(String.format("Student with email %s already exists.", email));
+        }
+
         team.addUser(student);
-        return createStudent(student);
+        validateUser(student);
+        return usersDb.createStudent(student);
     }
 
     /**
@@ -658,14 +650,27 @@ public final class UsersLogic {
      * Gets the section with the name in a particular course, otherwise creates a new section.
      */
     public Section getSectionOrCreate(String courseId, String sectionName) {
-        return usersDb.getSectionOrCreate(courseId, sectionName);
-    }
+        // TODO: temporarily added so actions that use this do not break.
+        // This should not be used and will be removed once all actions are refactored to not use this method.
+        // Sections should not be created implicitly unless creating/updating a student.
+        // Currently this is used in actions such as SubmitFeedbackResponsesAction,
+        //  which should not be creating sections at all.
+        Course course = coursesLogic.getCourse(courseId);
+        if (course == null) {
+            return null;
+        }
+        Section section = getSection(courseId, sectionName);
+        if (section == null) {
+            try {
+                section = coursesLogic.createSection(course, sectionName);
+            } catch (EntityAlreadyExistsException e) {
+                assert false : "Section with name " + sectionName + " should not exist for course " + courseId;
+            } catch (InvalidParametersException e) {
+                assert false : "Section name " + sectionName + " should be valid.";
+            }
+        }
 
-    /**
-     * Gets the team with the name in a particular session, otherwise creates a new team.
-     */
-    public Team getTeamOrCreate(Section section, String teamName) {
-        return usersDb.getTeamOrCreate(section, teamName);
+        return section;
     }
 
     /**
@@ -740,83 +745,9 @@ public final class UsersLogic {
         return newEmail != null && !originalEmail.equals(newEmail);
     }
 
-    private boolean isTeamChanged(Team originalTeam, Team newTeam) {
-        return newTeam != null && originalTeam != null
-                && !originalTeam.equals(newTeam);
-    }
-
     private boolean isSectionChanged(Section originalSection, Section newSection) {
         return newSection != null && originalSection != null
                 && !originalSection.equals(newSection);
-    }
-
-    /**
-     * Updates a student by {@link Student}.
-     *
-     * <p>If email changed, update by recreating the student and cascade update all responses
-     * and comments the student gives/receives.
-     *
-     * <p>If team changed, cascade delete all responses the student gives/receives within that team.
-     *
-     * <p>If section changed, cascade update all responses the student gives/receives.
-     *
-     * @return updated student
-     * @throws InvalidParametersException if attributes to update are not valid
-     * @throws EntityDoesNotExistException if the student cannot be found
-     * @throws EntityAlreadyExistsException if the student cannot be updated
-     *         by recreation because of an existent student
-     */
-    public Student updateStudentCascade(Student student)
-            throws InvalidParametersException, EntityDoesNotExistException, EntityAlreadyExistsException {
-        String courseId = student.getCourseId();
-        Student originalStudent = getStudent(student.getId());
-        if (originalStudent == null) {
-            throw new EntityDoesNotExistException(ERROR_UPDATE_NON_EXISTENT);
-        }
-        String originalEmail = originalStudent.getEmail();
-        boolean changedEmail = isEmailChanged(originalEmail, student.getEmail());
-
-        // check for email conflict
-        Student s = usersDb.getStudentForEmail(courseId, student.getEmail());
-        if (changedEmail && s != null) {
-            String errorMessage = String.format(ERROR_CREATE_ENTITY_ALREADY_EXISTS, s.toString());
-            throw new EntityAlreadyExistsException(errorMessage);
-        }
-
-        Team originalTeam = originalStudent.getTeam();
-        Section originalSection = originalStudent.getSection();
-        boolean changedTeam = isTeamChanged(originalTeam, student.getTeam());
-        boolean changedSection = isSectionChanged(originalSection, student.getSection());
-
-        // update student
-        originalStudent.setName(student.getName());
-        originalStudent.setTeam(student.getTeam());
-        originalStudent.setEmail(student.getEmail());
-        originalStudent.setComments(student.getComments());
-
-        // cascade email changes to responses and comments
-        if (changedEmail) {
-            feedbackResponsesLogic
-                    .updateFeedbackResponsesForChangingEmail(courseId, originalEmail, student.getEmail());
-            feedbackResponseCommentsLogic
-                    .updateFeedbackResponseCommentsEmails(courseId, originalEmail, student.getEmail());
-        }
-
-        // adjust submissions if moving to a different team
-        if (changedTeam) {
-            feedbackResponsesLogic
-                    .updateFeedbackResponsesForChangingTeam(student.getCourse(), student.getEmail(), originalTeam);
-        }
-
-        // update the new section name in responses
-        if (changedSection) {
-            feedbackResponsesLogic.updateFeedbackResponsesForChangingSection(
-                    student.getCourse(), student.getEmail(), student.getSection());
-        }
-
-        validateUser(originalStudent);
-
-        return originalStudent;
     }
 
     /**
@@ -877,6 +808,74 @@ public final class UsersLogic {
     }
 
     /**
+     * Updates a student by student id and update request, and cascades to responses and comments if needed.
+     */
+    public Student updateStudent(UUID studentId, StudentUpdateRequest updateRequest)
+            throws InvalidParametersException, EntityDoesNotExistException, EntityAlreadyExistsException, EnrollException {
+
+        Student student = getStudent(studentId);
+        if (student == null) {
+            throw new EntityDoesNotExistException(String.format("Student with id %s not found", studentId));
+        }
+
+        boolean isEmailChanged = isEmailChanged(student.getEmail(), updateRequest.getEmail());
+        if (isEmailChanged) {
+            Instructor instructor = getInstructorForEmail(student.getCourseId(), updateRequest.getEmail());
+            if (instructor != null) {
+                String errorMessage = String.format(
+                        "Cannot update student email to %s as this email is already used by an instructor in course %s",
+                        updateRequest.getEmail(), student.getCourseId());
+                throw new EntityAlreadyExistsException(errorMessage);
+            }
+
+            Student existingStudent = getStudentForEmail(student.getCourseId(), updateRequest.getEmail());
+            if (existingStudent != null) {
+                String errorMessage = String.format(
+                        "Cannot update student email to %s as this email is already used by another student in course %s",
+                        updateRequest.getEmail(), student.getCourseId());
+                throw new EntityAlreadyExistsException(errorMessage);
+            }
+        }
+
+        // section name -> section
+        Map<String, Section> sections = student.getCourse().getSections()
+                .stream()
+                .collect(Collectors.toMap(Section::getName, Function.identity()));
+
+        // section -> team name -> team
+        Map<String, Map<String, Team>> teams = coursesLogic.getTeamsForCourse(student.getCourseId())
+                .stream()
+                .collect(Collectors.groupingBy(team -> team.getSection().getName(),
+                        Collectors.toMap(Team::getName, Function.identity())));
+
+        Section section = sections.get(updateRequest.getSection());
+        if (section == null) {
+            section = coursesLogic.createSection(student.getCourse(), updateRequest.getSection());
+            sections.put(section.getName(), section);
+        }
+
+        Team team = teams.getOrDefault(section.getName(), Collections.emptyMap()).get(updateRequest.getTeam());
+        if (team == null) {
+            team = coursesLogic.createTeam(section, updateRequest.getTeam());
+            teams.computeIfAbsent(section.getName(), k -> new HashMap<>()).put(team.getName(), team);
+        }
+
+        updateStudentCascade(student, updateRequest.getEmail(), team, updateRequest.getComments());
+
+        // Validate section limit and team name violations.
+        // Precondition: this is executed within a transaction; throwing an exception
+        // here will roll back all changes.
+        List<Student> studentsInCourse = getStudentsForCourse(student.getCourseId());
+        String errorMessage = getSectionInvalidityInfo(studentsInCourse)
+                + getTeamInvalidityInfo(studentsInCourse);
+        if (!errorMessage.isEmpty()) {
+            throw new EnrollException(errorMessage);
+        }
+
+        return student;
+    }
+
+    /**
      * Enrolls students in a course according to the enroll requests, creating the section and team if needed.
      */
     public EnrollResults enrollStudents(Course course,
@@ -923,7 +922,7 @@ public final class UsersLogic {
             }
         }
 
-        // Validate enroll requests for section limit and team name violations.
+        // Validate section limit and team name violations.
         // Precondition: this is executed within a transaction; throwing an exception here will roll back all changes.
         String errorMessage = getSectionInvalidityInfo(studentsInCourse.values())
                 + getTeamInvalidityInfo(studentsInCourse.values());
@@ -966,42 +965,6 @@ public final class UsersLogic {
         }
 
         return student;
-    }
-
-    /**
-     * Validates sections for any limit violations and teams for any team name violations.
-     */
-    public void validateSectionsAndTeams(
-            List<Student> studentList, String courseId) throws EnrollException {
-
-        List<Student> mergedList = getMergedList(studentList, courseId);
-
-        if (mergedList.size() < 2) { // no conflicts
-            return;
-        }
-
-        String errorMessage = getSectionInvalidityInfo(mergedList) + getTeamInvalidityInfo(mergedList);
-
-        if (!errorMessage.isEmpty()) {
-            throw new EnrollException(errorMessage);
-        }
-    }
-
-    private List<Student> getMergedList(List<Student> studentList, String courseId) {
-
-        List<Student> mergedList = new ArrayList<>();
-        List<Student> studentsInCourse = getStudentsForCourse(courseId);
-
-        for (Student student : studentList) {
-            mergedList.add(student);
-        }
-
-        for (Student student : studentsInCourse) {
-            if (!isInEnrollList(student, mergedList)) {
-                mergedList.add(student);
-            }
-        }
-        return mergedList;
     }
 
     private String getSectionInvalidityInfo(Collection<Student> studentList) {
@@ -1058,16 +1021,6 @@ public final class UsersLogic {
         }
 
         return errorMessage.toString();
-    }
-
-    private boolean isInEnrollList(Student student,
-                                   List<Student> studentInfoList) {
-        for (Student studentInfo : studentInfoList) {
-            if (studentInfo.getEmail().equalsIgnoreCase(student.getEmail())) {
-                return true;
-            }
-        }
-        return false;
     }
 
     /**

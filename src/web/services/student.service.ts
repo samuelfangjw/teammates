@@ -68,12 +68,12 @@ export class StudentService {
    */
   updateStudent(queryParams: {
     courseId: string;
-    studentEmail: string;
+    studentId: string;
     requestBody: StudentUpdateRequest;
   }): Observable<MessageOutput> {
     const paramsMap: { [key: string]: string } = {
       courseid: queryParams.courseId,
-      studentemail: queryParams.studentEmail,
+      studentid: queryParams.studentId,
     };
     return this.httpRequestService.put(ResourceEndpoints.STUDENT, paramsMap, queryParams.requestBody);
   }
