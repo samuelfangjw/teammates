@@ -106,7 +106,7 @@ public class GetSessionResultsAction extends BasicFeedbackSubmissionAction {
 
             bundle = logic.getSessionResults(feedbackSession, instructor.getEmail(),
                     questionUuid, selectedSection, fetchType);
-            return new JsonResult(SessionResultsData.initForInstructor(bundle));
+            return new JsonResult(SessionResultsData.initFullDetail(bundle));
         case INSTRUCTOR_RESULT:
             // Section name filter is not applicable here
             instructor = getInstructorOfCourseFromRequest(courseId);
@@ -119,7 +119,7 @@ public class GetSessionResultsAction extends BasicFeedbackSubmissionAction {
             Team team = new Team(Const.USER_TEAM_FOR_INSTRUCTOR);
             student.setTeam(team);
 
-            return new JsonResult(SessionResultsData.initForStudent(bundle, student));
+            return new JsonResult(SessionResultsData.initForUser(bundle, student));
         case STUDENT_RESULT:
             // Section name filter is not applicable here
             student = getStudentOfCourseFromRequest(courseId);
@@ -127,7 +127,7 @@ public class GetSessionResultsAction extends BasicFeedbackSubmissionAction {
             bundle = logic.getSessionResultsForUser(feedbackSession, student.getEmail(),
                     false, questionUuid, isPreviewResults);
 
-            return new JsonResult(SessionResultsData.initForStudent(bundle, student));
+            return new JsonResult(SessionResultsData.initForUser(bundle, student));
         case INSTRUCTOR_SUBMISSION, STUDENT_SUBMISSION:
             throw new InvalidHttpParameterException("Invalid intent for this action");
         default:
