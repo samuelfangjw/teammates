@@ -753,19 +753,23 @@ public final class UsersLogic {
     /**
      * Updates a student by attributes to update. If an attribute is null, it will not be updated.
      */
-    public Student updateStudentCascade(Student student, String newEmail, Team newTeam, String newComments)
+    public Student updateStudentCascade(Student student, String newEmail, String newName, Team newTeam, String newComments)
             throws InvalidParametersException {
         String courseId = student.getCourseId();
+        
+        if (newName != null) {
+            student.setName(newName);
+        }
 
-        if (newEmail != null) {
+        if (newEmail != null && !student.getEmail().equals(newEmail)) {
             feedbackResponsesLogic
-                    .updateFeedbackResponsesForChangingEmail(courseId, student.getEmail(), student.getEmail());
+                    .updateFeedbackResponsesForChangingEmail(courseId, student.getEmail(), newEmail);
             feedbackResponseCommentsLogic
-                    .updateFeedbackResponseCommentsEmails(courseId, student.getEmail(), student.getEmail());
+                    .updateFeedbackResponseCommentsEmails(courseId, student.getEmail(), newEmail);
             student.setEmail(newEmail);
         }
 
-        if (newTeam != null) {
+        if (newTeam != null && !student.getTeam().equals(newTeam)) {
             feedbackResponsesLogic
                     .updateFeedbackResponsesForChangingTeam(student.getCourse(), student.getEmail(), student.getTeam());
             if (isSectionChanged(student.getSection(), newTeam.getSection())) {
@@ -860,7 +864,7 @@ public final class UsersLogic {
             teams.computeIfAbsent(section.getName(), k -> new HashMap<>()).put(team.getName(), team);
         }
 
-        updateStudentCascade(student, updateRequest.getEmail(), team, updateRequest.getComments());
+        updateStudentCascade(student, updateRequest.getEmail(), updateRequest.getName(), team, updateRequest.getComments());
 
         // Validate section limit and team name violations.
         // Precondition: this is executed within a transaction; throwing an exception
@@ -958,7 +962,7 @@ public final class UsersLogic {
 
         Student student = studentsInCourse.get(email);
         if (student != null) {
-            updateStudentCascade(student, null, team, enrollRequest.getComments());
+            updateStudentCascade(student, null, enrollRequest.getName(), team, enrollRequest.getComments());
         } else {
             student = createStudent(course, team, enrollRequest.getName(), email, enrollRequest.getComments());
             studentsInCourse.put(email, student);
