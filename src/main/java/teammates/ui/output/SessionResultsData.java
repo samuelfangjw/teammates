@@ -232,7 +232,7 @@ public class SessionResultsData extends ApiOutput {
         } else {
             recipientSectionName = response.getRecipientSectionName();
         }
-        
+
         return recipientSectionName;
     }
 

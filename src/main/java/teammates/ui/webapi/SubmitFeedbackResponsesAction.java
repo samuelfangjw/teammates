@@ -102,8 +102,6 @@ public class SubmitFeedbackResponsesAction extends BasicFeedbackSubmissionAction
             throw new EntityNotFoundException("The feedback question does not exist.");
         }
 
-        String courseId = feedbackQuestion.getCourseId();
-
         List<FeedbackResponse> existingResponses;
         Map<String, FeedbackQuestionRecipient> recipientsOfTheQuestion;
         FeedbackQuestionDetails questionDetails = feedbackQuestion.getQuestionDetailsCopy();

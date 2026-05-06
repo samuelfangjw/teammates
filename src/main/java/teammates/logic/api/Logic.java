@@ -25,7 +25,6 @@ import teammates.common.exception.InstructorUpdateException;
 import teammates.common.exception.InvalidFeedbackSessionStateException;
 import teammates.common.exception.InvalidParametersException;
 import teammates.common.exception.StudentUpdateException;
-import teammates.common.util.Const;
 import teammates.logic.core.AccountRequestsLogic;
 import teammates.logic.core.AccountsLogic;
 import teammates.logic.core.CoursesLogic;
