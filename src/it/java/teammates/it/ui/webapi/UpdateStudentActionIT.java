@@ -226,7 +226,7 @@ public class UpdateStudentActionIT extends BaseActionIT<UpdateStudentAction> {
         };
 
         InvalidOperationException ioe = verifyInvalidOperation(updateRequest, submissionParams);
-        String expectedErrorMessage = "Team \"Team 4\" is detected in Sections \"Section 3\", \"Section 1\"."
+        String expectedErrorMessage = "Team \"Team 4\" is detected in Sections \"Section 1\", \"Section 3\"."
                 + " Please use different team names in different sections.";
         assertEquals(expectedErrorMessage, ioe.getMessage());
 

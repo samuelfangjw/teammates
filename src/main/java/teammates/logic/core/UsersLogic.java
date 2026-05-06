@@ -976,13 +976,15 @@ public final class UsersLogic {
         }
 
         StringJoiner errorMessage = new StringJoiner(" ");
-        for (Map.Entry<String, Integer> entry : sectionCountMap.entrySet()) {
-            if (entry.getValue() > Const.SECTION_SIZE_LIMIT) {
-                errorMessage.add(String.format(
-                        ERROR_ENROLL_EXCEED_SECTION_LIMIT,
-                        Const.SECTION_SIZE_LIMIT, entry.getKey()));
-            }
-        }
+        sectionCountMap.entrySet().stream()
+                .sorted(Map.Entry.comparingByKey())
+                .forEach(entry -> {
+                    if (entry.getValue() > Const.SECTION_SIZE_LIMIT) {
+                        errorMessage.add(String.format(
+                                ERROR_ENROLL_EXCEED_SECTION_LIMIT,
+                                Const.SECTION_SIZE_LIMIT, entry.getKey()));
+                    }
+                });
 
         if (errorMessage.length() > 0) {
             errorMessage.add(String.format(
@@ -1004,17 +1006,20 @@ public final class UsersLogic {
             teamToSectionsMap.computeIfAbsent(teamName, k -> new HashSet<>()).add(sectionName);
         }
 
-        for (Map.Entry<String, Set<String>> entry : teamToSectionsMap.entrySet()) {
-            if (entry.getValue().size() > 1) {
-                List<String> sectionStrings = entry.getValue().stream()
-                        .map(section -> String.format("\"%s\"", section))
-                        .toList();
-                errorMessage.add(String.format(
-                        "Team \"%s\" is detected in Sections %s.",
-                        entry.getKey(),
-                        String.join(", ", sectionStrings)));
-            }
-        }
+        teamToSectionsMap.entrySet().stream()
+                .sorted(Map.Entry.comparingByKey())
+                .forEach(entry -> {
+                    if (entry.getValue().size() > 1) {
+                        List<String> sectionStrings = entry.getValue().stream()
+                                .sorted()
+                                .map(section -> String.format("\"%s\"", section))
+                                .toList();
+                        errorMessage.add(String.format(
+                                "Team \"%s\" is detected in Sections %s.",
+                                entry.getKey(),
+                                String.join(", ", sectionStrings)));
+                    }
+                });
 
         if (errorMessage.length() > 0) {
             errorMessage.add(ERROR_INVALID_TEAM_NAME_INSTRUCTION);

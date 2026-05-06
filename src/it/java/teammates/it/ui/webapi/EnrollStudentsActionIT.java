@@ -121,7 +121,7 @@ public class EnrollStudentsActionIT extends BaseActionIT<EnrollStudentsAction> {
 
         ______TS("Fail to enroll due to duplicate team name across sections");
 
-        String expectedMessage = "Team \"Team Duplicate\" is detected in Sections \"Section 6\", \"Section 5\"."
+        String expectedMessage = "Team \"Team Duplicate\" is detected in Sections \"Section 5\", \"Section 6\"."
                 + " Please use different team names in different sections.";
         StudentEnrollRequest enrollRequest1 = new StudentEnrollRequest(
                 "Test Student", "test-failure1@email.com", "Team Duplicate",
