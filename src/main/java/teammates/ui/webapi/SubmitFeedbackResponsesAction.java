@@ -126,7 +126,7 @@ public class SubmitFeedbackResponsesAction extends BasicFeedbackSubmissionAction
         case INSTRUCTOR_SUBMISSION:
             Instructor instructor = getInstructorOfCourseFromRequest(feedbackQuestion.getCourseId());
             giverIdentifier = instructor.getEmail();
-            giverSection = logic.getDefaultSectionOrCreate(courseId);
+            giverSection = null;
             existingResponses = logic.getFeedbackResponsesFromInstructorForQuestion(feedbackQuestion, instructor);
             recipientsOfTheQuestion = logic.getRecipientsOfQuestion(feedbackQuestion, instructor, null);
             dynamicallyGeneratedOptions = logic.getDynamicallyGeneratedOptions(feedbackQuestion, null);

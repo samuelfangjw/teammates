@@ -254,37 +254,24 @@ abstract class BasicFeedbackSubmissionAction extends Action {
         switch (recipientType) {
         case SELF:
             switch (giverType) {
-            case INSTRUCTORS:
-            case SELF:
-                return logic.getDefaultSectionOrCreate(courseId);
-            case TEAMS:
-            case TEAMS_IN_SAME_SECTION:
-                Section section = logic.getSectionByCourseIdAndTeam(courseId, recipientIdentifier);
-                return section == null ? logic.getDefaultSectionOrCreate(courseId) : section;
-            case STUDENTS:
-            case STUDENTS_IN_SAME_SECTION:
+            case INSTRUCTORS, SELF:
+                return null;
+            case TEAMS, TEAMS_IN_SAME_SECTION:
+                return logic.getSectionByCourseIdAndTeam(courseId, recipientIdentifier);
+            case STUDENTS, STUDENTS_IN_SAME_SECTION:
                 Student student = logic.getStudentForEmail(courseId, recipientIdentifier);
-                return student == null ? logic.getDefaultSectionOrCreate(courseId) : student.getSection();
+                return student != null ? student.getSection() : null;
             default:
                 assert false : "Invalid giver type " + giverType + " for recipient type " + recipientType;
                 return null;
             }
-        case INSTRUCTORS:
-        case NONE:
-            return logic.getDefaultSectionOrCreate(courseId);
-        case TEAMS:
-        case TEAMS_EXCLUDING_SELF:
-        case TEAMS_IN_SAME_SECTION:
-        case OWN_TEAM:
-            Section section = logic.getSectionByCourseIdAndTeam(courseId, recipientIdentifier);
-            return section == null ? logic.getDefaultSectionOrCreate(courseId) : section;
-        case STUDENTS:
-        case STUDENTS_EXCLUDING_SELF:
-        case STUDENTS_IN_SAME_SECTION:
-        case OWN_TEAM_MEMBERS:
-        case OWN_TEAM_MEMBERS_INCLUDING_SELF:
+        case INSTRUCTORS, NONE:
+            return null;
+        case TEAMS, TEAMS_EXCLUDING_SELF, TEAMS_IN_SAME_SECTION, OWN_TEAM:
+            return logic.getSectionByCourseIdAndTeam(courseId, recipientIdentifier);
+        case STUDENTS, STUDENTS_EXCLUDING_SELF, STUDENTS_IN_SAME_SECTION, OWN_TEAM_MEMBERS, OWN_TEAM_MEMBERS_INCLUDING_SELF:
             Student student = logic.getStudentForEmail(courseId, recipientIdentifier);
-            return student == null ? logic.getDefaultSectionOrCreate(courseId) : student.getSection();
+            return student != null ? student.getSection() : null;
         default:
             assert false : "Unknown recipient type " + recipientType;
             return null;

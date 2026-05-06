@@ -247,8 +247,6 @@ public class SubmitFeedbackResponsesActionTest extends BaseActionTest<SubmitFeed
         when(mockLogic.getRecipientsOfQuestion(spyFeedbackQuestion, null, stubStudent))
                 .thenReturn(recipients);
 
-        when(mockLogic.getDefaultSectionOrCreate(stubCourse.getId())).thenReturn(stubSection);
-
         FeedbackResponse createdResponse = FeedbackResponse.makeResponse(
                 stubStudent.getEmail(), stubSection,
                 recipientStudent1.getEmail(), stubSection,
@@ -298,11 +296,9 @@ public class SubmitFeedbackResponsesActionTest extends BaseActionTest<SubmitFeed
         when(mockLogic.getRecipientsOfQuestion(spyFeedbackQuestion, stubInstructor, null))
                 .thenReturn(recipients);
 
-        when(mockLogic.getDefaultSectionOrCreate(stubCourse.getId())).thenReturn(stubSection);
-
         FeedbackResponse createdResponse = FeedbackResponse.makeResponse(
-                stubInstructor.getEmail(), stubSection,
-                recipientInstructor1.getEmail(), stubSection,
+                stubInstructor.getEmail(), null,
+                recipientInstructor1.getEmail(), null,
                 new FeedbackTextResponseDetails("Response for " + recipientInstructor1.getEmail()));
         spyFeedbackQuestion.addFeedbackResponse(createdResponse);
         when(mockLogic.createFeedbackResponse(any(FeedbackResponse.class)))
@@ -365,8 +361,6 @@ public class SubmitFeedbackResponsesActionTest extends BaseActionTest<SubmitFeed
         when(mockLogic.getRecipientsOfQuestion(spyFeedbackQuestion, null, stubStudent))
                 .thenReturn(recipients);
 
-        when(mockLogic.getDefaultSectionOrCreate(stubCourse.getId())).thenReturn(stubSection);
-
         FeedbackResponse updatedResponse = FeedbackResponse.makeResponse(
                 stubStudent.getEmail(), stubSection,
                 recipientStudent1.getEmail(), stubSection,
@@ -415,8 +409,6 @@ public class SubmitFeedbackResponsesActionTest extends BaseActionTest<SubmitFeed
                 new FeedbackQuestionRecipient(recipientStudent1.getName(), recipientStudent1.getEmail()));
         when(mockLogic.getRecipientsOfQuestion(spyFeedbackQuestion, null, stubStudent))
                 .thenReturn(recipients);
-
-        when(mockLogic.getDefaultSectionOrCreate(stubCourse.getId())).thenReturn(stubSection);
 
         when(mockLogic.createFeedbackResponse(any(FeedbackResponse.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
@@ -492,7 +484,6 @@ public class SubmitFeedbackResponsesActionTest extends BaseActionTest<SubmitFeed
         when(mockLogic.getRecipientsOfQuestion(spyFeedbackQuestion, null, stubStudent))
                 .thenReturn(recipients);
 
-        when(mockLogic.getDefaultSectionOrCreate(stubCourse.getId())).thenReturn(stubSection);
         when(mockLogic.createFeedbackResponse(any(FeedbackResponse.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
 
@@ -533,8 +524,6 @@ public class SubmitFeedbackResponsesActionTest extends BaseActionTest<SubmitFeed
         when(mockLogic.getRecipientsOfQuestion(spyFeedbackQuestion, null, stubStudent))
                 .thenReturn(recipients);
 
-        when(mockLogic.getDefaultSectionOrCreate(stubCourse.getId())).thenReturn(stubSection);
-
         when(mockLogic.createFeedbackResponse(any(FeedbackResponse.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
 
@@ -574,8 +563,6 @@ public class SubmitFeedbackResponsesActionTest extends BaseActionTest<SubmitFeed
                 new FeedbackQuestionRecipient(teamName, teamName));
         when(mockLogic.getRecipientsOfQuestion(spyFeedbackQuestion, null, stubStudent))
                 .thenReturn(recipients);
-
-        when(mockLogic.getDefaultSectionOrCreate(stubCourse.getId())).thenReturn(stubSection);
 
         when(mockLogic.createFeedbackResponse(any(FeedbackResponse.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
@@ -638,7 +625,6 @@ public class SubmitFeedbackResponsesActionTest extends BaseActionTest<SubmitFeed
         when(mockLogic.getRecipientsOfQuestion(spyFeedbackQuestion, null, stubStudent))
                 .thenReturn(recipients);
 
-        when(mockLogic.getDefaultSectionOrCreate(stubCourse.getId())).thenReturn(stubSection);
         when(mockLogic.createFeedbackResponse(any(FeedbackResponse.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
 

@@ -26,7 +26,6 @@ import teammates.storage.entity.FeedbackQuestion;
 import teammates.storage.entity.FeedbackResponse;
 import teammates.storage.entity.FeedbackResponseComment;
 import teammates.storage.entity.Instructor;
-import teammates.storage.entity.Section;
 import teammates.storage.entity.Student;
 import teammates.storage.entity.User;
 
@@ -196,11 +195,11 @@ public class SessionResultsData extends ApiOutput {
                 .withGiverTeam(giverTeam)
                 .withGiverEmail(null)
                 .withRelatedGiverEmail(null)
-                .withGiverSection(response.getGiverSection())
+                .withGiverSectionName(getGiverSectionName(response))
                 .withRecipient(recipientName)
                 .withRecipientTeam(recipientTeam)
                 .withRecipientEmail(null)
-                .withRecipientSection(response.getRecipientSection())
+                .withRecipientSectionName(getRecipientSectionName(response))
                 .withResponseDetails(response.getFeedbackResponseDetailsCopy())
                 .withParticipantComment(comments.poll())
                 .withInstructorComments(new ArrayList<>(comments))
@@ -210,6 +209,31 @@ public class SessionResultsData extends ApiOutput {
     private static String removeAnonymousHash(String identifier) {
         return identifier.replaceAll(Const.DISPLAYED_NAME_FOR_ANONYMOUS_PARTICIPANT + " (student|instructor|team) "
                 + REGEX_ANONYMOUS_PARTICIPANT_HASH, Const.DISPLAYED_NAME_FOR_ANONYMOUS_PARTICIPANT + " $1");
+    }
+
+    private static String getGiverSectionName(FeedbackResponse response) {
+        FeedbackParticipantType giverType = response.getFeedbackQuestion().getGiverType();
+        if (giverType == FeedbackParticipantType.INSTRUCTORS || giverType == FeedbackParticipantType.NONE) {
+            return Const.DEFAULT_SECTION;
+        } else {
+            return response.getGiverSectionName();
+        }
+    }
+
+    private static String getRecipientSectionName(FeedbackResponse response) {
+        FeedbackParticipantType recipientType = response.getFeedbackQuestion().getRecipientType();
+        if (recipientType == FeedbackParticipantType.SELF) {
+            recipientType = response.getFeedbackQuestion().getGiverType();
+        }
+
+        String recipientSectionName;
+        if (recipientType == FeedbackParticipantType.INSTRUCTORS || recipientType == FeedbackParticipantType.NONE) {
+            recipientSectionName = Const.DEFAULT_SECTION;
+        } else {
+            recipientSectionName = response.getRecipientSectionName();
+        }
+        
+        return recipientSectionName;
     }
 
     private static List<ResponseOutput> buildResponsesFullDetail(
@@ -242,12 +266,14 @@ public class SessionResultsData extends ApiOutput {
         }
         String giverName = getGiverNameOfResponse(response.getId(), response.getGiver(), question, bundle);
         String giverTeam = bundle.getRoster().getInfoForIdentifier(response.getGiver()).getTeamName();
-        String giverSectionName = response.getGiverSectionName();
+        String giverSectionName;
         if (question.getGiverType() == FeedbackParticipantType.INSTRUCTORS) {
             Instructor instructor = bundle.getRoster().getInstructorForEmail(response.getGiver());
             giverName = instructor.getName();
             giverTeam = Const.USER_TEAM_FOR_INSTRUCTOR;
             giverSectionName = Const.DEFAULT_SECTION;
+        } else {
+            giverSectionName = response.getGiverSectionName();
         }
 
         // process recipient
@@ -255,13 +281,16 @@ public class SessionResultsData extends ApiOutput {
         String recipientName = getRecipientNameOfResponse(response.getId(), response.getRecipient(), question, bundle);
         String recipientTeam =
                 bundle.getRoster().getInfoForIdentifier(response.getRecipient()).getTeamName();
-        String recipientSectionName = response.getRecipientSectionName();
+        String recipientSectionName;
         if (question.getRecipientType() == FeedbackParticipantType.INSTRUCTORS) {
             Instructor instructor = bundle.getRoster().getInstructorForEmail(response.getRecipient());
             recipientName = instructor.getName();
             recipientTeam = Const.USER_TEAM_FOR_INSTRUCTOR;
             recipientSectionName = Const.DEFAULT_SECTION;
+        } else {
+            recipientSectionName = response.getRecipientSectionName();
         }
+
         if (bundle.isResponseRecipientVisible(response.getId(), question.getRecipientType())) {
             recipientEmail = response.getRecipient();
 
@@ -668,11 +697,6 @@ public class SessionResultsData extends ApiOutput {
                 return this;
             }
 
-            Builder withGiverSection(Section giverSection) {
-                responseOutput.giverSection = giverSection.getName();
-                return this;
-            }
-
             Builder withRecipient(String recipientName) {
                 responseOutput.recipient = recipientName;
                 return this;
@@ -690,11 +714,6 @@ public class SessionResultsData extends ApiOutput {
 
             Builder withRecipientSectionName(String recipientSection) {
                 responseOutput.recipientSection = recipientSection;
-                return this;
-            }
-
-            Builder withRecipientSection(Section recipientSection) {
-                responseOutput.recipientSection = recipientSection.getName();
                 return this;
             }
 

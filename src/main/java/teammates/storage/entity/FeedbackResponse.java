@@ -233,7 +233,7 @@ public abstract class FeedbackResponse extends BaseEntity {
     }
 
     public String getGiverSectionName() {
-        return giverSection.getName();
+        return giverSection == null ? null : giverSection.getName();
     }
 
     /**
@@ -261,7 +261,7 @@ public abstract class FeedbackResponse extends BaseEntity {
     }
 
     public String getRecipientSectionName() {
-        return recipientSection.getName();
+        return recipientSection == null ? null : recipientSection.getName();
     }
 
     /**

@@ -978,14 +978,6 @@ public class Logic {
     }
 
     /**
-     * Returns the default section.
-     * If it does not exist, create and return it.
-     */
-    public Section getDefaultSectionOrCreate(String courseId) {
-        return usersLogic.getSectionOrCreate(courseId, Const.DEFAULT_SECTION);
-    }
-
-    /**
      * Creates a section.
      */
     public Section createSection(Course course, String sectionName)

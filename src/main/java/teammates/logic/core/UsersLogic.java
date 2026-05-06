@@ -645,33 +645,6 @@ public final class UsersLogic {
     }
 
     /**
-     * Gets the section with the name in a particular course, otherwise creates a new section.
-     */
-    public Section getSectionOrCreate(String courseId, String sectionName) {
-        // TODO: temporarily added so actions that use this do not break.
-        // This should not be used and will be removed once all actions are refactored to not use this method.
-        // Sections should not be created implicitly unless creating/updating a student.
-        // Currently this is used in actions such as SubmitFeedbackResponsesAction,
-        //  which should not be creating sections at all.
-        Course course = coursesLogic.getCourse(courseId);
-        if (course == null) {
-            return null;
-        }
-        Section section = getSection(courseId, sectionName);
-        if (section == null) {
-            try {
-                section = coursesLogic.createSection(course, sectionName);
-            } catch (EntityAlreadyExistsException e) {
-                assert false : "Section with name " + sectionName + " should not exist for course " + courseId;
-            } catch (InvalidParametersException e) {
-                assert false : "Section name " + sectionName + " should be valid.";
-            }
-        }
-
-        return section;
-    }
-
-    /**
      * Checks if there are any other registered instructors that can modify instructors.
      * If there are none, the instructor currently being edited will be granted the privilege
      * of modifying instructors automatically.
