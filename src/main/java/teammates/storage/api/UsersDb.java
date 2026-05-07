@@ -49,6 +49,18 @@ public final class UsersDb {
     }
 
     /**
+     * Gets users for the specified course.
+     */
+    public List<User> getUsersForCourse(String courseId) {
+        CriteriaBuilder cb = HibernateUtil.getCriteriaBuilder();
+        CriteriaQuery<User> cr = cb.createQuery(User.class);
+        Root<User> userRoot = cr.from(User.class);
+        cr.select(userRoot).where(cb.equal(userRoot.get("courseId"), courseId));
+
+        return HibernateUtil.createQuery(cr).getResultList();
+    }
+
+    /**
      * Creates an instructor.
      */
     public Instructor createInstructor(Instructor instructor) {
