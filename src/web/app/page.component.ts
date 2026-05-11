@@ -69,8 +69,6 @@ export class PageComponent {
   NotificationTargetUser: typeof NotificationTargetUser = NotificationTargetUser;
 
   @Input() isFetchingAuthDetails = false;
-  @Input() studentLoginUrl = '';
-  @Input() instructorLoginUrl = '';
   @Input() user = '';
   @Input() isStudent = false;
   @Input() isInstructor = false;

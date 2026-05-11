@@ -39,6 +39,7 @@ export class AuthService {
     if (nextUrl) {
       params['nextUrl'] = nextUrl;
     }
+
     return this.httpRequestService.get(ResourceEndpoints.AUTH, params);
   }
 
