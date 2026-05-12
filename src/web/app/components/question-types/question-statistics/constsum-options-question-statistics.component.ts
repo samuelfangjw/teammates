@@ -1,6 +1,6 @@
 import { Component, OnChanges, OnInit } from '@angular/core';
 import { ConstsumOptionsQuestionStatisticsCalculation } from './question-statistics-calculation/constsum-options-question-statistics-calculation';
-import { DEFAULT_CONSTSUM_RECIPIENTS_QUESTION_DETAILS } from '../../../../types/default-question-structs';
+import { DEFAULT_CONSTSUM_OPTIONS_QUESTION_DETAILS } from '../../../../types/default-question-structs';
 import { SortBy } from '../../../../types/sort-properties';
 import {
   ColumnData,
@@ -27,7 +27,7 @@ export class ConstsumOptionsQuestionStatisticsComponent
   rowsData: SortableTableCellData[][] = [];
 
   constructor() {
-    super(DEFAULT_CONSTSUM_RECIPIENTS_QUESTION_DETAILS());
+    super(DEFAULT_CONSTSUM_OPTIONS_QUESTION_DETAILS());
   }
 
   ngOnInit(): void {
