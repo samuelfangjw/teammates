@@ -8,7 +8,7 @@ import { config } from './config';
 /**
  * Environment variables for development mode.
  */
-export const environment: any = {
+export const environment = {
   ...config,
   version: APPLICATION_VERSION,
   production: false,
