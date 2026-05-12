@@ -1,11 +1,15 @@
 import { AbstractFeedbackQuestionDetails } from './abstract-feedback-question-details';
-import {
-  PerRecipientStats,
-  RubricQuestionStatisticsCalculation,
-} from '../../app/components/question-types/question-statistics/question-statistics-calculation/rubric-question-statistics-calculation';
+import { PerRecipientStats } from '../../app/components/question-types/question-statistics/question-statistics-calculation/rubric-question-statistics-calculation';
 import { StringHelper } from '../../services/string-helper';
-import { FeedbackQuestionType, FeedbackRubricQuestionDetails, QuestionOutput } from '../api-output';
+import {
+  FeedbackQuestionType,
+  FeedbackRubricQuestionDetails,
+  FeedbackRubricResponseDetails,
+  QuestionOutput,
+} from '../api-output';
 import { NO_VALUE } from '../feedback-response-details';
+import { Response } from '../question-statistics.model';
+import { calculateRubricQuestionStatistics } from '../../app/utils/question-statistics.util';
 
 /**
  * Concrete implementation of {@link FeedbackRubricQuestionDetails}.
@@ -43,13 +47,17 @@ export class FeedbackRubricQuestionDetailsImpl
   getQuestionCsvStats(question: QuestionOutput): string[][] {
     const statsRows: string[][] = [];
 
-    const statsCalculation: RubricQuestionStatisticsCalculation = new RubricQuestionStatisticsCalculation(this);
-    this.populateQuestionStatistics(statsCalculation, question);
-    if (statsCalculation.responses.length === 0) {
+    const questionDetails = question.feedbackQuestion.questionDetails as FeedbackRubricQuestionDetails;
+    const responses = question.allResponses
+      // Missing response is meaningless for statistics
+      .filter((response) => !response.isMissingResponse) as unknown as Response<FeedbackRubricResponseDetails>[];
+
+    if (responses.length === 0) {
       // skip stats for no response
       return [];
     }
-    statsCalculation.calculateStatistics();
+
+    const statsCalculation = calculateRubricQuestionStatistics(questionDetails, responses, false);
 
     const header: string[] = ['', ...statsCalculation.choices];
     if (statsCalculation.hasWeights) {
