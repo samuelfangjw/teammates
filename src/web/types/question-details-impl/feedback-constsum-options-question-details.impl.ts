@@ -2,11 +2,11 @@ import { AbstractFeedbackQuestionDetails } from './abstract-feedback-question-de
 import {
   FeedbackConstantSumDistributePointsType,
   FeedbackConstantSumQuestionDetails,
+  FeedbackConstantSumResponseDetails,
   FeedbackQuestionType,
   QuestionOutput,
 } from '../api-output';
 import { calculateConstsumOptionsQuestionStatistics } from '../../app/utils/question-statistics.util';
-import { FeedbackConstantSumResponseDetails } from '../api-request';
 import { Response } from '../question-statistics.model';
 
 /**
