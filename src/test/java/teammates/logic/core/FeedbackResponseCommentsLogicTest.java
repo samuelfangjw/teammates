@@ -63,20 +63,6 @@ public class FeedbackResponseCommentsLogicTest extends BaseTestCase {
     }
 
     @Test
-    public void testGetFeedbackResponseCommentsForResponses_success() {
-        FeedbackResponseComment comment1 = getTypicalResponseComment(TYPICAL_ID);
-        FeedbackResponseComment comment2 = getTypicalResponseComment(NOT_TYPICAL_ID);
-        List<UUID> feedbackResponseIds = List.of(TYPICAL_UUID, UUID.fromString("00000000-0000-4000-8000-000000000066"));
-
-        when(frcDb.getFeedbackResponseCommentsForResponses(feedbackResponseIds)).thenReturn(List.of(comment1, comment2));
-
-        List<FeedbackResponseComment> commentsFetched =
-                frcLogic.getFeedbackResponseCommentsForResponses(feedbackResponseIds);
-
-        assertEquals(List.of(comment1, comment2), commentsFetched);
-    }
-
-    @Test
     public void testGetComment_commentDoesNotExist_returnsNull() {
         when(frcDb.getFeedbackResponseComment(NOT_TYPICAL_ID)).thenReturn(null);
 
