@@ -88,10 +88,9 @@ public final class FeedbackResponseCommentsDb {
         CriteriaBuilder cb = HibernateUtil.getCriteriaBuilder();
         CriteriaQuery<FeedbackResponseComment> cq = cb.createQuery(FeedbackResponseComment.class);
         Root<FeedbackResponseComment> root = cq.from(FeedbackResponseComment.class);
-        Join<FeedbackResponseComment, FeedbackResponse> frJoin = root.join("feedbackResponse");
 
         cq.select(root)
-                .where(frJoin.get("id").in(feedbackResponseIds));
+                .where(root.get("responseId").in(feedbackResponseIds));
 
         return HibernateUtil.createQuery(cq).getResultList();
     }
