@@ -390,11 +390,23 @@ public class FeedbackResultsPage extends AppPage {
                 additionalInfo.append(TestProperties.LINE_SEPARATOR).append("Other");
             }
         } else {
-            additionalInfo.append("The options for this question is automatically generated from the list of all ")
-                    .append(getDisplayRecipientName(generateOptionsFor).toLowerCase())
-                    .append('.');
+            String displayRecipientName = switch (generateOptionsFor) {
+            case STUDENTS:
+                yield "Students in this course";
+            case INSTRUCTORS:
+                yield "Instructors in this course";
+            case TEAMS:
+                yield "Teams in this course";
+            default:
+                assert false : "Unexpected recipient type for option generation: " + generateOptionsFor;
+                yield "";
+            };
 
+            additionalInfo.append("The options for this question is automatically generated from the list of all ")
+                    .append(displayRecipientName.toLowerCase())
+                    .append('.');
         }
+
         return additionalInfo.toString();
     }
 
