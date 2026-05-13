@@ -13,9 +13,11 @@ import jakarta.annotation.Nullable;
 
 import teammates.common.datatransfer.CourseRoster;
 import teammates.common.datatransfer.FeedbackMissingResponse;
-import teammates.common.datatransfer.FeedbackParticipantType;
 import teammates.common.datatransfer.FeedbackResultFetchType;
 import teammates.common.datatransfer.SessionResultsBundle;
+import teammates.common.datatransfer.participanttypes.QuestionGiverType;
+import teammates.common.datatransfer.participanttypes.QuestionRecipientType;
+import teammates.common.datatransfer.participanttypes.ViewerType;
 import teammates.common.datatransfer.questions.FeedbackQuestionType;
 import teammates.common.datatransfer.questions.FeedbackRankRecipientsResponseDetails;
 import teammates.common.exception.EntityAlreadyExistsException;
@@ -82,34 +84,34 @@ public final class FeedbackResponsesLogic {
      * Returns true if the responses of the question are visible to students.
      */
     public boolean isResponseOfFeedbackQuestionVisibleToStudent(FeedbackQuestion question) {
-        if (question.isResponseVisibleTo(FeedbackParticipantType.STUDENTS)) {
+        if (question.isResponseVisibleTo(ViewerType.STUDENTS)) {
             return true;
         }
         boolean isStudentRecipientType =
-                   question.getRecipientType() == FeedbackParticipantType.STUDENTS
-                || question.getRecipientType() == FeedbackParticipantType.STUDENTS_EXCLUDING_SELF
-                || question.getRecipientType() == FeedbackParticipantType.STUDENTS_IN_SAME_SECTION
-                || question.getRecipientType() == FeedbackParticipantType.OWN_TEAM_MEMBERS
-                || question.getRecipientType() == FeedbackParticipantType.OWN_TEAM_MEMBERS_INCLUDING_SELF
-                || question.getRecipientType() == FeedbackParticipantType.GIVER
-                   && question.getGiverType() == FeedbackParticipantType.STUDENTS;
+                   question.getRecipientType() == QuestionRecipientType.STUDENTS
+                || question.getRecipientType() == QuestionRecipientType.STUDENTS_EXCLUDING_SELF
+                || question.getRecipientType() == QuestionRecipientType.STUDENTS_IN_SAME_SECTION
+                || question.getRecipientType() == QuestionRecipientType.OWN_TEAM_MEMBERS
+                || question.getRecipientType() == QuestionRecipientType.OWN_TEAM_MEMBERS_INCLUDING_SELF
+                || question.getRecipientType() == QuestionRecipientType.SELF
+                   && question.getGiverType() == QuestionGiverType.STUDENTS;
 
         if ((isStudentRecipientType || question.getRecipientType().isTeam())
-                && question.isResponseVisibleTo(FeedbackParticipantType.RECEIVER)) {
+                && question.isResponseVisibleTo(ViewerType.RECEIVER)) {
             return true;
         }
-        if (question.getGiverType() == FeedbackParticipantType.TEAMS
-                || question.isResponseVisibleTo(FeedbackParticipantType.OWN_TEAM_MEMBERS)) {
+        if (question.getGiverType() == QuestionGiverType.TEAMS
+                || question.isResponseVisibleTo(ViewerType.OWN_TEAM_MEMBERS)) {
             return true;
         }
-        return question.isResponseVisibleTo(FeedbackParticipantType.RECEIVER_TEAM_MEMBERS);
+        return question.isResponseVisibleTo(ViewerType.RECEIVER_TEAM_MEMBERS);
     }
 
     /**
      * Returns true if the responses of the question are visible to instructors.
      */
     public boolean isResponseOfFeedbackQuestionVisibleToInstructor(FeedbackQuestion question) {
-        return question.isResponseVisibleTo(FeedbackParticipantType.INSTRUCTORS);
+        return question.isResponseVisibleTo(ViewerType.INSTRUCTORS);
     }
 
     /**
@@ -172,7 +174,7 @@ public final class FeedbackResponsesLogic {
      */
     public List<FeedbackResponse> getFeedbackResponsesFromStudentOrTeamForQuestion(
             FeedbackQuestion question, Student student) {
-        if (question.getGiverType() == FeedbackParticipantType.TEAMS) {
+        if (question.getGiverType() == QuestionGiverType.TEAMS) {
             return getFeedbackResponsesFromTeamForQuestion(
                     question.getId(), question.getCourseId(), student.getTeamName(), null);
         }
@@ -355,7 +357,7 @@ public final class FeedbackResponsesLogic {
             FeedbackQuestion question, CourseRoster roster) {
         assert question.getQuestionType() == FeedbackQuestionType.RANK_RECIPIENTS;
 
-        FeedbackParticipantType giverType = question.getGiverType();
+        QuestionGiverType giverType = question.getGiverType();
         List<FeedbackResponse> responses = new ArrayList<>();
         int numberOfRecipients = 0;
 
@@ -478,7 +480,7 @@ public final class FeedbackResponsesLogic {
 
         for (FeedbackResponse response : responsesFromUser) {
             FeedbackQuestion qn = response.getFeedbackQuestion();
-            if (qn != null && qn.getGiverType() == FeedbackParticipantType.TEAMS) {
+            if (qn != null && qn.getGiverType() == QuestionGiverType.TEAMS) {
                 deleteFeedbackResponsesForQuestionCascade(qn);
             }
         }
@@ -488,7 +490,7 @@ public final class FeedbackResponsesLogic {
 
         for (FeedbackResponse response : responsesToUser) {
             FeedbackQuestion qn = response.getFeedbackQuestion();
-            if (qn != null && qn.getGiverType() == FeedbackParticipantType.TEAMS) {
+            if (qn != null && qn.getGiverType() == QuestionGiverType.TEAMS) {
                 deleteFeedbackResponsesForQuestionCascade(qn);
             }
         }
@@ -891,7 +893,7 @@ public final class FeedbackResponsesLogic {
         }
 
         // Early return if user is giver
-        if (question.getGiverType() == FeedbackParticipantType.TEAMS) {
+        if (question.getGiverType() == QuestionGiverType.TEAMS) {
             // if response is given by team, then anyone in the team can see the response
             if (roster.isStudentInTeam(userEmail, responseGiver)) {
                 return true;
@@ -909,10 +911,10 @@ public final class FeedbackResponsesLogic {
     private boolean isFeedbackParticipantNameVisibleToUser(
             FeedbackQuestion question, String responseGiver, String responseRecipient,
             String userEmail, boolean isInstructor, boolean isGiverName, CourseRoster roster) {
-        List<FeedbackParticipantType> showNameTo = isGiverName
-                                                 ? question.getShowGiverNameTo()
-                                                 : question.getShowRecipientNameTo();
-        for (FeedbackParticipantType type : showNameTo) {
+        List<ViewerType> showNameTo = isGiverName
+                ? question.getShowGiverNameTo()
+                : question.getShowRecipientNameTo();
+        for (ViewerType type : showNameTo) {
             switch (type) {
             case INSTRUCTORS:
                 if (roster.getInstructorForEmail(userEmail) != null && isInstructor) {
@@ -958,7 +960,7 @@ public final class FeedbackResponsesLogic {
                 }
                 break;
             default:
-                assert false : "Invalid FeedbackParticipantType for showNameTo in "
+                assert false : "Invalid ViewerType for showNameTo in "
                         + "FeedbackResponseLogic.isFeedbackParticipantNameVisibleToUser()";
                 break;
             }
@@ -986,7 +988,7 @@ public final class FeedbackResponsesLogic {
                 );
 
         boolean isRecipientSectionRestrictedForInstructor = isInstructor
-                && relatedQuestion.getRecipientType() != FeedbackParticipantType.NONE
+                && relatedQuestion.getRecipientType() != QuestionRecipientType.NONE
                 && !instructor.isAllowedForPrivilege(
                         recipientSectionName,
                         relatedQuestion.getFeedbackSessionName(),
@@ -994,27 +996,27 @@ public final class FeedbackResponsesLogic {
                 );
 
         boolean isVisibleToInstructor = isInstructor
-                && relatedQuestion.isResponseVisibleTo(FeedbackParticipantType.INSTRUCTORS)
+                && relatedQuestion.isResponseVisibleTo(ViewerType.INSTRUCTORS)
                 && !isGiverSectionRestrictedForInstructor
                 && !isRecipientSectionRestrictedForInstructor;
         boolean isVisibleToRecipient = SanitizationHelper.areEmailsEqual(recipient, userEmail)
-                && relatedQuestion.isResponseVisibleTo(FeedbackParticipantType.RECEIVER);
+                && relatedQuestion.isResponseVisibleTo(ViewerType.RECEIVER);
         boolean isVisibleToGiver = SanitizationHelper.areEmailsEqual(giver, userEmail);
-        boolean isVisibleToStudents = !isInstructor && relatedQuestion.isResponseVisibleTo(FeedbackParticipantType.STUDENTS);
+        boolean isVisibleToStudents = !isInstructor && relatedQuestion.isResponseVisibleTo(ViewerType.STUDENTS);
         boolean isVisibleToTeamRecipient = studentsEmailInTeam != null && !isInstructor
-                && (relatedQuestion.getRecipientType() == FeedbackParticipantType.TEAMS
-                    || relatedQuestion.getRecipientType() == FeedbackParticipantType.TEAMS_IN_SAME_SECTION
-                    || relatedQuestion.getRecipientType() == FeedbackParticipantType.TEAMS_EXCLUDING_SELF)
-                && relatedQuestion.isResponseVisibleTo(FeedbackParticipantType.RECEIVER)
+                && (relatedQuestion.getRecipientType() == QuestionRecipientType.TEAMS
+                    || relatedQuestion.getRecipientType() == QuestionRecipientType.TEAMS_IN_SAME_SECTION
+                    || relatedQuestion.getRecipientType() == QuestionRecipientType.TEAMS_EXCLUDING_SELF)
+                && relatedQuestion.isResponseVisibleTo(ViewerType.RECEIVER)
                 && recipient.equals(student.getTeamName());
         boolean isVisibleToTeamGiver = studentsEmailInTeam != null && !isInstructor
-                && relatedQuestion.getGiverType() == FeedbackParticipantType.TEAMS
+                && relatedQuestion.getGiverType() == QuestionGiverType.TEAMS
                 && giver.equals(student.getTeamName());
         boolean isVisibleToOwnTeamMembers = studentsEmailInTeam != null && !isInstructor
-                && relatedQuestion.isResponseVisibleTo(FeedbackParticipantType.OWN_TEAM_MEMBERS)
+                && relatedQuestion.isResponseVisibleTo(ViewerType.OWN_TEAM_MEMBERS)
                 && studentsEmailInTeam.contains(giver);
         boolean isVisibleToReceiverTeamMembers = studentsEmailInTeam != null && !isInstructor
-                && relatedQuestion.isResponseVisibleTo(FeedbackParticipantType.RECEIVER_TEAM_MEMBERS)
+                && relatedQuestion.isResponseVisibleTo(ViewerType.RECEIVER_TEAM_MEMBERS)
                 && studentsEmailInTeam.contains(recipient);
 
         return isVisibleToInstructor || isVisibleToRecipient || isVisibleToGiver
@@ -1071,16 +1073,16 @@ public final class FeedbackResponsesLogic {
         Set<FeedbackResponse> viewableResponses = new HashSet<>();
 
         // Add responses that the instructor submitted him/herself
-        if (question.getGiverType() == FeedbackParticipantType.INSTRUCTORS) {
+        if (question.getGiverType() == QuestionGiverType.INSTRUCTORS) {
             viewableResponses.addAll(
                     getFeedbackResponsesFromGiverForQuestion(question.getId(), instructor.getEmail())
             );
         }
 
         // Add responses that user is a receiver of when response is visible to receiver or instructors
-        if (question.getRecipientType() == FeedbackParticipantType.INSTRUCTORS
-                && (question.isResponseVisibleTo(FeedbackParticipantType.RECEIVER)
-                || question.isResponseVisibleTo(FeedbackParticipantType.INSTRUCTORS))) {
+        if (question.getRecipientType() == QuestionRecipientType.INSTRUCTORS
+                && (question.isResponseVisibleTo(ViewerType.RECEIVER)
+                || question.isResponseVisibleTo(ViewerType.INSTRUCTORS))) {
             viewableResponses.addAll(
                     getFeedbackResponsesForRecipientForQuestion(question.getId(), instructor.getEmail())
             );
@@ -1097,21 +1099,21 @@ public final class FeedbackResponsesLogic {
         Set<FeedbackResponse> viewableResponses = new HashSet<>();
 
         // Add responses that the student submitted him/herself
-        if (question.getGiverType() != FeedbackParticipantType.INSTRUCTORS) {
+        if (question.getGiverType() != QuestionGiverType.INSTRUCTORS) {
             viewableResponses.addAll(
                     getFeedbackResponsesFromGiverForQuestion(question.getId(), student.getEmail())
             );
         }
 
         // Add responses that user is a receiver of when response is visible to receiver
-        if (question.getRecipientType() != FeedbackParticipantType.INSTRUCTORS
-                && question.isResponseVisibleTo(FeedbackParticipantType.RECEIVER)) {
+        if (question.getRecipientType() != QuestionRecipientType.INSTRUCTORS
+                && question.isResponseVisibleTo(ViewerType.RECEIVER)) {
             viewableResponses.addAll(
                     getFeedbackResponsesForRecipientForQuestion(question.getId(), student.getEmail())
             );
         }
 
-        if (question.isResponseVisibleTo(FeedbackParticipantType.STUDENTS)) {
+        if (question.isResponseVisibleTo(ViewerType.STUDENTS)) {
             viewableResponses.addAll(getFeedbackResponsesForQuestion(question.getId()));
 
             // Early return as STUDENTS covers all cases below.
@@ -1119,20 +1121,20 @@ public final class FeedbackResponsesLogic {
         }
 
         if (question.getRecipientType().isTeam()
-                && question.isResponseVisibleTo(FeedbackParticipantType.RECEIVER)) {
+                && question.isResponseVisibleTo(ViewerType.RECEIVER)) {
             viewableResponses.addAll(
                     getFeedbackResponsesForRecipientForQuestion(question.getId(), student.getTeamName())
             );
         }
 
-        if (question.getGiverType() == FeedbackParticipantType.TEAMS
-                || question.isResponseVisibleTo(FeedbackParticipantType.OWN_TEAM_MEMBERS)) {
+        if (question.getGiverType() == QuestionGiverType.TEAMS
+                || question.isResponseVisibleTo(ViewerType.OWN_TEAM_MEMBERS)) {
             viewableResponses.addAll(
                     getFeedbackResponsesFromTeamForQuestion(
                             question.getId(), question.getCourseId(), student.getTeamName(), courseRoster));
         }
 
-        if (question.isResponseVisibleTo(FeedbackParticipantType.RECEIVER_TEAM_MEMBERS)) {
+        if (question.isResponseVisibleTo(ViewerType.RECEIVER_TEAM_MEMBERS)) {
             for (Student studentInTeam : courseRoster.getTeamToMembersTable().get(student.getTeamName())) {
                 if (SanitizationHelper.areEmailsEqual(studentInTeam.getEmail(), student.getEmail())) {
                     continue;
@@ -1165,11 +1167,11 @@ public final class FeedbackResponsesLogic {
      */
     boolean checkCanInstructorsSeeQuestion(FeedbackQuestion feedbackQuestion) {
         boolean isResponseVisibleToInstructor =
-                feedbackQuestion.getShowResponsesTo().contains(FeedbackParticipantType.INSTRUCTORS);
+                feedbackQuestion.getShowResponsesTo().contains(ViewerType.INSTRUCTORS);
         boolean isGiverVisibleToInstructor =
-                feedbackQuestion.getShowGiverNameTo().contains(FeedbackParticipantType.INSTRUCTORS);
+                feedbackQuestion.getShowGiverNameTo().contains(ViewerType.INSTRUCTORS);
         boolean isRecipientVisibleToInstructor =
-                feedbackQuestion.getShowRecipientNameTo().contains(FeedbackParticipantType.INSTRUCTORS);
+                feedbackQuestion.getShowRecipientNameTo().contains(ViewerType.INSTRUCTORS);
         return isResponseVisibleToInstructor && isGiverVisibleToInstructor && isRecipientVisibleToInstructor;
     }
 
@@ -1178,9 +1180,9 @@ public final class FeedbackResponsesLogic {
      */
     boolean checkCanInstructorsSeeComment(FeedbackResponseComment feedbackResponseComment) {
         boolean isCommentVisibleToInstructor =
-                feedbackResponseComment.getShowCommentTo().contains(FeedbackParticipantType.INSTRUCTORS);
+                feedbackResponseComment.getShowCommentTo().contains(ViewerType.INSTRUCTORS);
         boolean isGiverVisibleToInstructor =
-                feedbackResponseComment.getShowGiverNameTo().contains(FeedbackParticipantType.INSTRUCTORS);
+                feedbackResponseComment.getShowGiverNameTo().contains(ViewerType.INSTRUCTORS);
         return isCommentVisibleToInstructor && isGiverVisibleToInstructor;
     }
 

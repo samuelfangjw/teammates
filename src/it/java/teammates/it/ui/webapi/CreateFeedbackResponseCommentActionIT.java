@@ -6,7 +6,7 @@ import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
 import teammates.common.datatransfer.DataBundle;
-import teammates.common.datatransfer.FeedbackParticipantType;
+import teammates.common.datatransfer.participanttypes.QuestionGiverType;
 import teammates.common.util.Const;
 import teammates.common.util.HibernateUtil;
 import teammates.storage.entity.FeedbackResponse;
@@ -65,7 +65,7 @@ public class CreateFeedbackResponseCommentActionIT extends BaseActionIT<CreateFe
         assertEquals(student.getEmail(), comment.getGiver());
         assertTrue(comment.getIsCommentFromFeedbackParticipant());
         assertTrue(comment.getIsVisibilityFollowingFeedbackQuestion());
-        assertEquals(FeedbackParticipantType.STUDENTS, comment.getGiverType());
+        assertEquals(QuestionGiverType.STUDENTS, comment.getGiverType());
     }
 
     @Test

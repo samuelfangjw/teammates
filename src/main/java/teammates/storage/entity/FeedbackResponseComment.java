@@ -17,7 +17,8 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import teammates.common.datatransfer.FeedbackParticipantType;
+import teammates.common.datatransfer.participanttypes.QuestionGiverType;
+import teammates.common.datatransfer.participanttypes.ViewerType;
 import teammates.common.util.FieldValidator;
 import teammates.common.util.SanitizationHelper;
 
@@ -42,8 +43,8 @@ public class FeedbackResponseComment extends BaseEntity {
     private String giver;
 
     @Column(nullable = false)
-    @Convert(converter = FeedbackParticipantTypeConverter.class)
-    private FeedbackParticipantType giverType;
+    @Convert(converter = QuestionGiverTypeConverter.class)
+    private QuestionGiverType giverType;
 
     @ManyToOne
     @JoinColumn(name = "giverSectionId")
@@ -69,12 +70,12 @@ public class FeedbackResponseComment extends BaseEntity {
     private boolean isCommentFromFeedbackParticipant;
 
     @Column(nullable = false)
-    @Convert(converter = FeedbackParticipantTypeListConverter.class)
-    private List<FeedbackParticipantType> showCommentTo;
+    @Convert(converter = ViewerTypeListConverter.class)
+    private List<ViewerType> showCommentTo;
 
     @Column(nullable = false)
-    @Convert(converter = FeedbackParticipantTypeListConverter.class)
-    private List<FeedbackParticipantType> showGiverNameTo;
+    @Convert(converter = ViewerTypeListConverter.class)
+    private List<ViewerType> showGiverNameTo;
 
     @UpdateTimestamp
     private Instant updatedAt;
@@ -86,10 +87,10 @@ public class FeedbackResponseComment extends BaseEntity {
     }
 
     public FeedbackResponseComment(
-            String giver, FeedbackParticipantType giverType,
+            String giver, QuestionGiverType giverType,
             Section giverSection, Section recipientSection, String commentText,
             boolean isVisibilityFollowingFeedbackQuestion, boolean isCommentFromFeedbackParticipant,
-            List<FeedbackParticipantType> showCommentTo, List<FeedbackParticipantType> showGiverNameTo,
+            List<ViewerType> showCommentTo, List<ViewerType> showGiverNameTo,
             String lastEditorEmail
     ) {
         this.setGiver(giver);
@@ -137,11 +138,11 @@ public class FeedbackResponseComment extends BaseEntity {
         this.giver = giver;
     }
 
-    public FeedbackParticipantType getGiverType() {
+    public QuestionGiverType getGiverType() {
         return giverType;
     }
 
-    public void setGiverType(FeedbackParticipantType giverType) {
+    public void setGiverType(QuestionGiverType giverType) {
         this.giverType = giverType;
     }
 
@@ -201,19 +202,19 @@ public class FeedbackResponseComment extends BaseEntity {
         this.isCommentFromFeedbackParticipant = isCommentFromFeedbackParticipant;
     }
 
-    public List<FeedbackParticipantType> getShowCommentTo() {
+    public List<ViewerType> getShowCommentTo() {
         return showCommentTo;
     }
 
-    public void setShowCommentTo(List<FeedbackParticipantType> showCommentTo) {
+    public void setShowCommentTo(List<ViewerType> showCommentTo) {
         this.showCommentTo = showCommentTo;
     }
 
-    public List<FeedbackParticipantType> getShowGiverNameTo() {
+    public List<ViewerType> getShowGiverNameTo() {
         return showGiverNameTo;
     }
 
-    public void setShowGiverNameTo(List<FeedbackParticipantType> showGiverNameTo) {
+    public void setShowGiverNameTo(List<ViewerType> showGiverNameTo) {
         this.showGiverNameTo = showGiverNameTo;
     }
 
@@ -243,7 +244,7 @@ public class FeedbackResponseComment extends BaseEntity {
     /**
      * Returns true if the response comment is visible to the given participant type.
      */
-    public boolean checkIsVisibleTo(FeedbackParticipantType viewerType) {
+    public boolean checkIsVisibleTo(ViewerType viewerType) {
         return showCommentTo.contains(viewerType);
     }
 
