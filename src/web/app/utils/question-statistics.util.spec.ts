@@ -1,6 +1,7 @@
 import {
   ConstsumOptionsQuestionStatistics,
   ConstsumRecipientsQuestionStatistics,
+  ContributionQuestionStatistics,
   McqQuestionStatistics,
   MsqQuestionStatistics,
   NumScaleQuestionStatistics,
@@ -13,6 +14,7 @@ import {
 import {
   FeedbackConstantSumQuestionDetails,
   FeedbackConstantSumResponseDetails,
+  FeedbackContributionResponseDetails,
   FeedbackMcqQuestionDetails,
   FeedbackMcqResponseDetails,
   FeedbackMsqQuestionDetails,
@@ -29,6 +31,7 @@ import {
 import {
   calculateConstsumOptionsQuestionStatistics,
   calculateConstsumRecipientsQuestionStatistics,
+  calculateContributionQuestionStatistics,
   calculateMcqQuestionStatistics,
   calculateMsqQuestionStatistics,
   calculateNumScaleQuestionStatistics,
@@ -42,6 +45,7 @@ import msqQuestionResponses from '../components/question-types/question-statisti
 import numScaleQuestionResponses from '../components/question-types/question-statistics/test-data/numScaleQuestionResponses.json';
 import rankOptionQuestionResponses from '../components/question-types/question-statistics/test-data/rankOptionQuestionResponses.json';
 import rubricQuestionResponses from '../components/question-types/question-statistics/test-data/rubricQuestionResponses.json';
+import { CONTRIBUTION_POINT_NOT_SUBMITTED } from '../../types/feedback-response-details';
 
 describe('Question Statistics Utility Functions', () => {
   describe('calculateConstsumOptionsQuestionStatistics', () => {
@@ -873,6 +877,410 @@ describe('Question Statistics Utility Functions', () => {
       expect(stats.percentages).toEqual(expectedPercentages);
       expect(stats.percentagesExcludeSelf).toEqual(expectedPercentagesExceptSelf);
       expect(stats.perRecipientStatsMap).toEqual(expectedPerRecpientStatsMap);
+    });
+  });
+
+  describe('calculateContributionQuestionStatistics', () => {
+    it('should return empty stats when statistics string is empty', () => {
+      const responses: Response<FeedbackContributionResponseDetails>[] = [];
+      const statistics = '';
+      const isStudent = false;
+
+      const stats: ContributionQuestionStatistics = calculateContributionQuestionStatistics(
+        responses,
+        statistics,
+        isStudent,
+      );
+
+      expect(stats.emailToTeamName).toEqual({});
+      expect(stats.emailToName).toEqual({});
+      expect(stats.emailToDiff).toEqual({});
+      expect(stats.questionOverallStatistics?.results).toEqual({});
+    });
+
+    it('should return empty stats when statistics string is null or undefined', () => {
+      const responses: Response<FeedbackContributionResponseDetails>[] = [];
+
+      const statsWithNull: ContributionQuestionStatistics = calculateContributionQuestionStatistics(
+        responses,
+        null as any,
+        false,
+      );
+
+      expect(statsWithNull.emailToTeamName).toEqual({});
+      expect(statsWithNull.emailToName).toEqual({});
+      expect(statsWithNull.emailToDiff).toEqual({});
+    });
+
+    it('should calculate statistics correctly for student view', () => {
+      const responses: Response<FeedbackContributionResponseDetails>[] = [];
+      const statistics = JSON.stringify({
+        results: {
+          'student@example.com': {
+            claimed: 25,
+            perceived: 30,
+            claimedOthers: {
+              'peer1@example.com': 20,
+              'peer2@example.com': 55,
+            },
+            perceivedOthers: [35, 35],
+          },
+        },
+      });
+      const isStudent = true;
+
+      const stats: ContributionQuestionStatistics = calculateContributionQuestionStatistics(
+        responses,
+        statistics,
+        isStudent,
+      );
+
+      expect(stats.questionStatisticsForStudent?.claimed).toBe(25);
+      expect(stats.questionStatisticsForStudent?.perceived).toBe(30);
+      expect(stats.questionStatisticsForStudent?.claimedOthers).toEqual({
+        'peer1@example.com': 20,
+        'peer2@example.com': 55,
+      });
+      expect(stats.questionStatisticsForStudent?.claimedOthersValues).toEqual([55, 20]);
+      expect(stats.emailToTeamName).toEqual({});
+      expect(stats.emailToName).toEqual({});
+    });
+
+    it('should calculate statistics correctly for instructor view with positive differences', () => {
+      const responses: Response<FeedbackContributionResponseDetails>[] = [
+        {
+          giver: 'Alice',
+          giverTeam: 'Team A',
+          giverEmail: 'alice@example.com',
+          giverSection: '',
+          recipient: 'Bob',
+          recipientTeam: 'Team B',
+          recipientEmail: 'bob@example.com',
+          recipientSection: '',
+          responseDetails: {
+            answer: 25,
+            questionType: FeedbackQuestionType.CONTRIB,
+          },
+        },
+        {
+          giver: 'Charlie',
+          giverTeam: 'Team A',
+          giverEmail: 'charlie@example.com',
+          giverSection: '',
+          recipient: 'Bob',
+          recipientTeam: 'Team B',
+          recipientEmail: 'bob@example.com',
+          recipientSection: '',
+          responseDetails: {
+            answer: 30,
+            questionType: FeedbackQuestionType.CONTRIB,
+          },
+        },
+      ];
+      const statistics = JSON.stringify({
+        results: {
+          'bob@example.com': {
+            claimed: 20,
+            perceived: 35,
+            claimedOthers: {},
+            perceivedOthers: [],
+          },
+        },
+      });
+      const isStudent = false;
+
+      const stats: ContributionQuestionStatistics = calculateContributionQuestionStatistics(
+        responses,
+        statistics,
+        isStudent,
+      );
+
+      expect(stats.emailToTeamName).toEqual({
+        'bob@example.com': 'Team B',
+      });
+      expect(stats.emailToName).toEqual({
+        'bob@example.com': 'Bob',
+      });
+      expect(stats.emailToDiff).toEqual({
+        'bob@example.com': 15, // 35 - 20
+      });
+      expect(stats.questionOverallStatistics?.results).toEqual({
+        'bob@example.com': {
+          claimed: 20,
+          perceived: 35,
+          claimedOthers: {},
+          perceivedOthers: [],
+        },
+      });
+    });
+
+    it('should calculate statistics correctly for instructor view with negative claimed values', () => {
+      const responses: Response<FeedbackContributionResponseDetails>[] = [
+        {
+          giver: 'Alice',
+          giverTeam: 'Team A',
+          giverEmail: 'alice@example.com',
+          giverSection: '',
+          recipient: 'Bob',
+          recipientTeam: 'Team B',
+          recipientEmail: 'bob@example.com',
+          recipientSection: '',
+          responseDetails: {
+            answer: 25,
+            questionType: FeedbackQuestionType.CONTRIB,
+          },
+        },
+      ];
+      const statistics = JSON.stringify({
+        results: {
+          'bob@example.com': {
+            claimed: -1,
+            perceived: 35,
+            claimedOthers: {},
+            perceivedOthers: [],
+          },
+        },
+      });
+      const isStudent = false;
+
+      const stats: ContributionQuestionStatistics = calculateContributionQuestionStatistics(
+        responses,
+        statistics,
+        isStudent,
+      );
+
+      expect(stats.emailToDiff['bob@example.com']).toBe(CONTRIBUTION_POINT_NOT_SUBMITTED); // CONTRIBUTION_POINT_NOT_SUBMITTED
+    });
+
+    it('should calculate statistics correctly for instructor view with negative perceived values', () => {
+      const responses: Response<FeedbackContributionResponseDetails>[] = [
+        {
+          giver: 'Alice',
+          giverTeam: 'Team A',
+          giverEmail: 'alice@example.com',
+          giverSection: '',
+          recipient: 'Bob',
+          recipientTeam: 'Team B',
+          recipientEmail: 'bob@example.com',
+          recipientSection: '',
+          responseDetails: {
+            answer: 25,
+            questionType: FeedbackQuestionType.CONTRIB,
+          },
+        },
+      ];
+      const statistics = JSON.stringify({
+        results: {
+          'bob@example.com': {
+            claimed: 25,
+            perceived: -1,
+            claimedOthers: {},
+            perceivedOthers: [],
+          },
+        },
+      });
+      const isStudent = false;
+
+      const stats: ContributionQuestionStatistics = calculateContributionQuestionStatistics(
+        responses,
+        statistics,
+        isStudent,
+      );
+
+      expect(stats.emailToDiff['bob@example.com']).toBe(CONTRIBUTION_POINT_NOT_SUBMITTED);
+    });
+
+    it('should handle responses without recipientEmail for instructor view', () => {
+      const responses: Response<FeedbackContributionResponseDetails>[] = [
+        {
+          giver: 'Alice',
+          giverTeam: 'Team A',
+          giverEmail: 'alice@example.com',
+          giverSection: '',
+          recipient: 'Bob',
+          recipientTeam: 'Team B',
+          recipientEmail: undefined,
+          recipientSection: '',
+          responseDetails: {
+            answer: 25,
+            questionType: FeedbackQuestionType.CONTRIB,
+          },
+        },
+      ];
+      const statistics = JSON.stringify({
+        results: {},
+      });
+      const isStudent = false;
+
+      const stats: ContributionQuestionStatistics = calculateContributionQuestionStatistics(
+        responses,
+        statistics,
+        isStudent,
+      );
+
+      expect(stats.emailToTeamName).toEqual({});
+      expect(stats.emailToName).toEqual({});
+      expect(stats.emailToDiff).toEqual({});
+    });
+
+    it('should calculate statistics correctly for multiple recipients in instructor view', () => {
+      const responses: Response<FeedbackContributionResponseDetails>[] = [
+        {
+          giver: 'Alice',
+          giverTeam: 'Team A',
+          giverEmail: 'alice@example.com',
+          giverSection: '',
+          recipient: 'Bob',
+          recipientTeam: 'Team B',
+          recipientEmail: 'bob@example.com',
+          recipientSection: '',
+          responseDetails: {
+            answer: 25,
+            questionType: FeedbackQuestionType.CONTRIB,
+          },
+        },
+        {
+          giver: 'Alice',
+          giverTeam: 'Team A',
+          giverEmail: 'alice@example.com',
+          giverSection: '',
+          recipient: 'Charlie',
+          recipientTeam: 'Team B',
+          recipientEmail: 'charlie@example.com',
+          recipientSection: '',
+          responseDetails: {
+            answer: 30,
+            questionType: FeedbackQuestionType.CONTRIB,
+          },
+        },
+      ];
+      const statistics = JSON.stringify({
+        results: {
+          'bob@example.com': {
+            claimed: 20,
+            perceived: 35,
+            claimedOthers: {},
+            perceivedOthers: [],
+          },
+          'charlie@example.com': {
+            claimed: 30,
+            perceived: 40,
+            claimedOthers: {},
+            perceivedOthers: [],
+          },
+        },
+      });
+      const isStudent = false;
+
+      const stats: ContributionQuestionStatistics = calculateContributionQuestionStatistics(
+        responses,
+        statistics,
+        isStudent,
+      );
+
+      expect(stats.emailToTeamName).toEqual({
+        'bob@example.com': 'Team B',
+        'charlie@example.com': 'Team B',
+      });
+      expect(stats.emailToName).toEqual({
+        'bob@example.com': 'Bob',
+        'charlie@example.com': 'Charlie',
+      });
+      expect(stats.emailToDiff).toEqual({
+        'bob@example.com': 15, // 35 - 20
+        'charlie@example.com': 10, // 40 - 30
+      });
+    });
+
+    it('should calculate statistics correctly for student view with multiple peers', () => {
+      const responses: Response<FeedbackContributionResponseDetails>[] = [];
+      const statistics = JSON.stringify({
+        results: {
+          'student@example.com': {
+            claimed: 30,
+            perceived: 25,
+            claimedOthers: {
+              'peer1@example.com': 15,
+              'peer2@example.com': 35,
+              'peer3@example.com': 20,
+            },
+            perceivedOthers: [20, 40, 15],
+          },
+        },
+      });
+      const isStudent = true;
+
+      const stats: ContributionQuestionStatistics = calculateContributionQuestionStatistics(
+        responses,
+        statistics,
+        isStudent,
+      );
+
+      expect(stats.questionStatisticsForStudent?.claimed).toBe(30);
+      expect(stats.questionStatisticsForStudent?.perceived).toBe(25);
+      // Should be sorted in descending order
+      expect(stats.questionStatisticsForStudent?.claimedOthersValues).toEqual([35, 20, 15]);
+    });
+
+    it('should preserve team information for multiple recipients in instructor view', () => {
+      const responses: Response<FeedbackContributionResponseDetails>[] = [
+        {
+          giver: 'Alice',
+          giverTeam: 'Team A',
+          giverEmail: 'alice@example.com',
+          giverSection: '',
+          recipient: 'Bob',
+          recipientTeam: 'Team A',
+          recipientEmail: 'bob@example.com',
+          recipientSection: '',
+          responseDetails: {
+            answer: 25,
+            questionType: FeedbackQuestionType.CONTRIB,
+          },
+        },
+        {
+          giver: 'Alice',
+          giverTeam: 'Team A',
+          giverEmail: 'alice@example.com',
+          giverSection: '',
+          recipient: 'Charlie',
+          recipientTeam: 'Team B',
+          recipientEmail: 'charlie@example.com',
+          recipientSection: '',
+          responseDetails: {
+            answer: 30,
+            questionType: FeedbackQuestionType.CONTRIB,
+          },
+        },
+      ];
+      const statistics = JSON.stringify({
+        results: {
+          'bob@example.com': {
+            claimed: 20,
+            perceived: 35,
+            claimedOthers: {},
+            perceivedOthers: [],
+          },
+          'charlie@example.com': {
+            claimed: 30,
+            perceived: 40,
+            claimedOthers: {},
+            perceivedOthers: [],
+          },
+        },
+      });
+      const isStudent = false;
+
+      const stats: ContributionQuestionStatistics = calculateContributionQuestionStatistics(
+        responses,
+        statistics,
+        isStudent,
+      );
+
+      expect(stats.emailToTeamName['bob@example.com']).toBe('Team A');
+      expect(stats.emailToTeamName['charlie@example.com']).toBe('Team B');
+      expect(stats.emailToName['bob@example.com']).toBe('Bob');
+      expect(stats.emailToName['charlie@example.com']).toBe('Charlie');
     });
   });
 });
