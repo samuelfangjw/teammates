@@ -240,8 +240,12 @@ export function calculateMcqQuestionStatistics(
   }
 
   for (const answer of Object.keys(stats.answerFrequency)) {
-    const percentage: number = (100 * stats.answerFrequency[answer]) / responses.length;
-    stats.percentagePerOption[answer] = +percentage.toFixed(2);
+    if (responses.length === 0) {
+      stats.percentagePerOption[answer] = 0;
+    } else {
+      const percentage: number = (100 * stats.answerFrequency[answer]) / responses.length;
+      stats.percentagePerOption[answer] = +percentage.toFixed(2);
+    }
   }
 
   if (question.hasAssignedWeights) {
