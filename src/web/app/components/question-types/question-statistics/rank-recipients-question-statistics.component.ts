@@ -52,7 +52,7 @@ export class RankRecipientsQuestionStatisticsComponent implements OnChanges {
       return [
         { value: stats.emailToTeamName[key] },
         {
-          value: stats.emailToName[key] + (key === stats.emailToName[key] ? '' : key),
+          value: stats.emailToName[key] + (key === stats.emailToName[key] ? '' : ` (${key})`),
         },
         { value: stats.ranksReceivedPerOption[key].join(', ') },
         { value: stats.selfRankPerOption[key] || '-' },
