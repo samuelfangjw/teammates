@@ -46,5 +46,5 @@ public enum ViewerType {
      * <p>
      * Used by feedbackResponseComment.
      */
-    GIVER;
+    GIVER
 }

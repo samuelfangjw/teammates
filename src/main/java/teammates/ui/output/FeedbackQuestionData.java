@@ -139,7 +139,7 @@ public class FeedbackQuestionData extends ApiOutput {
             case RECEIVER_TEAM_MEMBERS:
                 return FeedbackVisibilityType.RECIPIENT_TEAM_MEMBERS;
             default:
-                assert false : "Unknown feedbackParticipantType" + viewerType;
+                assert false : "Unknown viewerType " + viewerType;
                 break;
             }
             return null;

@@ -402,12 +402,12 @@ public class SessionResultsData extends ApiOutput {
         if (recipientType == QuestionRecipientType.SELF) {
             // recipient type for self-feedback is the same as the giver type
             recipientType = switch (question.getGiverType()) {
-                case TEAMS -> QuestionRecipientType.TEAMS;
-                case TEAMS_IN_SAME_SECTION -> QuestionRecipientType.TEAMS_IN_SAME_SECTION;
-                case INSTRUCTORS -> QuestionRecipientType.INSTRUCTORS;
-                case SELF -> QuestionRecipientType.SELF;
-                case STUDENTS -> QuestionRecipientType.STUDENTS;
-                case STUDENTS_IN_SAME_SECTION -> QuestionRecipientType.STUDENTS_IN_SAME_SECTION;              
+            case TEAMS -> QuestionRecipientType.TEAMS;
+            case TEAMS_IN_SAME_SECTION -> QuestionRecipientType.TEAMS_IN_SAME_SECTION;
+            case INSTRUCTORS -> QuestionRecipientType.INSTRUCTORS;
+            case SELF -> QuestionRecipientType.SELF;
+            case STUDENTS -> QuestionRecipientType.STUDENTS;
+            case STUDENTS_IN_SAME_SECTION -> QuestionRecipientType.STUDENTS_IN_SAME_SECTION;
             };
         }
 

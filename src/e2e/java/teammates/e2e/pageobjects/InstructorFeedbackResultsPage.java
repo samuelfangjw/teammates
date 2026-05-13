@@ -694,10 +694,10 @@ public class InstructorFeedbackResultsPage extends AppPage {
                                            Collection<Student> students) {
         String[] expected = new String[3];
         QuestionGiverType giverType = question.getGiverType();
-        
+
         expected[0] = getTeam(giverType, response.getGiver(), students);
         expected[1] = getNameAndEmail(giverType, response.getGiver(), instructors, students);
-        
+
         if (isMissingResponse(response)) {
             expected[2] = NO_RESPONSE_LABEL;
         } else {
