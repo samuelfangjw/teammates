@@ -97,7 +97,6 @@ public class GetSessionResultsAction extends BasicFeedbackSubmissionAction {
 
         String courseId = feedbackSession.getCourseId();
         Instructor instructor;
-        Student student;
         SessionResultsBundle bundle;
 
         switch (intent) {
@@ -114,15 +113,10 @@ public class GetSessionResultsAction extends BasicFeedbackSubmissionAction {
             bundle = logic.getSessionResultsForUser(feedbackSession, instructor.getEmail(),
                     true, questionUuid, isPreviewResults);
 
-            // Build a fake student object, as the results will be displayed as if they are displayed to a student
-            student = new Student(instructor.getCourse(), instructor.getName(), instructor.getEmail(), "");
-            Team team = new Team(Const.USER_TEAM_FOR_INSTRUCTOR);
-            student.setTeam(team);
-
-            return new JsonResult(SessionResultsData.initForUser(bundle, student));
+            return new JsonResult(SessionResultsData.initForUser(bundle, instructor));
         case STUDENT_RESULT:
             // Section name filter is not applicable here
-            student = getStudentOfCourseFromRequest(courseId);
+            Student student = getStudentOfCourseFromRequest(courseId);
 
             bundle = logic.getSessionResultsForUser(feedbackSession, student.getEmail(),
                     false, questionUuid, isPreviewResults);
