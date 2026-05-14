@@ -620,6 +620,7 @@ export interface UsageStatisticsRange extends ApiOutput {
 
 export interface UserInfo {
   id: string;
+  accountId: string;
   isAdmin: boolean;
   isInstructor: boolean;
   isStudent: boolean;
