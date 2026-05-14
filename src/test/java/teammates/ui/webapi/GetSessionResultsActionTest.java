@@ -67,7 +67,7 @@ public class GetSessionResultsActionTest extends BaseActionTest<GetSessionResult
                 new HashSet<>(), new HashSet<>(), new ArrayList<>(),
                 new ArrayList<>(), new HashMap<>(), new HashMap<>(),
                 new HashMap<>(), new HashMap<>(), new CourseRoster(new ArrayList<>(), new ArrayList<>()));
-        expectedResults = SessionResultsData.initForInstructor(resultsStub);
+        expectedResults = SessionResultsData.init(resultsStub);
         reset(mockLogic);
     }
 
