@@ -173,7 +173,7 @@ public class SessionResultsData extends ApiOutput {
                 || !isUserInstructor && question.getRecipientType() != QuestionRecipientType.INSTRUCTORS);
         boolean isUserTeamRecipient = false;
         if (user instanceof Student student) {
-             isUserTeamRecipient = (question.getRecipientType() == QuestionRecipientType.TEAMS
+            isUserTeamRecipient = (question.getRecipientType() == QuestionRecipientType.TEAMS
                     || question.getRecipientType() == QuestionRecipientType.TEAMS_IN_SAME_SECTION)
                     && student.getTeamName().equals(response.getRecipient());
         }

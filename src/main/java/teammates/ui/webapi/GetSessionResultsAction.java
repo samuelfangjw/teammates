@@ -9,7 +9,6 @@ import teammates.common.util.StringHelper;
 import teammates.storage.entity.FeedbackSession;
 import teammates.storage.entity.Instructor;
 import teammates.storage.entity.Student;
-import teammates.storage.entity.Team;
 import teammates.ui.exception.EntityNotFoundException;
 import teammates.ui.exception.InvalidHttpParameterException;
 import teammates.ui.exception.UnauthorizedAccessException;
@@ -110,16 +109,14 @@ public class GetSessionResultsAction extends BasicFeedbackSubmissionAction {
             // Section name filter is not applicable here
             instructor = getInstructorOfCourseFromRequest(courseId);
 
-            bundle = logic.getSessionResultsForUser(feedbackSession, instructor.getEmail(),
-                    true, questionUuid, isPreviewResults);
+            bundle = logic.getSessionResultsForUser(feedbackSession, instructor, questionUuid, isPreviewResults);
 
             return new JsonResult(SessionResultsData.initForUser(bundle, instructor));
         case STUDENT_RESULT:
             // Section name filter is not applicable here
             Student student = getStudentOfCourseFromRequest(courseId);
 
-            bundle = logic.getSessionResultsForUser(feedbackSession, student.getEmail(),
-                    false, questionUuid, isPreviewResults);
+            bundle = logic.getSessionResultsForUser(feedbackSession, student, questionUuid, isPreviewResults);
 
             return new JsonResult(SessionResultsData.initForUser(bundle, student));
         case INSTRUCTOR_SUBMISSION, STUDENT_SUBMISSION:
