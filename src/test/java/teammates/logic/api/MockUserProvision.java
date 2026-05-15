@@ -2,7 +2,7 @@ package teammates.logic.api;
 
 import java.util.UUID;
 
-import teammates.common.datatransfer.UserInfo;
+import teammates.common.datatransfer.AuthContext;
 import teammates.common.datatransfer.UserInfoCookie;
 
 /**
@@ -13,7 +13,7 @@ import teammates.common.datatransfer.UserInfoCookie;
  */
 public class MockUserProvision extends UserProvision {
     private static final UUID MOCK_ACCOUNT_ID = UUID.randomUUID();
-    private UserInfo mockUser = new UserInfo("user.id", MOCK_ACCOUNT_ID);
+    private AuthContext mockUser = new AuthContext("user.id", MOCK_ACCOUNT_ID);
     private boolean isLoggedIn;
     private boolean isAutomatedServiceMode;
     private boolean isMaintainer;
@@ -21,7 +21,7 @@ public class MockUserProvision extends UserProvision {
     private boolean isInstructor;
     private boolean isStudent;
 
-    private UserInfo loginUser(String userId, boolean isAdmin, boolean isInstructor, boolean isStudent,
+    private AuthContext loginUser(String userId, boolean isAdmin, boolean isInstructor, boolean isStudent,
             boolean isMaintainer) {
         isLoggedIn = true;
         mockUser.id = userId;
@@ -37,7 +37,7 @@ public class MockUserProvision extends UserProvision {
      *
      * @return The user info after login process
      */
-    public UserInfo loginUser(String userId) {
+    public AuthContext loginUser(String userId) {
         return loginUser(userId, false, false, false, false);
     }
 
@@ -46,7 +46,7 @@ public class MockUserProvision extends UserProvision {
      *
      * @return The user info after login process
      */
-    public UserInfo loginAsAdmin(String userId) {
+    public AuthContext loginAsAdmin(String userId) {
         return loginUser(userId, true, false, false, false);
     }
 
@@ -55,7 +55,7 @@ public class MockUserProvision extends UserProvision {
      *
      * @return The user info after login process
      */
-    public UserInfo loginAsInstructor(String userId) {
+    public AuthContext loginAsInstructor(String userId) {
         return loginUser(userId, false, true, false, false);
     }
 
@@ -64,7 +64,7 @@ public class MockUserProvision extends UserProvision {
      *
      * @return The user info after login process
      */
-    public UserInfo loginAsStudent(String userId) {
+    public AuthContext loginAsStudent(String userId) {
         return loginUser(userId, false, false, true, false);
     }
 
@@ -73,7 +73,7 @@ public class MockUserProvision extends UserProvision {
      *
      * @return The user info after login process
      */
-    public UserInfo loginAsStudentInstructor(String userId) {
+    public AuthContext loginAsStudentInstructor(String userId) {
         return loginUser(userId, false, true, true, false);
     }
 
@@ -82,7 +82,7 @@ public class MockUserProvision extends UserProvision {
      *
      * @return The user info after login process
      */
-    public UserInfo loginAsMaintainer(String userId) {
+    public AuthContext loginAsMaintainer(String userId) {
         return loginUser(userId, false, false, false, true);
     }
 
@@ -107,18 +107,18 @@ public class MockUserProvision extends UserProvision {
     }
 
     @Override
-    public UserInfo getCurrentUser(UserInfoCookie uic) {
-        return getCurrentLoggedInUser(uic);
+    public AuthContext getCurrentUserContext(UserInfoCookie uic) {
+        return getCurrentLoggedInUserContext(uic);
     }
 
     @Override
-    public UserInfo getCurrentLoggedInUser(UserInfoCookie uic) {
+    public AuthContext getCurrentLoggedInUserContext(UserInfoCookie uic) {
         return isLoggedIn ? mockUser : null;
     }
 
     @Override
-    public UserInfo getMasqueradeUser(String googleId) {
-        UserInfo userInfo = new UserInfo(googleId, MOCK_ACCOUNT_ID);
+    public AuthContext getMasqueradeUserContext(String googleId) {
+        AuthContext userInfo = new AuthContext(googleId, MOCK_ACCOUNT_ID);
         userInfo.isAdmin = isAdmin;
         userInfo.isInstructor = isInstructor;
         userInfo.isStudent = isStudent;

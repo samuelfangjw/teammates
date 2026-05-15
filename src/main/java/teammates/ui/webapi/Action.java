@@ -6,8 +6,8 @@ import java.util.UUID;
 
 import jakarta.servlet.http.HttpServletRequest;
 
+import teammates.common.datatransfer.AuthContext;
 import teammates.common.datatransfer.InstructorPermissionSet;
-import teammates.common.datatransfer.UserInfo;
 import teammates.common.datatransfer.UserInfoCookie;
 import teammates.common.datatransfer.logs.RequestLogUser;
 import teammates.common.util.AutomatedRequestAuth;
@@ -50,7 +50,7 @@ public abstract class Action {
     LogsProcessor logsProcessor = LogsProcessor.inst();
 
     HttpServletRequest req;
-    UserInfo userInfo;
+    AuthContext authContext;
     AuthType authType;
 
     private Student unregisteredStudent;
@@ -64,7 +64,7 @@ public abstract class Action {
      */
     public void init(HttpServletRequest req) {
         this.req = req;
-        initAuthInfo();
+        initAuthContext();
     }
 
     /**
@@ -103,8 +103,8 @@ public abstract class Action {
      */
     public void checkAccessControl() throws UnauthorizedAccessException {
         String userParam = getRequestParamValue(Const.ParamsNames.USER_ID);
-        if (userInfo != null && userParam != null && !userInfo.isAdmin && !userParam.equals(userInfo.id)) {
-            throw new UnauthorizedAccessException("User " + userInfo.id
+        if (authContext != null && userParam != null && !authContext.isAdmin && !userParam.equals(authContext.id)) {
+            throw new UnauthorizedAccessException("User " + authContext.id
                     + " is trying to masquerade as " + userParam + " without admin permission.");
         }
 
@@ -128,7 +128,7 @@ public abstract class Action {
     public RequestLogUser getUserInfoForLogging() {
         RequestLogUser user = new RequestLogUser();
 
-        String googleId = userInfo == null ? null : userInfo.getId();
+        String googleId = authContext == null ? null : authContext.getId();
 
         user.setGoogleId(googleId);
         if (unregisteredStudent != null) {
@@ -139,12 +139,12 @@ public abstract class Action {
         return user;
     }
 
-    private void initAuthInfo() {
+    private void initAuthContext() {
         if (Config.BACKDOOR_KEY.equals(req.getHeader(Const.HeaderNames.BACKDOOR_KEY))) {
             authType = AuthType.ALL_ACCESS;
-            userInfo = userProvision.getAdminOnlyUser(getRequestParamValue(Const.ParamsNames.USER_ID));
-            userInfo.isStudent = true;
-            userInfo.isInstructor = true;
+            authContext = userProvision.getAdminOnlyUserContext(getRequestParamValue(Const.ParamsNames.USER_ID));
+            authContext.isStudent = true;
+            authContext.isInstructor = true;
             return;
         }
 
@@ -156,15 +156,15 @@ public abstract class Action {
 
         String cookie = HttpRequestHelper.getCookieValueFromRequest(req, Const.SecurityConfig.AUTH_COOKIE_NAME);
         UserInfoCookie uic = UserInfoCookie.fromCookie(cookie);
-        userInfo = userProvision.getCurrentUser(uic);
+        authContext = userProvision.getCurrentUserContext(uic);
 
         String regKey = getRequestParamValue(Const.ParamsNames.REGKEY);
         String userParam = getRequestParamValue(Const.ParamsNames.USER_ID);
 
-        if (userInfo == null) {
+        if (authContext == null) {
             authType = StringHelper.isEmpty(regKey) ? AuthType.PUBLIC : AuthType.REG_KEY;
-        } else if (userParam != null && userInfo.isAdmin) {
-            userInfo = userProvision.getMasqueradeUser(userParam);
+        } else if (userParam != null && authContext.isAdmin) {
+            authContext = userProvision.getMasqueradeUserContext(userParam);
             authType = AuthType.MASQUERADE;
         } else {
             authType = AuthType.LOGGED_IN;
@@ -325,19 +325,19 @@ public abstract class Action {
 
     Instructor getPossiblyUnregisteredInstructor(String courseId) {
         return getUnregisteredInstructor().orElseGet(() -> {
-            if (userInfo == null) {
+            if (authContext == null) {
                 return null;
             }
-            return logic.getInstructorByGoogleId(courseId, userInfo.getId());
+            return logic.getInstructorByGoogleId(courseId, authContext.getId());
         });
     }
 
     Student getPossiblyUnregisteredStudent(String courseId) {
         return getUnregisteredStudent().orElseGet(() -> {
-            if (userInfo == null) {
+            if (authContext == null) {
                 return null;
             }
-            return logic.getStudentByGoogleId(courseId, userInfo.getId());
+            return logic.getStudentByGoogleId(courseId, authContext.getId());
         });
     }
 

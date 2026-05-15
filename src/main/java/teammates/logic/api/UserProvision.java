@@ -1,5 +1,6 @@
 package teammates.logic.api;
 
+import teammates.common.datatransfer.AuthContext;
 import teammates.common.datatransfer.UserInfo;
 import teammates.common.datatransfer.UserInfoCookie;
 import teammates.common.util.Config;
@@ -29,8 +30,8 @@ public class UserProvision {
     /**
      * Gets the information of the current logged in user.
      */
-    public UserInfo getCurrentUser(UserInfoCookie uic) {
-        UserInfo user = getCurrentLoggedInUser(uic);
+    public AuthContext getCurrentUserContext(UserInfoCookie uic) {
+        AuthContext user = getCurrentLoggedInUserContext(uic);
 
         if (user == null) {
             return null;
@@ -47,35 +48,50 @@ public class UserProvision {
     /**
      * Gets the current logged in user.
      */
-    UserInfo getCurrentLoggedInUser(UserInfoCookie uic) {
+    AuthContext getCurrentLoggedInUserContext(UserInfoCookie uic) {
         if (uic == null || !uic.isValid()) {
             return null;
         }
 
-        return new UserInfo(uic.getUserId(), uic.getAccountId());
+        return new AuthContext(uic.getUserId(), uic.getAccountId());
     }
 
     /**
      * Gets the information of the current masqueraded user.
      */
-    public UserInfo getMasqueradeUser(String googleId) {
+    public AuthContext getMasqueradeUserContext(String googleId) {
         Account account = accountsLogic.getAccountForGoogleId(googleId);
-        UserInfo userInfo = new UserInfo(googleId, account == null ? null : account.getId());
-        userInfo.isAdmin = false;
-        userInfo.isInstructor = usersLogic.isInstructorInAnyCourse(googleId);
-        userInfo.isStudent = usersLogic.isStudentInAnyCourse(googleId);
-        userInfo.isMaintainer = Config.getAppMaintainers().contains(googleId);
-        return userInfo;
+        AuthContext authContext = new AuthContext(googleId, account == null ? null : account.getId());
+        authContext.isAdmin = false;
+        authContext.isInstructor = usersLogic.isInstructorInAnyCourse(googleId);
+        authContext.isStudent = usersLogic.isStudentInAnyCourse(googleId);
+        authContext.isMaintainer = Config.getAppMaintainers().contains(googleId);
+        return authContext;
     }
 
     /**
      * Gets the information of a user who has administrator role only.
      */
-    public UserInfo getAdminOnlyUser(String userId) {
+    public AuthContext getAdminOnlyUserContext(String userId) {
         Account account = userId == null ? null : accountsLogic.getAccountForGoogleId(userId);
-        UserInfo userInfo = new UserInfo(userId, account == null ? null : account.getId());
-        userInfo.isAdmin = true;
-        return userInfo;
+        AuthContext authContext = new AuthContext(userId, account == null ? null : account.getId());
+        authContext.isAdmin = true;
+        return authContext;
     }
 
+    /**
+     * Gets the information of a user from an AuthContext.
+     */
+    public UserInfo getUserInfo(AuthContext authContext) {
+        if (authContext == null) {
+            return null;
+        }
+
+        UserInfo userInfo = new UserInfo(authContext.id, authContext.accountId);
+        userInfo.isAdmin = Config.getAppAdmins().contains(authContext.id);
+        userInfo.isInstructor = usersLogic.isInstructorInAnyCourse(authContext.id);
+        userInfo.isStudent = usersLogic.isStudentInAnyCourse(authContext.id);
+        userInfo.isMaintainer = Config.getAppMaintainers().contains(authContext.id);
+        return userInfo;
+    }
 }
