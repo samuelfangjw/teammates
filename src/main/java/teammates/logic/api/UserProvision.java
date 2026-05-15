@@ -55,7 +55,8 @@ public class UserProvision {
             return null;
         }
 
-        return new AuthContext(uic.getUserId(), uic.getAccountId());
+        return new AuthContext(uic.getUserId(), uic.getAccountId(),
+                false, false, false, false);
     }
 
     /**

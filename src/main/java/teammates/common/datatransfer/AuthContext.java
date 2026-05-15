@@ -19,8 +19,4 @@ public record AuthContext(
         boolean isInstructor,
         boolean isStudent,
         boolean isMaintainer) {
-
-    public AuthContext(String googleId, UUID accountId) {
-        this(googleId, accountId, false, false, false, false);
-    }
 }

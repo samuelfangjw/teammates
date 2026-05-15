@@ -13,7 +13,9 @@ import teammates.common.datatransfer.UserInfoCookie;
  */
 public class MockUserProvision extends UserProvision {
     private static final UUID MOCK_ACCOUNT_ID = UUID.randomUUID();
-    private AuthContext mockUser = new AuthContext("user.id", MOCK_ACCOUNT_ID);
+    private AuthContext mockUser = new AuthContext(
+            "user.id", MOCK_ACCOUNT_ID, false, false, false, false
+    );
     private boolean isLoggedIn;
     private boolean isAutomatedServiceMode;
     private boolean isMaintainer;
