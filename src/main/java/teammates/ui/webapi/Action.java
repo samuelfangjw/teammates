@@ -103,8 +103,8 @@ public abstract class Action {
      */
     public void checkAccessControl() throws UnauthorizedAccessException {
         String userParam = getRequestParamValue(Const.ParamsNames.USER_ID);
-        if (authContext != null && userParam != null && !authContext.isAdmin && !userParam.equals(authContext.id)) {
-            throw new UnauthorizedAccessException("User " + authContext.id
+        if (authContext != null && userParam != null && !authContext.isAdmin() && !userParam.equals(authContext.id())) {
+            throw new UnauthorizedAccessException("User " + authContext.id()
                     + " is trying to masquerade as " + userParam + " without admin permission.");
         }
 
@@ -128,7 +128,7 @@ public abstract class Action {
     public RequestLogUser getUserInfoForLogging() {
         RequestLogUser user = new RequestLogUser();
 
-        String googleId = authContext == null ? null : authContext.getId();
+        String googleId = authContext == null ? null : authContext.id();
 
         user.setGoogleId(googleId);
         if (unregisteredStudent != null) {
@@ -142,9 +142,14 @@ public abstract class Action {
     private void initAuthContext() {
         if (Config.BACKDOOR_KEY.equals(req.getHeader(Const.HeaderNames.BACKDOOR_KEY))) {
             authType = AuthType.ALL_ACCESS;
-            authContext = userProvision.getAdminOnlyUserContext(getRequestParamValue(Const.ParamsNames.USER_ID));
-            authContext.isStudent = true;
-            authContext.isInstructor = true;
+            AuthContext adminOnlyContext = userProvision.getAdminOnlyUserContext(getRequestParamValue(Const.ParamsNames.USER_ID));
+            authContext = new AuthContext(
+                    adminOnlyContext.id(),
+                    adminOnlyContext.accountId(),
+                    adminOnlyContext.isAdmin(),
+                    true,
+                    true,
+                    adminOnlyContext.isMaintainer());
             return;
         }
 
@@ -163,7 +168,7 @@ public abstract class Action {
 
         if (authContext == null) {
             authType = StringHelper.isEmpty(regKey) ? AuthType.PUBLIC : AuthType.REG_KEY;
-        } else if (userParam != null && authContext.isAdmin) {
+        } else if (userParam != null && authContext.isAdmin()) {
             authContext = userProvision.getMasqueradeUserContext(userParam);
             authType = AuthType.MASQUERADE;
         } else {
@@ -328,7 +333,7 @@ public abstract class Action {
             if (authContext == null) {
                 return null;
             }
-            return logic.getInstructorByGoogleId(courseId, authContext.getId());
+            return logic.getInstructorByGoogleId(courseId, authContext.id());
         });
     }
 
@@ -337,7 +342,7 @@ public abstract class Action {
             if (authContext == null) {
                 return null;
             }
-            return logic.getStudentByGoogleId(courseId, authContext.getId());
+            return logic.getStudentByGoogleId(courseId, authContext.id());
         });
     }
 

@@ -17,17 +17,17 @@ public class DeleteStudentAction extends Action {
 
     @Override
     void checkSpecificAccessControl() throws UnauthorizedAccessException {
-        if (authContext.isAdmin) {
+        if (authContext.isAdmin()) {
             return;
         }
 
-        if (!authContext.isInstructor) {
+        if (!authContext.isInstructor()) {
             throw new UnauthorizedAccessException("Instructor privilege is required to access this resource.");
         }
 
         String courseId = getNonNullRequestParamValue(Const.ParamsNames.COURSE_ID);
 
-        Instructor instructor = logic.getInstructorByGoogleId(courseId, authContext.id);
+        Instructor instructor = logic.getInstructorByGoogleId(courseId, authContext.id());
         gateKeeper.verifyAccessible(
                 instructor, logic.getCourse(courseId), Const.InstructorPermissions.CAN_MODIFY_STUDENT);
     }

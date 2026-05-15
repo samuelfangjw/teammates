@@ -37,12 +37,14 @@ public class UserProvision {
             return null;
         }
 
-        String userId = user.id;
-        user.isAdmin = Config.getAppAdmins().contains(userId);
-        user.isInstructor = usersLogic.isInstructorInAnyCourse(userId);
-        user.isStudent = usersLogic.isStudentInAnyCourse(userId);
-        user.isMaintainer = Config.getAppMaintainers().contains(userId);
-        return user;
+        String userId = user.id();
+        return new AuthContext(
+                userId,
+                user.accountId(),
+                Config.getAppAdmins().contains(userId),
+                usersLogic.isInstructorInAnyCourse(userId),
+                usersLogic.isStudentInAnyCourse(userId),
+                Config.getAppMaintainers().contains(userId));
     }
 
     /**
@@ -61,12 +63,13 @@ public class UserProvision {
      */
     public AuthContext getMasqueradeUserContext(String googleId) {
         Account account = accountsLogic.getAccountForGoogleId(googleId);
-        AuthContext authContext = new AuthContext(googleId, account == null ? null : account.getId());
-        authContext.isAdmin = false;
-        authContext.isInstructor = usersLogic.isInstructorInAnyCourse(googleId);
-        authContext.isStudent = usersLogic.isStudentInAnyCourse(googleId);
-        authContext.isMaintainer = Config.getAppMaintainers().contains(googleId);
-        return authContext;
+        return new AuthContext(
+                googleId,
+                account == null ? null : account.getId(),
+                false,
+                usersLogic.isInstructorInAnyCourse(googleId),
+                usersLogic.isStudentInAnyCourse(googleId),
+                Config.getAppMaintainers().contains(googleId));
     }
 
     /**
@@ -74,9 +77,7 @@ public class UserProvision {
      */
     public AuthContext getAdminOnlyUserContext(String userId) {
         Account account = userId == null ? null : accountsLogic.getAccountForGoogleId(userId);
-        AuthContext authContext = new AuthContext(userId, account == null ? null : account.getId());
-        authContext.isAdmin = true;
-        return authContext;
+        return new AuthContext(userId, account == null ? null : account.getId(), true, false, false, false);
     }
 
     /**
@@ -87,11 +88,11 @@ public class UserProvision {
             return null;
         }
 
-        UserInfo userInfo = new UserInfo(authContext.id, authContext.accountId);
-        userInfo.isAdmin = Config.getAppAdmins().contains(authContext.id);
-        userInfo.isInstructor = usersLogic.isInstructorInAnyCourse(authContext.id);
-        userInfo.isStudent = usersLogic.isStudentInAnyCourse(authContext.id);
-        userInfo.isMaintainer = Config.getAppMaintainers().contains(authContext.id);
+        UserInfo userInfo = new UserInfo(authContext.id(), authContext.accountId());
+        userInfo.isAdmin = authContext.isAdmin();
+        userInfo.isInstructor = authContext.isInstructor();
+        userInfo.isStudent = authContext.isStudent();
+        userInfo.isMaintainer = authContext.isMaintainer();
         return userInfo;
     }
 }

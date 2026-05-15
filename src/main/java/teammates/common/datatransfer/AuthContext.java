@@ -4,66 +4,23 @@ import java.util.UUID;
 
 /**
  * Represents the authentication context of a user.
+ * 
+ * @param id           The user's Google ID.
+ * @param accountId    The user's account ID.
+ * @param isAdmin      Indicates whether the user has admin privilege.
+ * @param isInstructor Indicates whether the user has instructor privilege.
+ * @param isStudent    Indicates whether the user has student privilege.
+ * @param isMaintainer Indicates whether the user has maintainer privilege.
  */
-public class AuthContext {
-
-    /**
-     * The user's Google ID.
-     */
-    public String id;
-
-    /**
-     * The user's account ID.
-     */
-    public UUID accountId;
-
-    /**
-     * Indicates whether the user has admin privilege.
-     */
-    public boolean isAdmin;
-
-    /**
-     * Indicates whether the user has instructor privilege.
-     */
-    public boolean isInstructor;
-
-    /**
-     * Indicates whether the user has student privilege.
-     */
-    public boolean isStudent;
-
-    /**
-     * Indicates whether the user has maintainer privilege.
-     */
-    public boolean isMaintainer;
+public record AuthContext(
+        String id,
+        UUID accountId,
+        boolean isAdmin,
+        boolean isInstructor,
+        boolean isStudent,
+        boolean isMaintainer) {
 
     public AuthContext(String googleId, UUID accountId) {
-        this.id = googleId;
-        this.accountId = accountId;
+        this(googleId, accountId, false, false, false, false);
     }
-
-    public String getId() {
-        return id;
-    }
-
-    public UUID getAccountId() {
-        return accountId;
-    }
-
-    public boolean getIsAdmin() {
-        return isAdmin;
-    }
-
-    public boolean getIsInstructor() {
-        return isInstructor;
-    }
-
-    public boolean getIsStudent() {
-        return isStudent;
-    }
-
-    public boolean getIsMaintainer() {
-        return isMaintainer;
-    }
-
 }

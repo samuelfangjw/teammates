@@ -28,7 +28,7 @@ public class BinFeedbackSessionAction extends Action {
             throw new EntityNotFoundException("Feedback session not found");
         }
         gateKeeper.verifyAccessible(
-                logic.getInstructorByGoogleId(feedbackSession.getCourseId(), authContext.getId()),
+                logic.getInstructorByGoogleId(feedbackSession.getCourseId(), authContext.id()),
                 feedbackSession,
                 Const.InstructorPermissions.CAN_MODIFY_SESSION);
     }

@@ -24,11 +24,7 @@ public class MockUserProvision extends UserProvision {
     private AuthContext loginUser(String userId, boolean isAdmin, boolean isInstructor, boolean isStudent,
             boolean isMaintainer) {
         isLoggedIn = true;
-        mockUser.id = userId;
-        mockUser.isAdmin = isAdmin;
-        mockUser.isInstructor = isInstructor;
-        mockUser.isStudent = isStudent;
-        mockUser.isMaintainer = isMaintainer;
+        mockUser = new AuthContext(userId, MOCK_ACCOUNT_ID, isAdmin, isInstructor, isStudent, isMaintainer);
         return mockUser;
     }
 
@@ -117,13 +113,7 @@ public class MockUserProvision extends UserProvision {
 
     @Override
     public AuthContext getMasqueradeUserContext(String googleId) {
-        AuthContext userInfo = new AuthContext(googleId, MOCK_ACCOUNT_ID);
-        userInfo.isAdmin = isAdmin;
-        userInfo.isInstructor = isInstructor;
-        userInfo.isStudent = isStudent;
-        userInfo.isMaintainer = isMaintainer;
-
-        return userInfo;
+        return new AuthContext(googleId, MOCK_ACCOUNT_ID, isAdmin, isInstructor, isStudent, isMaintainer);
     }
 
     public void setAdmin(boolean isAdmin) {

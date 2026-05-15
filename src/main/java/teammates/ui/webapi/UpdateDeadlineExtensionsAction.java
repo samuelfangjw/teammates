@@ -36,7 +36,7 @@ public class UpdateDeadlineExtensionsAction extends Action {
         }
 
         gateKeeper.verifyAccessible(
-                logic.getInstructorByGoogleId(feedbackSession.getCourseId(), authContext.getId()),
+                logic.getInstructorByGoogleId(feedbackSession.getCourseId(), authContext.id()),
                 feedbackSession,
                 Const.InstructorPermissions.CAN_MODIFY_SESSION);
     }
