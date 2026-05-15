@@ -77,8 +77,9 @@ public class UserProvision {
      * Gets the information of a user who has administrator role only.
      */
     public AuthContext getAdminOnlyUserContext(String userId) {
+        // Only used for testing. To be removed in the future.
         Account account = userId == null ? null : accountsLogic.getAccountForGoogleId(userId);
-        return new AuthContext(userId, account == null ? null : account.getId(), true, false, false, false);
+        return new AuthContext(userId, account == null ? null : account.getId(), true, true, true, true);
     }
 
     /**

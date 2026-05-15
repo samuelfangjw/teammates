@@ -289,13 +289,13 @@ public class UserProvisionTest extends BaseTestCase {
     }
 
     @Test
-    public void testGetAdminOnlyUser_returnsUserInfoWithOnlyIsAdminTrue() {
+    public void testGetAdminOnlyUser_returnsAuthContextWithAllRolesTrue() {
         String userId = "admin-user-id";
 
         AuthContext authContext = userProvision.getAdminOnlyUserContext(userId);
 
         assertEquals(userId, authContext.id());
-        assertHasRoles(authContext, Role.ADMIN);
+        assertHasRoles(authContext, Role.ADMIN, Role.INSTRUCTOR, Role.STUDENT);
         verifyNoInteractions(mockUsersLogic);
     }
 
