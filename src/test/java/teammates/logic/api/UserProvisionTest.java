@@ -295,7 +295,7 @@ public class UserProvisionTest extends BaseTestCase {
         AuthContext authContext = userProvision.getAdminOnlyUserContext(userId);
 
         assertEquals(userId, authContext.id());
-        assertHasRoles(authContext, Role.ADMIN, Role.INSTRUCTOR, Role.STUDENT);
+        assertHasRoles(authContext, Role.ADMIN, Role.MAINTAINER, Role.INSTRUCTOR, Role.STUDENT);
         verifyNoInteractions(mockUsersLogic);
     }
 
