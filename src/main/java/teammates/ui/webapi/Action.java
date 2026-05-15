@@ -142,7 +142,8 @@ public abstract class Action {
     private void initAuthContext() {
         if (Config.BACKDOOR_KEY.equals(req.getHeader(Const.HeaderNames.BACKDOOR_KEY))) {
             authType = AuthType.ALL_ACCESS;
-            AuthContext adminOnlyContext = userProvision.getAdminOnlyUserContext(getRequestParamValue(Const.ParamsNames.USER_ID));
+            AuthContext adminOnlyContext = userProvision
+                    .getAdminOnlyUserContext(getRequestParamValue(Const.ParamsNames.USER_ID));
             authContext = new AuthContext(
                     adminOnlyContext.id(),
                     adminOnlyContext.accountId(),
