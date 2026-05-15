@@ -33,62 +33,61 @@ public class MockUserProvision extends UserProvision {
     }
 
     /**
-     * Adds a logged-in user without admin rights.
+     * Login as a user without admin rights.
      *
-     * @return The user info after login process
+     * @return The auth context after login process
      */
     public AuthContext loginUser(String userId) {
         return loginUser(userId, false, false, false, false);
     }
 
     /**
-     * Adds a logged-in user as an admin.
+     * Login as a user with admin rights.
      *
-     * @return The user info after login process
+     * @return The auth context after login process
      */
     public AuthContext loginAsAdmin(String userId) {
         return loginUser(userId, true, false, false, false);
     }
 
     /**
-     * Adds a logged-in user as an instructor.
+     * Login as a user with instructor rights.
      *
-     * @return The user info after login process
+     * @return The auth context after login process
      */
     public AuthContext loginAsInstructor(String userId) {
         return loginUser(userId, false, true, false, false);
     }
 
     /**
-     * Adds a logged-in user as a student.
+     * Login as a user with student rights.
      *
-     * @return The user info after login process
+     * @return The auth context after login process
      */
     public AuthContext loginAsStudent(String userId) {
         return loginUser(userId, false, false, true, false);
     }
 
     /**
-     * Adds a logged-in user as a student instructor.
+     * Login as a user with student and instructor rights.
      *
-     * @return The user info after login process
+     * @return The auth context after login process
      */
     public AuthContext loginAsStudentInstructor(String userId) {
         return loginUser(userId, false, true, true, false);
     }
 
     /**
-     * Adds a logged-in user as a maintainer.
+     * Login as a user with maintainer rights.
      *
-     * @return The user info after login process
+     * @return The auth context after login process
      */
     public AuthContext loginAsMaintainer(String userId) {
         return loginUser(userId, false, false, false, true);
     }
 
     /**
-     * Models a verified cron/worker principal ({@link AuthType#AUTOMATED_SERVICE}), not a human app admin.
-     * Does not log in a user; sets a flag that {@code BaseActionTest} uses to override {@code action.authType}.
+     * Logs in as an automated service (cron/worker).
      */
     public void loginAsAutomatedService() {
         isAutomatedServiceMode = true;
