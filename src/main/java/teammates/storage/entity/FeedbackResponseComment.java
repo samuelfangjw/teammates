@@ -185,7 +185,13 @@ public class FeedbackResponseComment extends BaseEntity {
         this.updatedAt = updatedAt;
     }
 
+    /**
+     * Gets the last editor of the response comment. If the last editor is not set, returns an empty ResponseGiver.
+     */
     public ResponseGiver getLastEditedBy() {
+        if (lastEditedBy == null) {
+            return new ResponseGiver();
+        }
         return lastEditedBy;
     }
 

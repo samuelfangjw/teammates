@@ -97,7 +97,7 @@ public class ResponseGiver {
         if (giverUser != null) {
             return giverUser.getEmail();
         }
-        return "Unknown giver";
+        return "Deleted User";
     }
 
     /**
@@ -110,7 +110,7 @@ public class ResponseGiver {
         if (giverUser != null) {
             return giverUser.getName();
         }
-        return "Unknown giver";
+        return "Deleted User";
     }
 
     @Override

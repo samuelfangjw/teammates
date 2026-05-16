@@ -242,14 +242,12 @@ public final class DataBundleLogic {
             }
 
             ResponseGiver lastEditedBy = responseComment.getLastEditedBy();
-            if (lastEditedBy != null) {
-                if (lastEditedBy.getGiverTeamId() != null) {
-                    Team team = teamsMap.get(lastEditedBy.getGiverTeamId());
-                    responseComment.setLastEditedBy(new ResponseGiver(team));
-                } else if (lastEditedBy.getGiverUserId() != null) {
-                    User user = usersMap.get(lastEditedBy.getGiverUserId());
-                    responseComment.setLastEditedBy(new ResponseGiver(user));
-                }
+            if (lastEditedBy.getGiverTeamId() != null) {
+                Team team = teamsMap.get(lastEditedBy.getGiverTeamId());
+                responseComment.setLastEditedBy(new ResponseGiver(team));
+            } else if (lastEditedBy.getGiverUserId() != null) {
+                User user = usersMap.get(lastEditedBy.getGiverUserId());
+                responseComment.setLastEditedBy(new ResponseGiver(user));
             } else {
                 responseComment.setLastEditedBy(responseComment.getGiver());
             }
