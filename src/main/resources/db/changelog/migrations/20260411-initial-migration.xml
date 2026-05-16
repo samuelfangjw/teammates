@@ -485,4 +485,5 @@
     </changeSet>
     <changeSet author="aaron (generated)" id="1776100163799-45">
         <addForeignKeyConstraint baseColumnNames="question_id" baseTableName="feedback_responses" constraintName="FKsj5g8bgffopcarvqp3onlutvc" deferrable="false" initiallyDeferred="false" referencedColumnNames="id" referencedTableName="feedback_questions" validate="true"/>
-    </changeSet></databaseChangeLog>
+    </changeSet>
+</databaseChangeLog>
