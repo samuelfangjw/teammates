@@ -91,7 +91,7 @@ public class ResponseGiver {
         if (giverUser != null) {
             return giverUser.getEmail();
         }
-        return null;
+        return "Unknown giver";
     }
 
     /**
@@ -104,7 +104,7 @@ public class ResponseGiver {
         if (giverUser != null) {
             return giverUser.getName();
         }
-        return null;
+        return "Unknown giver";
     }
 
     @Override
