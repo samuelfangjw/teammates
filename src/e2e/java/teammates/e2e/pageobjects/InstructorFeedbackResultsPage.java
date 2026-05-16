@@ -17,7 +17,6 @@ import org.openqa.selenium.support.FindBy;
 
 import teammates.common.datatransfer.participanttypes.QuestionGiverType;
 import teammates.common.datatransfer.participanttypes.QuestionRecipientType;
-import teammates.common.datatransfer.participanttypes.ResponseGiverType;
 import teammates.common.datatransfer.questions.FeedbackConstantSumQuestionDetails;
 import teammates.common.datatransfer.questions.FeedbackConstantSumResponseDetails;
 import teammates.common.datatransfer.questions.FeedbackContributionResponseDetails;
@@ -33,7 +32,6 @@ import teammates.storage.entity.FeedbackResponse;
 import teammates.storage.entity.FeedbackResponseComment;
 import teammates.storage.entity.FeedbackSession;
 import teammates.storage.entity.Instructor;
-import teammates.storage.entity.ResponseGiver;
 import teammates.storage.entity.Student;
 import teammates.test.ThreadHelper;
 
@@ -583,8 +581,8 @@ public class InstructorFeedbackResultsPage extends AppPage {
         click(responseRow.findElement(By.id("btn-add-comment")));
         WebElement commentModal = waitForElementPresence(By.className("modal-body"));
 
-        String editor = getCommentParticipantName(comment.getLastEditedBy(), instructors, students);
-        String commentGiver = getCommentParticipantName(comment.getGiver(), instructors, students);
+        String editor = comment.getLastEditedBy().getDisplayName();
+        String commentGiver = comment.getGiver().getDisplayName();
         verifyCommentDetails(commentModal, commentGiver, editor, comment.getCommentText(), true);
     }
 
@@ -594,8 +592,8 @@ public class InstructorFeedbackResultsPage extends AppPage {
                                               Collection<Student> students) {
         WebElement questionPanel = getQuestionPanel(groupedResponses, qnNum);
 
-        String editor = getCommentParticipantName(comment.getLastEditedBy(), instructors, students);
-        String commentGiver = getCommentParticipantName(comment.getGiver(), instructors, students);
+        String editor = comment.getLastEditedBy().getDisplayName();
+        String commentGiver = comment.getGiver().getDisplayName();
         verifyCommentDetails(questionPanel, commentGiver, editor, comment.getCommentText(), false);
     }
 
@@ -1335,32 +1333,5 @@ public class InstructorFeedbackResultsPage extends AppPage {
         }
 
         return name;
-    }
-
-    private String getCommentParticipantName(ResponseGiver participant,
-                                             Collection<Instructor> instructors,
-                                             Collection<Student> students) {
-        if (participant == null) {
-            return "";
-        }
-        if (participant.getGiverType() == ResponseGiverType.TEAM) {
-            return students.stream()
-                    .filter(student -> student.getTeamId().equals(participant.getGiverId()))
-                    .findFirst()
-                    .map(Student::getTeamName)
-                    .orElse("");
-        } else if (participant.getGiverType() == ResponseGiverType.INSTRUCTOR) {
-            return instructors.stream()
-                    .filter(instructor -> instructor.getId().equals(participant.getGiverId()))
-                    .findFirst()
-                    .map(Instructor::getName)
-                    .orElse("");
-        } else {
-            return students.stream()
-                    .filter(student -> student.getId().equals(participant.getGiverId()))
-                    .findFirst()
-                    .map(Student::getName)
-                    .orElse("");
-        }
     }
 }
