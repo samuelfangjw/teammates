@@ -18,6 +18,30 @@
         <addColumn tableName="feedback_response_comments">
             <column name="last_edited_by_team_id" type="UUID" />
         </addColumn>
+        <addForeignKeyConstraint constraintName="fk_frc_giver_user"
+            baseTableName="feedback_response_comments"
+            baseColumnNames="giver_user_id"
+            referencedTableName="users"
+            referencedColumnNames="id"
+            onDelete="CASCADE"/>
+        <addForeignKeyConstraint constraintName="fk_frc_giver_team"
+            baseTableName="feedback_response_comments"
+            baseColumnNames="giver_team_id"
+            referencedTableName="teams"
+            referencedColumnNames="id"
+            onDelete="CASCADE"/>
+        <addForeignKeyConstraint constraintName="fk_frc_last_edited_by_user"
+            baseTableName="feedback_response_comments"
+            baseColumnNames="last_edited_by_user_id"
+            referencedTableName="users"
+            referencedColumnNames="id"
+            onDelete="SET NULL"/>
+        <addForeignKeyConstraint constraintName="fk_frc_last_edited_by_team"
+            baseTableName="feedback_response_comments"
+            baseColumnNames="last_edited_by_team_id"
+            referencedTableName="teams"
+            referencedColumnNames="id"
+            onDelete="SET NULL"/>
         <sql>
             UPDATE feedback_response_comments
             SET giver_user_id = giver_id
@@ -39,6 +63,10 @@
             WHERE last_edited_by_type = 'TEAM';
         </sql>
         <rollback>
+            <dropForeignKeyConstraint baseTableName="feedback_response_comments" constraintName="fk_frc_giver_user" />
+            <dropForeignKeyConstraint baseTableName="feedback_response_comments" constraintName="fk_frc_giver_team" />
+            <dropForeignKeyConstraint baseTableName="feedback_response_comments" constraintName="fk_frc_last_edited_by_user" />
+            <dropForeignKeyConstraint baseTableName="feedback_response_comments" constraintName="fk_frc_last_edited_by_team" />
             <dropColumn tableName="feedback_response_comments" columnName="giver_user_id" />
             <dropColumn tableName="feedback_response_comments" columnName="giver_team_id" />
             <dropColumn tableName="feedback_response_comments" columnName="last_edited_by_user_id" />
