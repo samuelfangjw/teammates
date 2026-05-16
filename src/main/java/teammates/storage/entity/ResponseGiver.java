@@ -47,6 +47,9 @@ public class ResponseGiver {
         return giverUser;
     }
 
+    /**
+     * Sets the giver user.
+     */
     public void setGiverUser(User giverUser) {
         this.giverUser = giverUser;
         this.giverUserId = giverUser == null ? null : giverUser.getId();
@@ -64,6 +67,9 @@ public class ResponseGiver {
         return giverTeam;
     }
 
+    /**
+     * Sets the giver team.
+     */
     public void setGiverTeam(Team giverTeam) {
         this.giverTeam = giverTeam;
         this.giverTeamId = giverTeam == null ? null : giverTeam.getId();

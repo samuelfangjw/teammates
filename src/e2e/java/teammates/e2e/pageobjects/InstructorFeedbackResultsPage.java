@@ -500,7 +500,7 @@ public class InstructorFeedbackResultsPage extends AppPage {
                 students);
         WebElement responseRow = getResponseRow(questionPanel, giverTeam, giverName, recipientTeam, recipientName);
 
-        verifyResponseRowComment(responseRow, comment, instructors, students);
+        verifyResponseRowComment(responseRow, comment);
     }
 
     public void verifyGqrViewComment(FeedbackQuestion question, FeedbackResponseComment comment,
@@ -518,7 +518,7 @@ public class InstructorFeedbackResultsPage extends AppPage {
                 students);
         WebElement responseRow = getResponseRow(questionPanel, recipientTeam, recipientName);
 
-        verifyResponseRowComment(responseRow, comment, instructors, students);
+        verifyResponseRowComment(responseRow, comment);
     }
 
     public void verifyRqgViewComment(FeedbackQuestion question, FeedbackResponseComment comment,
@@ -536,7 +536,7 @@ public class InstructorFeedbackResultsPage extends AppPage {
         String giverNameAndEmail = getNameAndEmail(question.getGiverType(), response.getGiver(), instructors, students);
         WebElement responseRow = getResponseRow(questionPanel, giverTeam, giverNameAndEmail);
 
-        verifyResponseRowComment(responseRow, comment, instructors, students);
+        verifyResponseRowComment(responseRow, comment);
     }
 
     public void verifyGrqViewComment(FeedbackQuestion question, FeedbackResponseComment comment,
@@ -554,7 +554,7 @@ public class InstructorFeedbackResultsPage extends AppPage {
         String recipientName = getName(recipientType, response.getRecipient(), instructors, students);
 
         WebElement groupedResponses = getGroupedResponses(userPanel, recipientName, recipientTeam, true);
-        verifyGroupedResponseComment(groupedResponses, question.getQuestionNumber(), comment, instructors, students);
+        verifyGroupedResponseComment(groupedResponses, question.getQuestionNumber(), comment);
     }
 
     public void verifyRgqViewComment(FeedbackQuestion question, FeedbackResponseComment comment,
@@ -572,12 +572,10 @@ public class InstructorFeedbackResultsPage extends AppPage {
         String giverName = getName(giverType, response.getGiver(), instructors, students);
 
         WebElement groupedResponses = getGroupedResponses(userPanel, giverName, giverTeam, false);
-        verifyGroupedResponseComment(groupedResponses, question.getQuestionNumber(), comment, instructors, students);
+        verifyGroupedResponseComment(groupedResponses, question.getQuestionNumber(), comment);
     }
 
-    private void verifyResponseRowComment(WebElement responseRow, FeedbackResponseComment comment,
-                                          Collection<Instructor> instructors,
-                                          Collection<Student> students) {
+    private void verifyResponseRowComment(WebElement responseRow, FeedbackResponseComment comment) {
         click(responseRow.findElement(By.id("btn-add-comment")));
         WebElement commentModal = waitForElementPresence(By.className("modal-body"));
 
@@ -587,9 +585,7 @@ public class InstructorFeedbackResultsPage extends AppPage {
     }
 
     private void verifyGroupedResponseComment(WebElement groupedResponses, int qnNum,
-                                              FeedbackResponseComment comment,
-                                              Collection<Instructor> instructors,
-                                              Collection<Student> students) {
+                                              FeedbackResponseComment comment) {
         WebElement questionPanel = getQuestionPanel(groupedResponses, qnNum);
 
         String editor = comment.getLastEditedBy().getDisplayName();
