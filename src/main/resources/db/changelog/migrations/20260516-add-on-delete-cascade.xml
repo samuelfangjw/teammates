@@ -237,4 +237,33 @@
         </rollback>
     </changeSet>
 
+    <changeSet author="samuelfangjw" id="20260516-add-on-delete-cascade-9">
+        <dropForeignKeyConstraint baseTableName="users"
+            constraintName="FKfm8rm8ks0kgj4fhlmmljkj17x"/>
+
+        <addForeignKeyConstraint baseColumnNames="account_id"
+            baseTableName="users"
+            constraintName="FKfm8rm8ks0kgj4fhlmmljkj17x"
+            deferrable="false"
+            initiallyDeferred="false"
+            onDelete="SET NULL"
+            referencedColumnNames="id"
+            referencedTableName="accounts"
+            validate="true"/>
+
+        <rollback>
+            <dropForeignKeyConstraint baseTableName="users"
+                constraintName="FKfm8rm8ks0kgj4fhlmmljkj17x"/>
+
+            <addForeignKeyConstraint baseColumnNames="account_id"
+                baseTableName="users"
+                constraintName="FKfm8rm8ks0kgj4fhlmmljkj17x"
+                deferrable="false"
+                initiallyDeferred="false"
+                referencedColumnNames="id"
+                referencedTableName="accounts"
+                validate="true"/>
+        </rollback>
+    </changeSet>
+
 </databaseChangeLog>

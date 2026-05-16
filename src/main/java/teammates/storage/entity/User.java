@@ -43,6 +43,7 @@ public abstract class User extends BaseEntity {
     private UUID id;
 
     @ManyToOne
+    @OnDelete(action = OnDeleteAction.SET_NULL)
     @JoinColumn(name = "accountId")
     private Account account;
 
