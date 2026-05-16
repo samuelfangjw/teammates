@@ -286,6 +286,9 @@ public class DataBundleLogicIT extends BaseTestCaseWithDatabaseAccess {
 
         dataBundleLogic.removeDataBundle(dataBundle);
 
+        HibernateUtil.flushSession();
+        HibernateUtil.clearSession();
+
         ______TS("verify notification removed correctly");
 
         assertThrows(NullPointerException.class, () -> verifyPresentInDatabase(notification1));

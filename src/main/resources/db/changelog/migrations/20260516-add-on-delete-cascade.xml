@@ -208,4 +208,33 @@
         </rollback>
     </changeSet>
 
+    <changeSet author="samuelfangjw" id="20260516-add-on-delete-cascade-8">
+        <dropForeignKeyConstraint baseTableName="sections"
+            constraintName="FK7ty9cevpq04d90ohtso1q8312"/>
+
+        <addForeignKeyConstraint baseColumnNames="course_id"
+            baseTableName="sections"
+            constraintName="FK7ty9cevpq04d90ohtso1q8312"
+            deferrable="false"
+            initiallyDeferred="false"
+            onDelete="CASCADE"
+            referencedColumnNames="id"
+            referencedTableName="courses"
+            validate="true"/>
+
+        <rollback>
+            <dropForeignKeyConstraint baseTableName="sections"
+                constraintName="FK7ty9cevpq04d90ohtso1q8312"/>
+
+            <addForeignKeyConstraint baseColumnNames="course_id"
+                baseTableName="sections"
+                constraintName="FK7ty9cevpq04d90ohtso1q8312"
+                deferrable="false"
+                initiallyDeferred="false"
+                referencedColumnNames="id"
+                referencedTableName="courses"
+                validate="true"/>
+        </rollback>
+    </changeSet>
+
 </databaseChangeLog>
