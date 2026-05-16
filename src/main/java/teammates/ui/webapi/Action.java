@@ -8,14 +8,10 @@ import jakarta.servlet.http.HttpServletRequest;
 
 import teammates.common.datatransfer.AuthContext;
 import teammates.common.datatransfer.InstructorPermissionSet;
-import teammates.common.datatransfer.UserInfoCookie;
 import teammates.common.datatransfer.logs.RequestLogUser;
-import teammates.common.util.AutomatedRequestAuth;
-import teammates.common.util.Config;
 import teammates.common.util.Const;
 import teammates.common.util.HttpRequestHelper;
 import teammates.common.util.JsonUtils;
-import teammates.common.util.StringHelper;
 import teammates.logic.api.EmailGenerator;
 import teammates.logic.api.EmailSender;
 import teammates.logic.api.Logic;
@@ -23,9 +19,11 @@ import teammates.logic.api.LogsProcessor;
 import teammates.logic.api.RecaptchaVerifier;
 import teammates.logic.api.TaskQueuer;
 import teammates.logic.api.UserProvision;
+import teammates.storage.entity.Account;
 import teammates.storage.entity.FeedbackSession;
 import teammates.storage.entity.Instructor;
 import teammates.storage.entity.Student;
+import teammates.storage.entity.User;
 import teammates.ui.exception.EntityNotFoundException;
 import teammates.ui.exception.InvalidHttpParameterException;
 import teammates.ui.exception.InvalidOperationException;
@@ -51,10 +49,6 @@ public abstract class Action {
 
     HttpServletRequest req;
     AuthContext authContext;
-    AuthType authType;
-
-    private Student unregisteredStudent;
-    private Instructor unregisteredInstructor;
 
     // buffer to store the request body
     private String requestBody;
@@ -62,9 +56,9 @@ public abstract class Action {
     /**
      * Initializes the action object based on the HTTP request.
      */
-    public void init(HttpServletRequest req) {
+    public void init(HttpServletRequest req) throws UnauthorizedAccessException {
         this.req = req;
-        initAuthContext();
+        this.authContext = userProvision.getAuthContextFromRequest(req);
     }
 
     /**
@@ -102,19 +96,13 @@ public abstract class Action {
      * Checks if the requesting user has sufficient authority to access the resource.
      */
     public void checkAccessControl() throws UnauthorizedAccessException {
-        String userParam = getRequestParamValue(Const.ParamsNames.USER_ID);
-        if (authContext != null && userParam != null && !authContext.isAdmin() && !userParam.equals(authContext.id())) {
-            throw new UnauthorizedAccessException("User " + authContext.id()
-                    + " is trying to masquerade as " + userParam + " without admin permission.");
-        }
-
-        if (authType.getLevel() < getMinAuthLevel().getLevel()) {
+        if (authContext.authType().getLevel() < getMinAuthLevel().getLevel()) {
             // Access control level lower than required
             throw new UnauthorizedAccessException("Not authorized to access this resource.");
         }
 
-        if (authType == AuthType.ALL_ACCESS) {
-            // All-access pass granted
+        if (authContext.authType() == AuthType.ALL_ACCESS) {
+            // All-access auth type is allowed to access all resources without further checks
             return;
         }
 
@@ -128,45 +116,17 @@ public abstract class Action {
     public RequestLogUser getUserInfoForLogging() {
         RequestLogUser user = new RequestLogUser();
 
-        String googleId = authContext == null ? null : authContext.id();
+        Account account = authContext.account();
+        User regKeyUser = authContext.regKeyUser();
 
-        user.setGoogleId(googleId);
-        if (unregisteredStudent != null) {
-            user.setEmail(unregisteredStudent.getEmail());
-        } else if (unregisteredInstructor != null) {
-            user.setEmail(unregisteredInstructor.getEmail());
+        if (account != null) {
+            user.setEmail(account.getEmail());
+            user.setGoogleId(account.getGoogleId());
+        } else if (regKeyUser != null) {
+            user.setEmail(regKeyUser.getEmail());
         }
+
         return user;
-    }
-
-    private void initAuthContext() {
-        if (Config.BACKDOOR_KEY.equals(req.getHeader(Const.HeaderNames.BACKDOOR_KEY))) {
-            authType = AuthType.ALL_ACCESS;
-            authContext = userProvision.getAdminOnlyUserContext(getRequestParamValue(Const.ParamsNames.USER_ID));
-            return;
-        }
-
-        boolean trustedAutomatedCronOrWorker = AutomatedRequestAuth.isTrustedCronOrWorkerRequest(req);
-        if (trustedAutomatedCronOrWorker) {
-            authType = AuthType.AUTOMATED_SERVICE;
-            return;
-        }
-
-        String cookie = HttpRequestHelper.getCookieValueFromRequest(req, Const.SecurityConfig.AUTH_COOKIE_NAME);
-        UserInfoCookie uic = UserInfoCookie.fromCookie(cookie);
-        authContext = userProvision.getCurrentUserContext(uic);
-
-        String regKey = getRequestParamValue(Const.ParamsNames.REGKEY);
-        String userParam = getRequestParamValue(Const.ParamsNames.USER_ID);
-
-        if (authContext == null) {
-            authType = StringHelper.isEmpty(regKey) ? AuthType.PUBLIC : AuthType.REG_KEY;
-        } else if (userParam != null && authContext.isAdmin()) {
-            authContext = userProvision.getMasqueradeUserContext(userParam);
-            authType = AuthType.MASQUERADE;
-        } else {
-            authType = AuthType.LOGGED_IN;
-        }
     }
 
     /**
@@ -281,62 +241,62 @@ public abstract class Action {
      * Deserializes and validates the request body payload.
      */
     <T extends BasicRequest> T getAndValidateRequestBody(Type typeOfBody) throws InvalidHttpRequestBodyException {
-        T requestBody = JsonUtils.fromJson(getRequestBody(), typeOfBody);
-        if (requestBody == null) {
+        T reqBody = JsonUtils.fromJson(getRequestBody(), typeOfBody);
+        if (reqBody == null) {
             throw new InvalidHttpRequestBodyException("The request body is null");
         }
-        requestBody.validate();
-        return requestBody;
+        reqBody.validate();
+        return reqBody;
     }
 
     /**
-     * Gets the unregistered student by the HTTP param.
+     * Gets the student associated with the request, if any.
+     * 
+     * <p>
+     * If the request is authenticated with a registration key, return the student associated with the registration key.
+     * Otherwise, if the request is authenticated with an account, return the student associated with the user's account.
      */
-    Optional<Student> getUnregisteredStudent() {
-        String key = getRequestParamValue(Const.ParamsNames.REGKEY);
-        if (!StringHelper.isEmpty(key)) {
-            Student student = logic.getStudentByRegistrationKey(key);
-            if (student == null) {
+    protected Optional<Student> getStudentFromRequest(String courseId) {
+        User regKeyUser = authContext.regKeyUser();
+        if (regKeyUser != null) {
+            if (regKeyUser instanceof Student student) {
+                return Optional.of(student);
+            } else {
                 return Optional.empty();
             }
-            unregisteredStudent = student;
-            return Optional.of(student);
         }
-        return Optional.empty();
+
+        Account account = authContext.account();
+        if (account == null) {
+            return Optional.empty();
+        }
+
+        return Optional.ofNullable(logic.getStudentByGoogleId(courseId, account.getGoogleId()));
     }
 
     /**
-     * Gets the unregistered instructor by the HTTP param.
+     * Gets the instructor associated with the request, if any.
+     * 
+     * <p>
+     * If the request is authenticated with a registration key, return the instructor associated with the registration key.
+     * Otherwise, if the request is authenticated with an account, return the instructor associated with the user's account.
      */
-    Optional<Instructor> getUnregisteredInstructor() {
-        String key = getRequestParamValue(Const.ParamsNames.REGKEY);
-        if (!StringHelper.isEmpty(key)) {
-            Instructor instructor = logic.getInstructorByRegistrationKey(key);
-            if (instructor == null) {
+    protected Optional<Instructor> getInstructorFromRequest(String courseId) {
+        User regKeyUser = authContext.regKeyUser();
+        if (regKeyUser != null) {
+            if (regKeyUser instanceof Instructor instructor) {
+                return Optional.of(instructor);
+            } else {
                 return Optional.empty();
             }
-            unregisteredInstructor = instructor;
-            return Optional.of(instructor);
         }
-        return Optional.empty();
-    }
 
-    Instructor getPossiblyUnregisteredInstructor(String courseId) {
-        return getUnregisteredInstructor().orElseGet(() -> {
-            if (authContext == null) {
-                return null;
-            }
-            return logic.getInstructorByGoogleId(courseId, authContext.id());
-        });
-    }
+        Account account = authContext.account();
+        if (account == null) {
+            return Optional.empty();
+        }
 
-    Student getPossiblyUnregisteredStudent(String courseId) {
-        return getUnregisteredStudent().orElseGet(() -> {
-            if (authContext == null) {
-                return null;
-            }
-            return logic.getStudentByGoogleId(courseId, authContext.id());
-        });
+        return Optional.ofNullable(logic.getInstructorByGoogleId(courseId, account.getGoogleId()));
     }
 
     InstructorPermissionSet constructInstructorPrivileges(Instructor instructor, String feedbackSessionName) {
