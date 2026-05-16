@@ -42,8 +42,6 @@ public class UserProvision {
                 userId,
                 user.accountId(),
                 Config.getAppAdmins().contains(userId),
-                usersLogic.isInstructorInAnyCourse(userId),
-                usersLogic.isStudentInAnyCourse(userId),
                 Config.getAppMaintainers().contains(userId));
     }
 
@@ -56,7 +54,7 @@ public class UserProvision {
         }
 
         return new AuthContext(uic.getUserId(), uic.getAccountId(),
-                false, false, false, false);
+                false, false);
     }
 
     /**
@@ -68,8 +66,6 @@ public class UserProvision {
                 googleId,
                 account == null ? null : account.getId(),
                 false,
-                usersLogic.isInstructorInAnyCourse(googleId),
-                usersLogic.isStudentInAnyCourse(googleId),
                 Config.getAppMaintainers().contains(googleId));
     }
 
@@ -79,7 +75,7 @@ public class UserProvision {
     public AuthContext getAdminOnlyUserContext(String userId) {
         // Only used for testing. To be removed in the future.
         Account account = userId == null ? null : accountsLogic.getAccountForGoogleId(userId);
-        return new AuthContext(userId, account == null ? null : account.getId(), true, true, true, true);
+        return new AuthContext(userId, account == null ? null : account.getId(), true, true);
     }
 
     /**
@@ -92,8 +88,8 @@ public class UserProvision {
 
         UserInfo userInfo = new UserInfo(authContext.id(), authContext.accountId());
         userInfo.isAdmin = authContext.isAdmin();
-        userInfo.isInstructor = authContext.isInstructor();
-        userInfo.isStudent = authContext.isStudent();
+        userInfo.isInstructor = usersLogic.isInstructorInAnyCourse(authContext.id());
+        userInfo.isStudent = usersLogic.isStudentInAnyCourse(authContext.id());
         userInfo.isMaintainer = authContext.isMaintainer();
         return userInfo;
     }
