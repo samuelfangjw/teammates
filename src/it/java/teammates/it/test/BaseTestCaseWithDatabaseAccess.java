@@ -39,7 +39,7 @@ import liquibase.command.CommandScope;
  */
 public abstract class BaseTestCaseWithDatabaseAccess extends BaseTestCase {
 
-    private static final PostgreSQLContainer<?> PGSQL = new PostgreSQLContainer<>("postgres:15.1-alpine");
+    private static final PostgreSQLContainer<?> PGSQL = new PostgreSQLContainer<>("postgres:18-bookworm");
 
     private final Logic logic = Logic.inst();
 
