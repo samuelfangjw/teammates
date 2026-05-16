@@ -11,9 +11,6 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Table;
 
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
-
 import teammates.common.datatransfer.InstructorPermissionRole;
 import teammates.common.datatransfer.InstructorPermissionSet;
 import teammates.common.datatransfer.InstructorPrivileges;
@@ -28,7 +25,6 @@ import teammates.common.util.SanitizationHelper;
  */
 @Entity
 @Table(name = "Instructors")
-@OnDelete(action = OnDeleteAction.CASCADE)
 public class Instructor extends User {
     @Column(nullable = false)
     private boolean isDisplayedToStudents;

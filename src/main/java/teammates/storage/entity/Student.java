@@ -10,9 +10,6 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
-
 import teammates.common.datatransfer.UserType;
 import teammates.common.util.Config;
 import teammates.common.util.Const;
@@ -24,7 +21,6 @@ import teammates.common.util.SanitizationHelper;
  */
 @Entity
 @Table(name = "Students")
-@OnDelete(action = OnDeleteAction.CASCADE)
 public class Student extends User {
     @Column(nullable = false)
     private String comments;
