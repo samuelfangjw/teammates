@@ -1434,16 +1434,6 @@ public class Logic {
     }
 
     /**
-     * Resolves a {@link ResponseGiver} to an String.
-     *
-     * <p>For STUDENT and INSTRUCTOR types, returns the email of the giver; for TEAM type, returns team name.
-     * This is largely for legacy considerations and should not be used in new code if possible.
-     */
-    public String resolveGiver(ResponseGiver giver) {
-        return feedbackResponsesLogic.resolveGiver(giver);
-    }
-
-    /**
      * Updates a feedback response and comments by {@link FeedbackResponse}.
      *
      * <p>
