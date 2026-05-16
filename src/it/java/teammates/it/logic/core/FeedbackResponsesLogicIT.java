@@ -41,6 +41,7 @@ public class FeedbackResponsesLogicIT extends BaseTestCaseWithDatabaseAccess {
         assertFalse(fr1.getFeedbackResponseComments().isEmpty());
 
         frLogic.deleteFeedbackResponsesAndCommentsCascade(fr1);
+        HibernateUtil.flushSession();
 
         assertNull(frLogic.getFeedbackResponse(fr1.getId()));
         assertNull(frcLogic.getFeedbackResponseComment(frcId));
