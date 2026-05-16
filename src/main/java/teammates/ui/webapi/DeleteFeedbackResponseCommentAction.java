@@ -70,8 +70,8 @@ public class DeleteFeedbackResponseCommentAction extends BasicCommentSubmissionA
                     new ResponseGiver(ResponseGiverType.INSTRUCTOR, instructorAsFeedbackParticipant.getId()));
             break;
         case INSTRUCTOR_RESULT:
-            gateKeeper.verifyLoggedInUserPrivileges(userInfo);
-            Instructor instructor = logic.getInstructorByGoogleId(courseId, userInfo.getId());
+            gateKeeper.verifyLoggedInUserPrivileges(authContext);
+            Instructor instructor = logic.getInstructorByGoogleId(courseId, authContext.id());
             if (instructor == null) {
                 throw new UnauthorizedAccessException("Trying to access system using a non-existent instructor entity");
             }

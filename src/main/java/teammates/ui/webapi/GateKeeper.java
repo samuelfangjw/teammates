@@ -1,6 +1,6 @@
 package teammates.ui.webapi;
 
-import teammates.common.datatransfer.UserInfo;
+import teammates.common.datatransfer.AuthContext;
 import teammates.common.datatransfer.participanttypes.QuestionGiverType;
 import teammates.common.util.Const;
 import teammates.storage.entity.Course;
@@ -30,8 +30,8 @@ final class GateKeeper {
     /**
      * Verifies the user is logged in.
      */
-    void verifyLoggedInUserPrivileges(UserInfo userInfo) throws UnauthorizedAccessException {
-        if (userInfo != null) {
+    void verifyLoggedInUserPrivileges(AuthContext authContext) throws UnauthorizedAccessException {
+        if (authContext != null) {
             return;
         }
 
