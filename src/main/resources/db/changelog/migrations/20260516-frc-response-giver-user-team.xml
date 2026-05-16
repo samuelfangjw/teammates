@@ -77,12 +77,12 @@
             <sql>
                 UPDATE feedback_response_comments frc
                 SET giver_type = CASE
-                                     WHEN frc.team_id IS NOT NULL THEN 'TEAM'
-                                     WHEN EXISTS (SELECT 1 FROM students s WHERE s.id = frc.user_id) THEN 'STUDENT'
+                                     WHEN frc.giver_team_id IS NOT NULL THEN 'TEAM'
+                                     WHEN EXISTS (SELECT 1 FROM students s WHERE s.id = frc.giver_user_id) THEN 'STUDENT'
                                      ELSE 'INSTRUCTOR'
                                  END,
-                    giver_id = COALESCE(frc.team_id, frc.user_id)
-                WHERE frc.team_id IS NOT NULL OR frc.user_id IS NOT NULL;
+                    giver_id = COALESCE(frc.giver_team_id, frc.giver_user_id)
+                WHERE frc.giver_team_id IS NOT NULL OR frc.giver_user_id IS NOT NULL;
             </sql>
 
             <sql>
