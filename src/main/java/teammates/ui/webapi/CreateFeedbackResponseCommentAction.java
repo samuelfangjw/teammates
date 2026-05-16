@@ -80,8 +80,8 @@ public class CreateFeedbackResponseCommentAction extends BasicCommentSubmissionA
             verifyResponseOwnerShipForInstructor(instructorAsFeedbackParticipant, feedbackResponse);
             break;
         case INSTRUCTOR_RESULT:
-            gateKeeper.verifyLoggedInUserPrivileges(userInfo);
-            Instructor instructor = logic.getInstructorByGoogleId(courseId, userInfo.getId());
+            gateKeeper.verifyLoggedInUserPrivileges(authContext);
+            Instructor instructor = logic.getInstructorByGoogleId(courseId, authContext.id());
             gateKeeper.verifyAccessible(instructor, session, feedbackResponse.getGiverSection().getName(),
                     Const.InstructorPermissions.CAN_SUBMIT_SESSION_IN_SECTIONS);
             gateKeeper.verifyAccessible(instructor, session, feedbackResponse.getRecipientSection().getName(),
@@ -150,7 +150,7 @@ public class CreateFeedbackResponseCommentAction extends BasicCommentSubmissionA
             giver = instructorAsFeedbackParticipant.getEmail();
             break;
         case INSTRUCTOR_RESULT:
-            Instructor instructor = logic.getInstructorByGoogleId(courseId, userInfo.getId());
+            Instructor instructor = logic.getInstructorByGoogleId(courseId, authContext.id());
             giverRg = new ResponseGiver(ResponseGiverType.INSTRUCTOR, instructor.getId());
             isFromParticipant = false;
             isFollowingQuestionVisibility = false;

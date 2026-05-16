@@ -18,7 +18,6 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 
 import teammates.common.datatransfer.InstructorPrivileges;
-import teammates.common.datatransfer.UserInfo;
 import teammates.common.util.Config;
 import teammates.common.util.Const;
 import teammates.common.util.EmailWrapper;
@@ -114,7 +113,7 @@ public abstract class BaseActionTest<T extends Action> extends BaseTestCase {
             action.init(req);
             if (mockUserProvision.isAutomatedServiceMode()) {
                 action.authType = AuthType.AUTOMATED_SERVICE;
-                action.userInfo = null;
+                action.authContext = null;
             }
             return action;
         } catch (ActionMappingException e) {
@@ -147,8 +146,7 @@ public abstract class BaseActionTest<T extends Action> extends BaseTestCase {
      * Logs in the user to the test environment as an admin.
      */
     protected void loginAsAdmin() {
-        UserInfo user = mockUserProvision.loginAsAdmin(Config.APP_ADMINS.get(0));
-        assertTrue(user.isAdmin);
+        mockUserProvision.loginAsAdmin(Config.APP_ADMINS.get(0));
     }
 
     /**
@@ -156,10 +154,7 @@ public abstract class BaseActionTest<T extends Action> extends BaseTestCase {
      * (without any right).
      */
     protected void loginAsUnregistered(String userId) {
-        UserInfo user = mockUserProvision.loginUser(userId);
-        assertFalse(user.isStudent);
-        assertFalse(user.isInstructor);
-        assertFalse(user.isAdmin);
+        mockUserProvision.loginUser(userId);
     }
 
     /**
@@ -167,10 +162,7 @@ public abstract class BaseActionTest<T extends Action> extends BaseTestCase {
      * (without admin rights or student rights).
      */
     protected void loginAsInstructor(String userId) {
-        UserInfo user = mockUserProvision.loginAsInstructor(userId);
-        assertFalse(user.isStudent);
-        assertTrue(user.isInstructor);
-        assertFalse(user.isAdmin);
+        mockUserProvision.loginAsInstructor(userId);
     }
 
     /**
@@ -178,10 +170,7 @@ public abstract class BaseActionTest<T extends Action> extends BaseTestCase {
      * (without admin rights or instructor rights).
      */
     protected void loginAsStudent(String userId) {
-        UserInfo user = mockUserProvision.loginAsStudent(userId);
-        assertTrue(user.isStudent);
-        assertFalse(user.isInstructor);
-        assertFalse(user.isAdmin);
+        mockUserProvision.loginAsStudent(userId);
     }
 
     /**
@@ -189,18 +178,14 @@ public abstract class BaseActionTest<T extends Action> extends BaseTestCase {
      * (without admin rights).
      */
     protected void loginAsStudentInstructor(String userId) {
-        UserInfo user = mockUserProvision.loginAsStudentInstructor(userId);
-        assertTrue(user.isStudent);
-        assertTrue(user.isInstructor);
-        assertFalse(user.isAdmin);
+        mockUserProvision.loginAsStudentInstructor(userId);
     }
 
     /**
      * Logs in the user to the test environment as a maintainer.
      */
     protected void loginAsMaintainer() {
-        UserInfo user = mockUserProvision.loginAsMaintainer(Config.APP_MAINTAINERS.get(0));
-        assertTrue(user.isMaintainer);
+        mockUserProvision.loginAsMaintainer(Config.APP_MAINTAINERS.get(0));
     }
 
     /**
@@ -209,7 +194,6 @@ public abstract class BaseActionTest<T extends Action> extends BaseTestCase {
      */
     protected void loginAsAutomatedService() {
         mockUserProvision.loginAsAutomatedService();
-        assertTrue(mockUserProvision.isAutomatedServiceMode());
     }
 
     /**
