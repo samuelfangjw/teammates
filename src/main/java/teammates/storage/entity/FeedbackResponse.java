@@ -57,6 +57,7 @@ public abstract class FeedbackResponse extends BaseEntity {
     private String giver;
 
     @ManyToOne
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "giverSectionId")
     private Section giverSection;
 
@@ -67,6 +68,7 @@ public abstract class FeedbackResponse extends BaseEntity {
     private String recipient;
 
     @ManyToOne
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "recipientSectionId")
     private Section recipientSection;
 
