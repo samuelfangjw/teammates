@@ -266,4 +266,33 @@
         </rollback>
     </changeSet>
 
+    <changeSet author="samuelfangjw" id="20260516-add-on-delete-cascade-10">
+        <dropForeignKeyConstraint baseTableName="students"
+            constraintName="FKjgyxg2x86o4me9gr70elinthr"/>
+
+        <addForeignKeyConstraint baseColumnNames="team_id"
+            baseTableName="students"
+            constraintName="FKjgyxg2x86o4me9gr70elinthr"
+            deferrable="false"
+            initiallyDeferred="false"
+            onDelete="CASCADE"
+            referencedColumnNames="id"
+            referencedTableName="teams"
+            validate="true"/>
+
+        <rollback>
+            <dropForeignKeyConstraint baseTableName="students"
+                constraintName="FKjgyxg2x86o4me9gr70elinthr"/>
+
+            <addForeignKeyConstraint baseColumnNames="team_id"
+                baseTableName="students"
+                constraintName="FKjgyxg2x86o4me9gr70elinthr"
+                deferrable="false"
+                initiallyDeferred="false"
+                referencedColumnNames="id"
+                referencedTableName="teams"
+                validate="true"/>
+        </rollback>
+    </changeSet>
+
 </databaseChangeLog>
