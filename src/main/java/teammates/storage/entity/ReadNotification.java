@@ -10,6 +10,9 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import jakarta.persistence.UniqueConstraint;
 
 /**
@@ -27,6 +30,7 @@ public class ReadNotification extends BaseEntity {
     private UUID id;
 
     @ManyToOne
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "account_id", nullable = false)
     private Account account;
 
@@ -34,6 +38,7 @@ public class ReadNotification extends BaseEntity {
     private UUID accountId;
 
     @ManyToOne
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "notification_id", nullable = false)
     private Notification notification;
 
