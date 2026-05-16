@@ -324,7 +324,7 @@ public final class DataBundleLogic {
         }
 
         dataBundle.courses.values().forEach(course ->
-                coursesLogic.deleteCourseCascade(course.getId())
+                coursesLogic.deleteCourse(course.getId())
         );
         dataBundle.readNotifications.values().forEach(readNotification ->
                 notificationsLogic.deleteReadNotification(readNotification.getId())

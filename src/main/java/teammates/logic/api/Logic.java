@@ -335,8 +335,8 @@ public class Logic {
      *
      * @param courseId of course.
      */
-    public void deleteCourseCascade(String courseId) {
-        coursesLogic.deleteCourseCascade(courseId);
+    public void deleteCourse(String courseId) {
+        coursesLogic.deleteCourse(courseId);
     }
 
     /**
