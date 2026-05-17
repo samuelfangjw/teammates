@@ -21,10 +21,6 @@ public class DeleteStudentAction extends Action {
             return;
         }
 
-        if (!authContext.isInstructor()) {
-            throw new UnauthorizedAccessException("Instructor privilege is required to access this resource.");
-        }
-
         String courseId = getNonNullRequestParamValue(Const.ParamsNames.COURSE_ID);
 
         Instructor instructor = logic.getInstructorByGoogleId(courseId, authContext.id());

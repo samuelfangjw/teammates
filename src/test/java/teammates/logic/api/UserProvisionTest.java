@@ -92,7 +92,7 @@ public class UserProvisionTest extends BaseTestCase {
         AuthContext authContext = userProvision.getCurrentUserContext(createMockValidCookie(userId));
 
         assertEquals(userId, authContext.id());
-        assertHasRoles(authContext, Role.INSTRUCTOR);
+        assertHasRoles(authContext);
     }
 
     @Test
@@ -103,7 +103,7 @@ public class UserProvisionTest extends BaseTestCase {
         AuthContext authContext = userProvision.getCurrentUserContext(createMockValidCookie(userId));
 
         assertEquals(userId, authContext.id());
-        assertHasRoles(authContext, Role.STUDENT);
+        assertHasRoles(authContext);
     }
 
     @Test
@@ -147,7 +147,7 @@ public class UserProvisionTest extends BaseTestCase {
         AuthContext authContext = userProvision.getCurrentUserContext(createMockValidCookie(userId));
 
         assertEquals(userId, authContext.id());
-        assertHasRoles(authContext, Role.INSTRUCTOR, Role.STUDENT);
+        assertHasRoles(authContext);
     }
 
     @Test
@@ -172,7 +172,7 @@ public class UserProvisionTest extends BaseTestCase {
         AuthContext authContext = userProvision.getCurrentUserContext(createMockValidCookie(userId));
 
         assertEquals(userId, authContext.id());
-        assertHasRoles(authContext, Role.INSTRUCTOR, Role.STUDENT, Role.MAINTAINER);
+        assertHasRoles(authContext, Role.MAINTAINER);
     }
 
     @Test
@@ -186,7 +186,7 @@ public class UserProvisionTest extends BaseTestCase {
         AuthContext authContext = userProvision.getCurrentUserContext(createMockValidCookie(userId));
 
         assertEquals(userId, authContext.id());
-        assertHasRoles(authContext, Role.ADMIN, Role.INSTRUCTOR, Role.STUDENT, Role.MAINTAINER);
+        assertHasRoles(authContext, Role.ADMIN, Role.MAINTAINER);
     }
 
     @Test
@@ -217,7 +217,7 @@ public class UserProvisionTest extends BaseTestCase {
         AuthContext authContext = userProvision.getMasqueradeUserContext(googleId);
 
         assertEquals(googleId, authContext.id());
-        assertHasRoles(authContext, Role.INSTRUCTOR);
+        assertHasRoles(authContext);
     }
 
     @Test
@@ -228,7 +228,7 @@ public class UserProvisionTest extends BaseTestCase {
         AuthContext authContext = userProvision.getMasqueradeUserContext(googleId);
 
         assertEquals(googleId, authContext.id());
-        assertHasRoles(authContext, Role.STUDENT);
+        assertHasRoles(authContext);
     }
 
     @Test
@@ -272,7 +272,7 @@ public class UserProvisionTest extends BaseTestCase {
         AuthContext authContext = userProvision.getMasqueradeUserContext(googleId);
 
         assertEquals(googleId, authContext.id());
-        assertHasRoles(authContext, Role.INSTRUCTOR, Role.STUDENT);
+        assertHasRoles(authContext);
     }
 
     @Test
@@ -285,7 +285,7 @@ public class UserProvisionTest extends BaseTestCase {
         AuthContext authContext = userProvision.getMasqueradeUserContext(googleId);
 
         assertEquals(googleId, authContext.id());
-        assertHasRoles(authContext, Role.INSTRUCTOR, Role.STUDENT, Role.MAINTAINER);
+        assertHasRoles(authContext, Role.MAINTAINER);
     }
 
     @Test
@@ -295,7 +295,7 @@ public class UserProvisionTest extends BaseTestCase {
         AuthContext authContext = userProvision.getAdminOnlyUserContext(userId);
 
         assertEquals(userId, authContext.id());
-        assertHasRoles(authContext, Role.ADMIN, Role.MAINTAINER, Role.INSTRUCTOR, Role.STUDENT);
+        assertHasRoles(authContext, Role.ADMIN, Role.MAINTAINER);
         verifyNoInteractions(mockUsersLogic);
     }
 
@@ -319,13 +319,11 @@ public class UserProvisionTest extends BaseTestCase {
     private static void assertHasRoles(AuthContext authContext, Role... expectedRoles) {
         Set<Role> expected = Set.of(expectedRoles);
         assertEquals(expected.contains(Role.ADMIN), authContext.isAdmin());
-        assertEquals(expected.contains(Role.INSTRUCTOR), authContext.isInstructor());
-        assertEquals(expected.contains(Role.STUDENT), authContext.isStudent());
         assertEquals(expected.contains(Role.MAINTAINER), authContext.isMaintainer());
     }
 
     private enum Role {
-        ADMIN, INSTRUCTOR, STUDENT, MAINTAINER
+        ADMIN, MAINTAINER
     }
 
 }

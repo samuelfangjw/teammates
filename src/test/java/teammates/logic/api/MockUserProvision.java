@@ -14,19 +14,16 @@ import teammates.common.datatransfer.UserInfoCookie;
 public class MockUserProvision extends UserProvision {
     private static final UUID MOCK_ACCOUNT_ID = UUID.randomUUID();
     private AuthContext mockUser = new AuthContext(
-            "user.id", MOCK_ACCOUNT_ID, false, false, false, false
+            "user.id", MOCK_ACCOUNT_ID, false, false
     );
     private boolean isLoggedIn;
     private boolean isAutomatedServiceMode;
     private boolean isMaintainer;
     private boolean isAdmin;
-    private boolean isInstructor;
-    private boolean isStudent;
 
-    private AuthContext loginUser(String userId, boolean isAdmin, boolean isInstructor, boolean isStudent,
-            boolean isMaintainer) {
-        isLoggedIn = true;
-        mockUser = new AuthContext(userId, MOCK_ACCOUNT_ID, isAdmin, isInstructor, isStudent, isMaintainer);
+    private AuthContext loginUser(String userId, boolean isAdmin, boolean isMaintainer) {
+        this.isLoggedIn = true;
+        mockUser = new AuthContext(userId, MOCK_ACCOUNT_ID, isAdmin, isMaintainer);
         return mockUser;
     }
 
@@ -36,7 +33,7 @@ public class MockUserProvision extends UserProvision {
      * @return The auth context after login process
      */
     public AuthContext loginUser(String userId) {
-        return loginUser(userId, false, false, false, false);
+        return loginUser(userId, false, false);
     }
 
     /**
@@ -45,34 +42,7 @@ public class MockUserProvision extends UserProvision {
      * @return The auth context after login process
      */
     public AuthContext loginAsAdmin(String userId) {
-        return loginUser(userId, true, false, false, false);
-    }
-
-    /**
-     * Login as a user with instructor rights.
-     *
-     * @return The auth context after login process
-     */
-    public AuthContext loginAsInstructor(String userId) {
-        return loginUser(userId, false, true, false, false);
-    }
-
-    /**
-     * Login as a user with student rights.
-     *
-     * @return The auth context after login process
-     */
-    public AuthContext loginAsStudent(String userId) {
-        return loginUser(userId, false, false, true, false);
-    }
-
-    /**
-     * Login as a user with student and instructor rights.
-     *
-     * @return The auth context after login process
-     */
-    public AuthContext loginAsStudentInstructor(String userId) {
-        return loginUser(userId, false, true, true, false);
+        return loginUser(userId, true, false);
     }
 
     /**
@@ -81,7 +51,7 @@ public class MockUserProvision extends UserProvision {
      * @return The auth context after login process
      */
     public AuthContext loginAsMaintainer(String userId) {
-        return loginUser(userId, false, false, false, true);
+        return loginUser(userId, false, true);
     }
 
     /**
@@ -115,19 +85,11 @@ public class MockUserProvision extends UserProvision {
 
     @Override
     public AuthContext getMasqueradeUserContext(String googleId) {
-        return new AuthContext(googleId, MOCK_ACCOUNT_ID, isAdmin, isInstructor, isStudent, isMaintainer);
+        return new AuthContext(googleId, MOCK_ACCOUNT_ID, isAdmin, isMaintainer);
     }
 
     public void setAdmin(boolean isAdmin) {
         this.isAdmin = isAdmin;
-    }
-
-    public void setInstructor(boolean isInstructor) {
-        this.isInstructor = isInstructor;
-    }
-
-    public void setStudent(boolean isStudent) {
-        this.isStudent = isStudent;
     }
 
     public void setMaintainer(boolean isMaintainer) {

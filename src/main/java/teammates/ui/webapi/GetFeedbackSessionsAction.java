@@ -43,21 +43,11 @@ public class GetFeedbackSessionsAction extends Action {
         String courseId = getRequestParamValue(Const.ParamsNames.COURSE_ID);
 
         if (Const.EntityType.STUDENT.equals(entityType)) {
-            if (!authContext.isStudent()) {
-                throw new UnauthorizedAccessException("User " + authContext.id()
-                        + " does not have student privileges");
-            }
-
             if (courseId != null) {
                 Course course = logic.getCourse(courseId);
                 gateKeeper.verifyAccessible(logic.getStudentByGoogleId(courseId, authContext.id()), course);
             }
         } else {
-            if (!authContext.isInstructor()) {
-                throw new UnauthorizedAccessException("User " + authContext.id()
-                        + " does not have instructor privileges");
-            }
-
             if (courseId != null) {
                 Course course = logic.getCourse(courseId);
                 gateKeeper.verifyAccessible(logic.getInstructorByGoogleId(courseId, authContext.id()), course);

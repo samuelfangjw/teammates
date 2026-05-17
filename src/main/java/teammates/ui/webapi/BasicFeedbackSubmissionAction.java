@@ -238,7 +238,6 @@ abstract class BasicFeedbackSubmissionAction extends Action {
             throws UnauthorizedAccessException {
         String moderatedPerson = getRequestParamValue(Const.ParamsNames.FEEDBACK_SESSION_MODERATED_PERSON);
         Instant deadlineExtension = logic.getDeadlineForUser(feedbackSession, user);
-
         if (StringHelper.isEmpty(moderatedPerson) && !(feedbackSession.isOpenedGivenExtendedDeadline(deadlineExtension)
                 || feedbackSession.isInGracePeriodGivenExtendedDeadline(deadlineExtension))) {
             throw new UnauthorizedAccessException("The feedback session is not available for submission", true);

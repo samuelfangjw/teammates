@@ -28,12 +28,8 @@ public class GetCoursesAction extends Action {
 
     @Override
     void checkSpecificAccessControl() throws UnauthorizedAccessException {
-        String entityType = getNonNullRequestParamValue(Const.ParamsNames.ENTITY_TYPE);
-
-        if (!(Const.EntityType.STUDENT.equals(entityType) && authContext.isStudent())
-                && !(Const.EntityType.INSTRUCTOR.equals(entityType) && authContext.isInstructor())) {
-            throw new UnauthorizedAccessException("Current account cannot access to courses of request entity type");
-        }
+        // No additional access control needed as both students and instructors can access this action
+        // as the courses returned are filtered based on the user.
     }
 
     @Override

@@ -20,6 +20,7 @@ import teammates.common.exception.InvalidParametersException;
 import teammates.common.util.Config;
 import teammates.common.util.Const;
 import teammates.common.util.EmailWrapper;
+import teammates.common.util.HibernateUtil;
 import teammates.common.util.JsonUtils;
 import teammates.it.test.BaseTestCaseWithDatabaseAccess;
 import teammates.logic.api.Logic;
@@ -180,7 +181,7 @@ public abstract class BaseActionIT<T extends Action> extends BaseTestCaseWithDat
      * (without admin rights or student rights).
      */
     protected void loginAsInstructor(String userId) {
-        mockUserProvision.loginAsInstructor(userId);
+        mockUserProvision.loginUser(userId);
     }
 
     /**
@@ -188,7 +189,7 @@ public abstract class BaseActionIT<T extends Action> extends BaseTestCaseWithDat
      * (without admin rights or instructor rights).
      */
     protected void loginAsStudent(String userId) {
-        mockUserProvision.loginAsStudent(userId);
+        mockUserProvision.loginUser(userId);
     }
 
     /**
@@ -196,7 +197,7 @@ public abstract class BaseActionIT<T extends Action> extends BaseTestCaseWithDat
      * admin rights).
      */
     protected void loginAsStudentInstructor(String userId) {
-        mockUserProvision.loginAsStudentInstructor(userId);
+        mockUserProvision.loginUser(userId);
     }
 
     /**
@@ -353,13 +354,10 @@ public abstract class BaseActionIT<T extends Action> extends BaseTestCaseWithDat
 
         loginAsAdmin();
         mockUserProvision.setAdmin(true);
-        mockUserProvision.setInstructor(true);
-        mockUserProvision.setStudent(false);
         mockUserProvision.setMaintainer(false);
 
         // not checking for non-masquerade mode because admin may not be an instructor
         verifyCanMasquerade(instructor.getAccount().getGoogleId(), submissionParams);
-        mockUserProvision.setInstructor(false);
     }
 
     void verifyAccessibleForAdminToMasqueradeAsInstructor(Course course, String[] submissionParams)
@@ -367,15 +365,13 @@ public abstract class BaseActionIT<T extends Action> extends BaseTestCaseWithDat
         ______TS("admin can access");
         Instructor instructor = createTypicalInstructor(course,
                 "accessibleforadmintomasqueradeasinstructor@teammates.tmt");
-
+        HibernateUtil.flushSession();
+        HibernateUtil.clearSession();
         loginAsAdmin();
         mockUserProvision.setAdmin(true);
-        mockUserProvision.setInstructor(true);
-        mockUserProvision.setStudent(false);
         mockUserProvision.setMaintainer(false);
         // not checking for non-masquerade mode because admin may not be an instructor
         verifyCanMasquerade(instructor.getAccount().getGoogleId(), submissionParams);
-        mockUserProvision.setInstructor(false);
     }
 
     void verifyInaccessibleWithoutModifySessionPrivilege(Course course, String[] submissionParams)
@@ -434,6 +430,8 @@ public abstract class BaseActionIT<T extends Action> extends BaseTestCaseWithDat
                 "accessibleforinstructorsofthesamecourse-otherinstructor@teammates.tmt");
 
         loginAsInstructor(instructorSameCourse.getAccount().getGoogleId());
+        HibernateUtil.flushSession();
+        HibernateUtil.clearSession();
         verifyCanAccess(submissionParams);
 
         verifyCannotMasquerade(studentSameCourse.getAccount().getGoogleId(), submissionParams);
@@ -455,6 +453,8 @@ public abstract class BaseActionIT<T extends Action> extends BaseTestCaseWithDat
                 "accessibleforinstructorsofothercourse-otherinstructor@teammates.tmt");
 
         loginAsInstructor(instructorOtherCourse.getAccount().getGoogleId());
+        HibernateUtil.flushSession();
+        HibernateUtil.clearSession();
         verifyCanAccess(submissionParams);
 
         verifyCannotMasquerade(studentSameCourse.getAccount().getGoogleId(), submissionParams);
@@ -509,6 +509,7 @@ public abstract class BaseActionIT<T extends Action> extends BaseTestCaseWithDat
      * the logged in user.
      */
     protected void verifyCanAccess(String... params) {
+        HibernateUtil.flushSession();
         Action c = getAction(params);
         try {
             c.checkAccessControl();
@@ -522,6 +523,7 @@ public abstract class BaseActionIT<T extends Action> extends BaseTestCaseWithDat
      * accessible to the user.
      */
     protected void verifyCannotAccess(String... params) {
+        HibernateUtil.flushSession();
         Action c = getAction(params);
         assertThrows(UnauthorizedAccessException.class, c::checkAccessControl);
     }

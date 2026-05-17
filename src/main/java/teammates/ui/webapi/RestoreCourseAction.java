@@ -18,9 +18,6 @@ public class RestoreCourseAction extends Action {
 
     @Override
     void checkSpecificAccessControl() throws UnauthorizedAccessException {
-        if (!authContext.isInstructor()) {
-            throw new UnauthorizedAccessException("Instructor privilege is required to access this resource.");
-        }
         String idOfCourseToRestore = getNonNullRequestParamValue(Const.ParamsNames.COURSE_ID);
         Course course = logic.getCourse(idOfCourseToRestore);
 

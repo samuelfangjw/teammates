@@ -162,7 +162,7 @@ public abstract class BaseActionTest<T extends Action> extends BaseTestCase {
      * (without admin rights or student rights).
      */
     protected void loginAsInstructor(String userId) {
-        mockUserProvision.loginAsInstructor(userId);
+        mockUserProvision.loginUser(userId);
     }
 
     /**
@@ -170,7 +170,7 @@ public abstract class BaseActionTest<T extends Action> extends BaseTestCase {
      * (without admin rights or instructor rights).
      */
     protected void loginAsStudent(String userId) {
-        mockUserProvision.loginAsStudent(userId);
+        mockUserProvision.loginUser(userId);
     }
 
     /**
@@ -178,7 +178,7 @@ public abstract class BaseActionTest<T extends Action> extends BaseTestCase {
      * (without admin rights).
      */
     protected void loginAsStudentInstructor(String userId) {
-        mockUserProvision.loginAsStudentInstructor(userId);
+        mockUserProvision.loginUser(userId);
     }
 
     /**
@@ -735,8 +735,6 @@ public abstract class BaseActionTest<T extends Action> extends BaseTestCase {
     private void loginAsAdminAndMasqueradeAsInstructor(Instructor instructor, boolean canMasquerade, String... params) {
         loginAsAdmin();
         mockUserProvision.setAdmin(false);
-        mockUserProvision.setInstructor(true);
-        mockUserProvision.setStudent(false);
         mockUserProvision.setMaintainer(false);
         when(mockLogic.getInstructorByGoogleId(any(), any())).thenReturn(instructor);
 
@@ -745,8 +743,6 @@ public abstract class BaseActionTest<T extends Action> extends BaseTestCase {
         } else {
             verifyCannotMasquerade(instructor.getGoogleId(), params);
         }
-
-        mockUserProvision.setInstructor(false);
     }
 
     private void loginAsInstructorOfTheSameCourse(Course thisCourse) {
