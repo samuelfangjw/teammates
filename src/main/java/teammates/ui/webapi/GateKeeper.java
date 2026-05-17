@@ -51,7 +51,7 @@ final class GateKeeper {
      * Verifies that the specified account has student privileges in any course.
      */
     void verifyStudentInAnyCourse(Account account) throws UnauthorizedAccessException {
-        if (account.getStudents() != null && !account.getStudents().isEmpty()) {
+        if (account != null && account.getStudents() != null && !account.getStudents().isEmpty()) {
             return;
         }
 
