@@ -32,10 +32,6 @@ public class GetFeedbackSessionLogsAction extends Action {
 
     @Override
     void checkSpecificAccessControl() throws UnauthorizedAccessException {
-        if (!authContext.isInstructor()) {
-            throw new UnauthorizedAccessException("Instructor privilege is required to access this resource.");
-        }
-
         String courseId = getNonNullRequestParamValue(Const.ParamsNames.COURSE_ID);
         Course course = logic.getCourse(courseId);
         if (course == null) {

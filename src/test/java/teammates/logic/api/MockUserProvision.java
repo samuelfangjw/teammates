@@ -46,33 +46,6 @@ public class MockUserProvision extends UserProvision {
     }
 
     /**
-     * Login as a user with instructor rights.
-     *
-     * @return The auth context after login process
-     */
-    public AuthContext loginAsInstructor(String userId) {
-        return loginUser(userId, false, false);
-    }
-
-    /**
-     * Login as a user with student rights.
-     *
-     * @return The auth context after login process
-     */
-    public AuthContext loginAsStudent(String userId) {
-        return loginUser(userId, false, false);
-    }
-
-    /**
-     * Login as a user with student and instructor rights.
-     *
-     * @return The auth context after login process
-     */
-    public AuthContext loginAsStudentInstructor(String userId) {
-        return loginUser(userId, false, false);
-    }
-
-    /**
      * Login as a user with maintainer rights.
      *
      * @return The auth context after login process

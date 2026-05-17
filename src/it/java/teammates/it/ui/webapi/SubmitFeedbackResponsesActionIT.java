@@ -108,16 +108,12 @@ public class SubmitFeedbackResponsesActionIT extends BaseActionIT<SubmitFeedback
         Instant startTime = TimeHelper.getInstantDaysOffsetFromNow(days);
 
         session.setStartTime(startTime);
-
-        HibernateUtil.flushSession();
     }
 
     private void setEndTime(FeedbackSession session, int days) {
         Instant endTime = TimeHelper.getInstantDaysOffsetFromNow(days);
 
         session.setEndTime(endTime);
-
-        HibernateUtil.flushSession();
     }
 
     private void setUserDeadlineExtension(FeedbackSession session, User user, int days)
@@ -394,7 +390,6 @@ public class SubmitFeedbackResponsesActionIT extends BaseActionIT<SubmitFeedback
 
         questionNumber = 2;
         submissionParams = buildSubmissionParams(session, questionNumber, Intent.STUDENT_SUBMISSION);
-
         verifyCannotAccess(submissionParams);
 
         ______TS("Typical success with students: redundant deadline extension");

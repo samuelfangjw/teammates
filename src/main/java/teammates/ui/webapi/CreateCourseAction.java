@@ -28,10 +28,6 @@ public class CreateCourseAction extends Action {
 
     @Override
     void checkSpecificAccessControl() throws UnauthorizedAccessException {
-        if (!authContext.isInstructor()) {
-            throw new UnauthorizedAccessException("Instructor privilege is required to access this resource.");
-        }
-
         String institute = getNonNullRequestParamValue(Const.ParamsNames.INSTRUCTOR_INSTITUTION);
         List<Instructor> existingInstructors = logic.getInstructorsForGoogleId(authContext.id());
         boolean canCreateCourse = existingInstructors.stream()

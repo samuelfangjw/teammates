@@ -40,10 +40,6 @@ public class GetStudentAction extends Action {
         if (studentEmail != null) {
             student = logic.getStudentForEmail(courseId, studentEmail);
 
-            if (student == null || authContext == null || !authContext.isInstructor()) {
-                throw new UnauthorizedAccessException(UNAUTHORIZED_ACCESS);
-            }
-
             Instructor instructor = logic.getInstructorByGoogleId(courseId, authContext.id());
 
             gateKeeper.verifyAccessible(instructor, logic.getCourse(courseId),
@@ -52,10 +48,6 @@ public class GetStudentAction extends Action {
         } else if (regKey != null) {
             getUnregisteredStudent().orElseThrow(() -> new UnauthorizedAccessException(UNAUTHORIZED_ACCESS));
         } else {
-            if (authContext == null || !authContext.isStudent()) {
-                throw new UnauthorizedAccessException(UNAUTHORIZED_ACCESS);
-            }
-
             student = logic.getStudentByGoogleId(courseId, authContext.id());
             gateKeeper.verifyAccessible(student, course);
         }

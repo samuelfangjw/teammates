@@ -50,9 +50,6 @@ public class UpdateStudentAction extends Action {
 
     @Override
     void checkSpecificAccessControl() throws UnauthorizedAccessException {
-        if (!authContext.isInstructor()) {
-            throw new UnauthorizedAccessException("Instructor privilege is required to access this resource.");
-        }
         UUID studentId = getUuidRequestParamValue(Const.ParamsNames.STUDENT_SQL_ID);
         Student existingStudent = logic.getStudent(studentId);
         if (existingStudent == null) {
